@@ -37,10 +37,11 @@ func main() {
 
 	router := gin.Default()
 
-	v2 := router.Group("v2")
+	v1 := router.Group("v1")
 	{
-		// handle /cell_lines endpoint
-		v2.GET("/cell_lines", func(c *gin.Context) {
+		// handle GET request
+		// Endpoints: /cell_lines
+		v1.GET("/cell_lines", func(c *gin.Context) {
 			var (
 				cell  Cell
 				cells []Cell
@@ -66,8 +67,9 @@ func main() {
 			c.JSON(http.StatusOK, result)
 		})
 
-		// handle /cell_lines/:id endpoint
-		v2.GET("/cell_lines/:id", func(c *gin.Context) {
+		// handle GET request (for all three endpoints below)
+		// Endpoints: /cell_lines/:id, /cell_lines/:name, /cell_lines/:accession
+		v1.GET("/cell_lines/:id", func(c *gin.Context) {
 			var (
 				cell   Cell
 				result gin.H
