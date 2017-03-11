@@ -2,6 +2,8 @@ package main
 
 import (
 	"database/sql"
+	// "encoding/json"
+	// "fmt"
 	"log"
 	"net/http"
 	"os"
@@ -113,6 +115,6 @@ func main() {
 			c.JSON(http.StatusOK, result)
 		})
 	}
-
+	gin.SetMode(gin.ReleaseMode)
 	router.Run(":3000")
 }
