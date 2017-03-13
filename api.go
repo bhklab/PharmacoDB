@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,10 +12,20 @@ import (
 )
 
 type Cell struct {
-	Id        int            `json:"id"`
-	Accession sql.NullString `json:"accession"`
-	Name      string         `json:"name"`
-	Tissue    sql.NullString `json:"tissue"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Accession string `json:"accession"`
+	Tissue    string `json:"tissue"`
+}
+
+func main() {
+	router := gin.Default()
+	v1 := router.Group("v1")
+	{
+		v1.GET("/cell_lines/name/:name", CellByName)
+	}
+
+	router.Run(":3000")
 }
 
 // create a database connection
@@ -35,50 +46,24 @@ func InitDb() *sql.DB {
 	return db
 }
 
-func getCell(c *gin.Context) {
-	var (
-		cell   Cell
-		result gin.H
-	)
+// GET cell line request handler (param: name)
+func CellByName(c *gin.Context) {
+	var cell Cell
 
 	db := InitDb()
 	defer db.Close()
 
-	id := c.Param("id")
-	row := db.QueryRow("select cell_id, accession_id, cell_name, tissue_name from cells inner join tissues on cells.tissue_id = tissues.tissue_id where cells.cell_name = ?;", id)
-	err := row.Scan(&cell.Id, &cell.Accession, &cell.Name, &cell.Tissue)
+	name := c.Param("name")
+	row := db.QueryRow("select cell_id, accession_id, cell_name, tissue_name from cells inner join tissues on cells.tissue_id = tissues.tissue_id where cells.cell_name = ?;", name)
+	err := row.Scan(&cell.ID, &cell.Accession, &cell.Name, &cell.Tissue)
 	if err != nil {
-		row = db.QueryRow("select cell_id, accession_id, cell_name, tissue_name from cells inner join tissues on cells.tissue_id = tissues.tissue_id where cells.cell_id = ?;", id)
-		err = row.Scan(&cell.Id, &cell.Accession, &cell.Name, &cell.Tissue)
-	}
-	if err != nil {
-		row = db.QueryRow("select cell_id, accession_id, cell_name, tissue_name from cells inner join tissues on cells.tissue_id = tissues.tissue_id where cells.accession_id = ?;", id)
-		err = row.Scan(&cell.Id, &cell.Accession, &cell.Name, &cell.Tissue)
-	}
-
-	if err != nil {
-		result = gin.H{
-			"category": "cell line",
-			"count":    0,
-			"data":     nil,
-		}
-		c.JSON(http.StatusNotFound, result)
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": gin.H{
+				"status":  http.StatusNotFound,
+				"message": fmt.Sprintf("cell line - %s - not found in database", name),
+			},
+		})
 	} else {
-		result = gin.H{
-			"category": "cell line",
-			"count":    1,
-			"data":     cell,
-		}
-		c.JSON(http.StatusOK, result)
+		c.JSON(http.StatusOK, cell)
 	}
-}
-
-func main() {
-	router := gin.Default()
-	v1 := router.Group("v1")
-	{
-		v1.GET("/cell_lines/:id", getCell)
-	}
-
-	router.Run(":3000")
 }
