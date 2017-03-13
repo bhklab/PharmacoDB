@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -129,17 +130,17 @@ func main() {
 
 	v1 := router.Group("v1")
 	{
-		v1.GET("/cell_lines", getCells)
-		v1.GET("/cell_lines/names", getCellsNames)
-		v1.GET("/cell_lines/names/:name", getCellByName)
-		v1.GET("/cell_lines/names/:name/synonyms", getCellSynByName)
-		v1.GET("/cell_lines/names/:name/drugs", getCellDrugsByName)
-		v1.GET("/cell_lines/names/:name/drugs_stat", getCellDrugStatByName)
-		v1.GET("/cell_lines/ids", getCellsIDs)
-		v1.GET("/cell_lines/ids/:id", getCellByID)
-		v1.GET("/cell_lines/ids/:id/synonyms", getCellSynByID)
-		v1.GET("/cell_lines/ids/:id/drugs", getCellDrugsByID)
-		v1.GET("/cell_lines/ids/:id/drugs_stat", getCellDrugStatByID)
+		v1.GET("/cell_lines", getCLines)
+		// v1.GET("/cell_lines/names", getCLineNames)
+		// v1.GET("/cell_lines/names/:name", getCellByName)
+		// v1.GET("/cell_lines/names/:name/synonyms", getCellSynByName)
+		// v1.GET("/cell_lines/names/:name/drugs", getCellDrugsByName)
+		// v1.GET("/cell_lines/names/:name/drugs_stat", getCellDrugStatByName)
+		// v1.GET("/cell_lines/ids", getCellsIDs)
+		// v1.GET("/cell_lines/ids/:id", getCellByID)
+		// v1.GET("/cell_lines/ids/:id/synonyms", getCellSynByID)
+		// v1.GET("/cell_lines/ids/:id/drugs", getCellDrugsByID)
+		// v1.GET("/cell_lines/ids/:id/drugs_stat", getCellDrugStatByID)
 	}
 
 	router.Run(":3000")
