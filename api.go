@@ -23,6 +23,7 @@ func main() {
 	v1 := router.Group("v1")
 	{
 		v1.GET("/cell_lines/name/:name", CellByName)
+		v1.GET("/cell_lines/id/:id", CellByID)
 	}
 
 	router.Run(":3000")
@@ -61,6 +62,28 @@ func CellByName(c *gin.Context) {
 			"error": gin.H{
 				"status":  http.StatusNotFound,
 				"message": fmt.Sprintf("cell line - %s - not found in database", name),
+			},
+		})
+	} else {
+		c.JSON(http.StatusOK, cell)
+	}
+}
+
+// GET cell line request handler (param: id)
+func CellByID(c *gin.Context) {
+	var cell Cell
+
+	db := InitDb()
+	defer db.Close()
+
+	id := c.Param("id")
+	row := db.QueryRow("select cell_id, accession_id, cell_name, tissue_name from cells inner join tissues on cells.tissue_id = tissues.tissue_id where cells.cell_id = ?;", id)
+	err := row.Scan(&cell.ID, &cell.Accession, &cell.Name, &cell.Tissue)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": gin.H{
+				"status":  http.StatusNotFound,
+				"message": fmt.Sprintf("cell line with ID - %s - not found in database", id),
 			},
 		})
 	} else {
