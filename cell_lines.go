@@ -8,26 +8,19 @@ import (
 	"gopkg.in/guregu/null.v3"
 )
 
-// Cell is a cell line (attr: 4)
+// Cell is a cell line
 type Cell struct {
 	ID        int         `json:"id"`
 	Name      string      `json:"name"`
 	Accession null.String `json:"accession"`
-	Tissue    string      `json:"tissue"`
-}
-
-// Cells is a cell line (attr: 3)
-type Cells struct {
-	ID        int         `json:"id"`
-	Name      string      `json:"name"`
-	Accession null.String `json:"accession"`
+	Tissue    string      `json:"tissue,omitempty"`
 }
 
 // GetCLines handles GET requests for cell lines
 func GetCLines(c *gin.Context) {
 	var (
-		cell  Cells
-		cells []Cells
+		cell  Cell
+		cells []Cell
 	)
 
 	db := InitDb()
