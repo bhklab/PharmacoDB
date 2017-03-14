@@ -8,13 +8,6 @@ import (
 	"gopkg.in/guregu/null.v3"
 )
 
-// Stat is a dataset-to-count statistics
-// (used for plotting in webapp)
-type Stat struct {
-	Dataset string `json:"dataset"`
-	Count   int    `json:"count"`
-}
-
 // Cell is a cell line (attr: 4)
 type Cell struct {
 	ID        int         `json:"id"`
@@ -59,29 +52,4 @@ func GetCLines(c *gin.Context) {
 		"data":     cells,
 	}
 	c.JSON(http.StatusOK, result)
-}
-
-// GetCLinesStats handles GET requests for cell lines statistics
-func GetCLinesStats(c *gin.Context) {
-	var (
-		stat  Stat
-		stats []Stat
-	)
-
-	db := InitDb()
-	defer db.Close()
-
-	rows, err := db.Query("select dataset_name, cell_lines from dataset_statistics;")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for rows.Next() {
-		err = rows.Scan(&stat.Dataset, &stat.Count)
-		if err != nil {
-			log.Fatal(err)
-		}
-		stats = append(stats, stat)
-	}
-	defer rows.Close()
-
 }
