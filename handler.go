@@ -8,8 +8,8 @@ import (
 
 // InitDb prepares database abstraction for later use
 func InitDb() *sql.DB {
-	dbname := os.Getenv("pharmacodb_api_dbname")
-	passwd := os.Getenv("local_mysql_passwd")
+	dbname := os.Getenv("pmdb_name")
+	passwd := os.Getenv("mysql_passwd")
 	cred := "root:" + passwd + "@tcp(127.0.0.1:3306)/" + dbname
 
 	db, err := sql.Open("mysql", cred)
