@@ -10,10 +10,20 @@ function loading {
   sleep 1
 }
 
+function exit_non_gracefully {
+  sleep 1
+  echo "You have failed to comply with simple instructions ¯\(°_o)/¯"
+  sleep 3
+  printf ">_ exiting non-gracefully "
+  loading
+  echo
+  exit 1
+}
+
 echo "Hi there!
 I see you want to re/create pharmacodb from scratch ...
 Well aren't you brave, attempting what many have tried, and failed ...
-But fret not, for this script will make your life a lot simpler :D
+But fret not, for I will make your life so much simpler :D
 Easy peasy right, so just follow along on this crazy ride!"
 echo
 printf "
@@ -33,47 +43,37 @@ echo
 echo
 
 echo "You are not under oath, but do answer each question as honestly as you can!"
-echo "Oh, and if you fail to comply with any instructions,
-script will get angry at you and exit rudely ..."
+echo "Oh, and if you fail to comply with any of my instructions,
+I will become very angry at you, and exit rudely! O.o"
 echo
 
-# printf "starting "
-# loading
-# echo
-# echo
+
+echo ">_ STEP 1: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo
 
 echo "Do you have a mysql user and password already created?"
-echo "  (If you enter no, you will be prompted to create a user.)"
+echo "  (If you enter no, I will prompt you to create a user.)"
 echo "  Press y for Yes, n for No."
 printf "(y/n): "
-read ans
+read answer
 echo
 
-if [[ ans -eq "y" ]]; then
-  printf ""
+if [[ $answer == "y" ]]; then
+  printf "Enter user: "
+  read user
+  printf "Enter password: "
+  stty -echo
+  read password
+  stty echo
+  printf "\n"
+  echo "username is: $user, password is: $password"
 
-
+  # continue here ====================================================== <<
 
   exit 0
-elif [[ ans -eq "n" ]]; then
+elif [[ $answer == "n" ]]; then
   echo "no"
   exit 0
-elif [[ ans -eq "h" ]]; then
-  echo "help"
-  exit 0
 else
-  echo "You failed to comply with simple instructions :("
-  printf "exiting non-gracefully "
-  loading
-  echo
-  exit 1
+  exit_non_gracefully
 fi
-
-printf "Enter user name: "
-read name
-printf "Enter password: "
-stty -echo
-read password
-stty echo
-printf "\n"
-echo "username is: $name, password is: $password"

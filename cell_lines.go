@@ -16,12 +16,6 @@ type Cell struct {
 	Tissue    string      `json:"tissue,omitempty"`
 }
 
-// Stat is a dataset-to-cell_line_count relation
-type Stat struct {
-	Dataset string `json:"dataset"`
-	Count   int    `json:"count"`
-}
-
 // GetCLines handles GET requests for cell lines
 func GetCLines(c *gin.Context) {
 	var (
@@ -46,34 +40,32 @@ func GetCLines(c *gin.Context) {
 	defer rows.Close()
 
 	result := gin.H{
-		"category": "cell_lines",
-		"count":    len(cells),
-		"data":     cells,
+		"category":    "cell_lines",
+		"description": "list of all cell lines in pharmacodb",
+		"count":       len(cells),
+		"data":        cells,
 	}
 	c.IndentedJSON(http.StatusOK, result)
 }
 
-// GetCStats handles GET requests for cell lines count stats (per dataset)
-func GetCStats(c *gin.Context) {
-	var (
-		stat  Stat
-		stats []Stat
-	)
+// GetCLineByID handles GET request for a cell line using ID
+func GetCLineByID(c *gin.Context) {
+	var cell Cell
+
 	db := InitDb()
 	defer db.Close()
 
-	rows, err := db.Query("select dataset_id, cell_lines from dataset_statistics;")
+	id := c.Param("id")
+	row := db.QueryRow("select cell_id, accession_id, cell_name, tissue_name from cells inner join tissues on cells.tissue_id = tissues.tissue_id where cells.cell_id = ?;", id)
+	err := row.Scan(&cell.ID, &cell.Accession, &cell.Name, &cell.Tissue)
 	if err != nil {
-		log.Fatal(err)
+		c.IndentedJSON(http.StatusNotFound, gin.H{
+			"error": gin.H{
+				"status":  http.StatusNotFound,
+				"message": "cell line with id - " + id + " - not found in database",
+			},
+		})
+	} else {
+		c.IndentedJSON(http.StatusOK, cell)
 	}
-	for rows.Next() {
-		err = rows.Scan(&stat.Dataset, &stat.Count)
-		if err != nil {
-			log.Fatal(err)
-		}
-		stats = append(stats, stat)
-	}
-	defer rows.Close()
-
-	c.IndentedJSON(http.StatusOK, stats)
 }
