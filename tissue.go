@@ -20,7 +20,7 @@ type Tissue struct {
 	Name null.String `json:"name"`
 }
 
-// GetTissues handles GET requests for /tissues endpoint
+// GetTissues handles GET requests for /tissues
 func GetTissues(c *gin.Context) {
 	var (
 		tissue  TissueReduced
@@ -33,7 +33,7 @@ func GetTissues(c *gin.Context) {
 	err := db.Ping()
 	if err != nil {
 		raven.CaptureError(err, nil)
-		ErrorHandler(c, http.StatusInternalServerError, "Internal server error")
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
 		c.Abort()
 		return
 	}
@@ -41,7 +41,7 @@ func GetTissues(c *gin.Context) {
 	rows, err := db.Query("select tissue_id, tissue_name from tissues;")
 	if err != nil {
 		raven.CaptureError(err, nil)
-		ErrorHandler(c, http.StatusInternalServerError, "Internal server error")
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
 		c.Abort()
 		return
 	}
@@ -49,7 +49,7 @@ func GetTissues(c *gin.Context) {
 		err = rows.Scan(&tissue.ID, &tissue.Name)
 		if err != nil {
 			raven.CaptureError(err, nil)
-			ErrorHandler(c, http.StatusInternalServerError, "Internal server error")
+			ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
 			c.Abort()
 			return
 		}
@@ -61,4 +61,44 @@ func GetTissues(c *gin.Context) {
 		"count": len(tissues),
 		"data":  tissues,
 	})
+}
+
+// GetTissueStats handles GET requests for /tissues/stats
+func GetTissueStats(c *gin.Context) {
+	var (
+		stat  DatasetStat
+		stats []DatasetStat
+	)
+
+	db := InitDb()
+	defer db.Close()
+
+	err := db.Ping()
+	if err != nil {
+		raven.CaptureError(err, nil)
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+		c.Abort()
+		return
+	}
+
+	rows, err := db.Query("select dataset_id, tissues from dataset_statistics;")
+	if err != nil {
+		raven.CaptureError(err, nil)
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+		c.Abort()
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&stat.Dataset, &stat.Count)
+		if err != nil {
+			raven.CaptureError(err, nil)
+			ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+			c.Abort()
+			return
+		}
+		stats = append(stats, stat)
+	}
+	defer rows.Close()
+
+	c.IndentedJSON(http.StatusOK, stats)
 }

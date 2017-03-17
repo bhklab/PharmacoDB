@@ -19,7 +19,7 @@ type Dataset struct {
 	Name string `json:"name"`
 }
 
-// GetDatasets handles GET requests for /datasets endpoint
+// GetDatasets handles GET requests for /datasets
 func GetDatasets(c *gin.Context) {
 	var (
 		dataset  DatasetReduced
@@ -32,7 +32,7 @@ func GetDatasets(c *gin.Context) {
 	err := db.Ping()
 	if err != nil {
 		raven.CaptureError(err, nil)
-		ErrorHandler(c, http.StatusInternalServerError, "Internal server error")
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
 		c.Abort()
 		return
 	}
@@ -40,7 +40,7 @@ func GetDatasets(c *gin.Context) {
 	rows, err := db.Query("select dataset_id, dataset_name from datasets;")
 	if err != nil {
 		raven.CaptureError(err, nil)
-		ErrorHandler(c, http.StatusInternalServerError, "Internal server error")
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
 		c.Abort()
 		return
 	}
@@ -48,7 +48,7 @@ func GetDatasets(c *gin.Context) {
 		err = rows.Scan(&dataset.ID, &dataset.Name)
 		if err != nil {
 			raven.CaptureError(err, nil)
-			ErrorHandler(c, http.StatusInternalServerError, "Internal server error")
+			ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
 			c.Abort()
 			return
 		}
@@ -59,5 +59,64 @@ func GetDatasets(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"count": len(datasets),
 		"data":  datasets,
+	})
+}
+
+// GetDatasetStats handles GET requests for /datasets/stats
+func GetDatasetStats(c *gin.Context) {
+	var (
+		cstat DatasetStat
+		tstat DatasetStat
+		dstat DatasetStat
+		estat DatasetStat
+
+		cstats []DatasetStat
+		tstats []DatasetStat
+		dstats []DatasetStat
+		estats []DatasetStat
+	)
+
+	db := InitDb()
+	defer db.Close()
+
+	err := db.Ping()
+	if err != nil {
+		raven.CaptureError(err, nil)
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+		c.Abort()
+		return
+	}
+
+	rows, err := db.Query("select dataset_id, cell_lines, tissues, drugs, experiments from dataset_statistics;")
+	if err != nil {
+		raven.CaptureError(err, nil)
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+		c.Abort()
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&cstat.Dataset, &cstat.Count, &tstat.Count, &dstat.Count, &estat.Count)
+		if err != nil {
+			raven.CaptureError(err, nil)
+			ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+			c.Abort()
+			return
+		}
+		tstat.Dataset = cstat.Dataset
+		dstat.Dataset = cstat.Dataset
+		estat.Dataset = cstat.Dataset
+
+		cstats = append(cstats, cstat)
+		tstats = append(tstats, tstat)
+		dstats = append(dstats, dstat)
+		estats = append(estats, estat)
+	}
+	defer rows.Close()
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"cell_lines":  cstats,
+		"tissues":     tstats,
+		"drugs":       dstats,
+		"experiments": estats,
 	})
 }

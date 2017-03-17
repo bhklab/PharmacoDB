@@ -9,6 +9,12 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
+// DatasetStat contains the number of a resource tested in a dataset
+type DatasetStat struct {
+	Dataset int `json:"dataset"`
+	Count   int `json:"count"`
+}
+
 func init() {
 	raven.SetDSN("https://24b828d4b8ea469da5b61941b6a3554a:d1de3fc962314598bcb3d04f010ce676@sentry.io/148972")
 }
