@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"net/http"
 	"os"
 
 	"github.com/getsentry/raven-go"
@@ -39,14 +38,5 @@ func InitDb() *sql.DB {
 	if err != nil {
 		raven.CaptureError(err, nil)
 	}
-
 	return db
-}
-
-// GetDataTypes handles request for /datatypes
-func GetDataTypes(c *gin.Context) {
-	data := [5]string{"cell_lines", "tissues", "drugs", "datasets", "experiments"}
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"data": data,
-	})
 }

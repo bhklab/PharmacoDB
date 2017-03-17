@@ -20,8 +20,6 @@ func main() {
 
 	v1 := router.Group("v1")
 	{
-		v1.GET("/datatypes", GetDataTypes)
-
 		v1.GET("/cell_lines", GetCells)
 		v1.GET("/cell_lines/stats", GetCellStats)
 
