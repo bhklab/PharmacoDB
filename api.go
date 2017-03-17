@@ -7,12 +7,19 @@ import (
 
 func main() {
 	router := gin.Default()
+	router.NoRoute(func(c *gin.Context) {
+		c.IndentedJSON(400, gin.H{
+			"error": gin.H{
+				"status":            400,
+				"message":           "Bad request. Check PharmacoDb API official documentation for properly formed endpoints/routes.",
+				"documentation_url": "https://www.pharmacodb.com/docs/api",
+			},
+		})
+	})
 
-	// version api
 	v1 := router.Group("v1")
 	{
 		v1.GET("/datatypes", GetDataTypes)
-
 		v1.GET("/cell_lines", GetCellLines)
 	}
 

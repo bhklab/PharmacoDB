@@ -3,8 +3,7 @@ package main
 import (
 	"net/http"
 
-	raven "github.com/getsentry/raven-go"
-
+	"github.com/getsentry/raven-go"
 	"gopkg.in/gin-gonic/gin.v1"
 	"gopkg.in/guregu/null.v3"
 )
@@ -33,10 +32,11 @@ func GetCellLines(c *gin.Context) {
 
 	db := InitDb()
 	defer db.Close()
+
 	err := db.Ping()
 	if err != nil {
 		raven.CaptureError(err, nil)
-		ErrorHandler(c, 500, "Internal server error")
+		ErrorHandler(c, http.StatusInternalServerError, "Internal server error")
 		c.Abort()
 		return
 	}
@@ -44,7 +44,7 @@ func GetCellLines(c *gin.Context) {
 	rows, err := db.Query("select cell_id, accession_id, cell_name from cells;")
 	if err != nil {
 		raven.CaptureError(err, nil)
-		ErrorHandler(c, 500, "Internal server error")
+		ErrorHandler(c, http.StatusInternalServerError, "Internal server error")
 		c.Abort()
 		return
 	}
@@ -52,7 +52,7 @@ func GetCellLines(c *gin.Context) {
 		err = rows.Scan(&cell.ID, &cell.Accession, &cell.Name)
 		if err != nil {
 			raven.CaptureError(err, nil)
-			ErrorHandler(c, 500, "Internal server error")
+			ErrorHandler(c, http.StatusInternalServerError, "Internal server error")
 			c.Abort()
 			return
 		}
