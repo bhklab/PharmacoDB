@@ -20,7 +20,10 @@ func main() {
 	v1 := router.Group("v1")
 	{
 		v1.GET("/datatypes", GetDataTypes)
-		v1.GET("/cell_lines", GetCellLines)
+		v1.GET("/cell_lines", GetCells)
+		v1.GET("/tissues", GetTissues)
+		v1.GET("/drugs", GetDrugs)
+		v1.GET("/datasets", GetDatasets)
 	}
 
 	router.Run(":3000")
