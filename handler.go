@@ -2,17 +2,25 @@ package main
 
 import (
 	"database/sql"
-	"log"
+	"net/http"
 	"os"
 
+	"github.com/getsentry/raven-go"
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
-// Synonym is a collection of synonyms for a resource
-// Resource is one of: cell_line, tissue, drug
-type Synonym struct {
-	Name    string   `json:"name"`
-	Sources []string `json:"sources"`
+func init() {
+	raven.SetDSN("https://24b828d4b8ea469da5b61941b6a3554a:d1de3fc962314598bcb3d04f010ce676@sentry.io/148972")
+}
+
+// ErrorHandler handles func error messages
+func ErrorHandler(c *gin.Context, code int, message string) {
+	c.IndentedJSON(code, gin.H{
+		"error": gin.H{
+			"status":  code,
+			"message": message,
+		},
+	})
 }
 
 // InitDb prepares database abstraction for later use
@@ -23,23 +31,16 @@ func InitDb() *sql.DB {
 
 	db, err := sql.Open("mysql", cred)
 	if err != nil {
-		log.Fatal(err)
-	}
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
+		raven.CaptureError(err, nil)
 	}
 
 	return db
 }
 
-// ErrHandler handles all error messages
-// Does not handle middleware errors (Eg. bad routes/endpoints)
-func ErrHandler(c *gin.Context, status int, message string) {
-	c.IndentedJSON(status, gin.H{
-		"error": gin.H{
-			"status":  status,
-			"message": message,
-		},
+// GetDataTypes handles request for /datatypes
+func GetDataTypes(c *gin.Context) {
+	data := [5]string{"cell_lines", "tissues", "drugs", "datasets", "experiments"}
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"data": data,
 	})
 }
