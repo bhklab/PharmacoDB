@@ -11,7 +11,6 @@ func main() {
 	v1 := router.Group("v1")
 	{
 		v1.GET("/cell_lines", GetCLines)
-		v1.GET("/cell_lines/ids/:id", GetCLineByID)
 	}
 
 	router.Run(":3000")
