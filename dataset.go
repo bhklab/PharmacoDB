@@ -26,7 +26,7 @@ func GetDatasets(c *gin.Context) {
 		datasets []DatasetReduced
 	)
 
-	db := InitDb()
+	db := InitDB()
 	defer db.Close()
 
 	err := db.Ping()
@@ -76,7 +76,7 @@ func GetDatasetStats(c *gin.Context) {
 		estats []DatasetStat
 	)
 
-	db := InitDb()
+	db := InitDB()
 	defer db.Close()
 
 	err := db.Ping()

@@ -27,7 +27,7 @@ func GetTissues(c *gin.Context) {
 		tissues []TissueReduced
 	)
 
-	db := InitDb()
+	db := InitDB()
 	defer db.Close()
 
 	err := db.Ping()
@@ -70,7 +70,7 @@ func GetTissueStats(c *gin.Context) {
 		stats []DatasetStat
 	)
 
-	db := InitDb()
+	db := InitDB()
 	defer db.Close()
 
 	err := db.Ping()

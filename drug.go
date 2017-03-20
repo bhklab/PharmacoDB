@@ -26,7 +26,7 @@ func GetDrugs(c *gin.Context) {
 		drugs []DrugReduced
 	)
 
-	db := InitDb()
+	db := InitDB()
 	defer db.Close()
 
 	err := db.Ping()
@@ -69,7 +69,7 @@ func GetDrugStats(c *gin.Context) {
 		stats []DatasetStat
 	)
 
-	db := InitDb()
+	db := InitDB()
 	defer db.Close()
 
 	err := db.Ping()

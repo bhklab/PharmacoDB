@@ -29,7 +29,7 @@ func GetCells(c *gin.Context) {
 		cells []CellReduced
 	)
 
-	db := InitDb()
+	db := InitDB()
 	defer db.Close()
 
 	err := db.Ping()
@@ -72,7 +72,7 @@ func GetCellStats(c *gin.Context) {
 		stats []DatasetStat
 	)
 
-	db := InitDb()
+	db := InitDB()
 	defer db.Close()
 
 	err := db.Ping()

@@ -28,8 +28,8 @@ func ErrorHandler(c *gin.Context, code int, message string) {
 	})
 }
 
-// InitDb prepares database abstraction for later use
-func InitDb() *sql.DB {
+// InitDB prepares database abstraction for later use
+func InitDB() *sql.DB {
 	dbname := os.Getenv("pmdb_name")
 	passwd := os.Getenv("mysql_passwd")
 	cred := "root:" + passwd + "@tcp(127.0.0.1:3306)/" + dbname
