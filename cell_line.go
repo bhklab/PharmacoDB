@@ -60,8 +60,8 @@ func GetCells(c *gin.Context) {
 	defer rows.Close()
 
 	c.IndentedJSON(http.StatusOK, gin.H{
-		"count": len(cells),
-		"data":  cells,
+		"count":      len(cells),
+		"cell_lines": cells,
 	})
 }
 
@@ -102,5 +102,7 @@ func GetCellStats(c *gin.Context) {
 	}
 	defer rows.Close()
 
-	c.IndentedJSON(http.StatusOK, stats)
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"statistics": stats,
+	})
 }

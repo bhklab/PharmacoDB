@@ -58,7 +58,7 @@ func GetDrugs(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"count": len(drugs),
-		"data":  drugs,
+		"drugs": drugs,
 	})
 }
 
@@ -99,5 +99,7 @@ func GetDrugStats(c *gin.Context) {
 	}
 	defer rows.Close()
 
-	c.IndentedJSON(http.StatusOK, stats)
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"statistics": stats,
+	})
 }

@@ -57,8 +57,8 @@ func GetDatasets(c *gin.Context) {
 	defer rows.Close()
 
 	c.IndentedJSON(http.StatusOK, gin.H{
-		"count": len(datasets),
-		"data":  datasets,
+		"count":    len(datasets),
+		"datasets": datasets,
 	})
 }
 
@@ -114,9 +114,11 @@ func GetDatasetStats(c *gin.Context) {
 	defer rows.Close()
 
 	c.IndentedJSON(http.StatusOK, gin.H{
-		"cell_lines":  cstats,
-		"tissues":     tstats,
-		"drugs":       dstats,
-		"experiments": estats,
+		"statistics": gin.H{
+			"cell_lines":  cstats,
+			"tissues":     tstats,
+			"drugs":       dstats,
+			"experiments": estats,
+		},
 	})
 }
