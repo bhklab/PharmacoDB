@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/getsentry/raven-go"
@@ -16,10 +17,10 @@ type CellReduced struct {
 
 // Cell is a cell line datatype
 type Cell struct {
-	ID        int         `json:"id"`
-	Accession null.String `json:"accession"`
-	Name      string      `json:"name"`
-	Tissue    Tissue      `json:"tissue"`
+	ID        int           `json:"id"`
+	Accession null.String   `json:"accession"`
+	Name      string        `json:"name"`
+	Tissue    TissueReduced `json:"tissue"`
 }
 
 // GetCells handles GET requests for /cell_lines
@@ -105,4 +106,68 @@ func GetCellStats(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"statistics": stats,
 	})
+}
+
+// GetCellIDs handles GET requests for /cell_lines/ids
+func GetCellIDs(c *gin.Context) {
+	db := InitDB()
+	defer db.Close()
+
+	err := db.Ping()
+	if err != nil {
+		raven.CaptureError(err, nil)
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+		c.Abort()
+		return
+	}
+
+	var (
+		ID  string
+		IDs []string
+	)
+	rows, dberr := db.Query("select cell_id from cells;")
+	if dberr != nil {
+		raven.CaptureError(dberr, nil)
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+		c.Abort()
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&ID)
+		if err != nil {
+			raven.CaptureError(err, nil)
+			ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+			c.Abort()
+			return
+		}
+		IDs = append(IDs, ID)
+	}
+	defer rows.Close()
+	c.JSON(http.StatusOK, IDs)
+}
+
+// GetCellByID handles GET requests for /cell_lines/ids/:id
+func GetCellByID(c *gin.Context) {
+	var cell Cell
+
+	db := InitDB()
+	defer db.Close()
+
+	err := db.Ping()
+	if err != nil {
+		raven.CaptureError(err, nil)
+		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+		c.Abort()
+		return
+	}
+
+	id := c.Param("id")
+
+	row := db.QueryRow("select cell_id, accession_id, cell_name, t.tissue_id, t.tissue_name from cells c inner join tissues t on c.tissue_id = t.tissue_id where c.cell_id = ?;", id)
+	err = row.Scan(&cell.ID, &cell.Accession, &cell.Name, &cell.Tissue.ID, &cell.Tissue.Name)
+	if err != nil {
+		ErrorHandler(c, http.StatusNotFound, fmt.Sprintf("Cell line with ID - %s - not found in database.", id))
+	} else {
+		c.IndentedJSON(http.StatusOK, cell)
+	}
 }
