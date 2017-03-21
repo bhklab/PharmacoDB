@@ -14,6 +14,18 @@ type DatasetStat struct {
 	Count   int `json:"count"`
 }
 
+// ReSynonym is a synonym struct
+type ReSynonym struct {
+	Name    string
+	Dataset string
+}
+
+// Synonym is a synonym struct
+type Synonym struct {
+	Name     string   `json:"name"`
+	Datasets []string `json:"datasets"`
+}
+
 func init() {
 	raven.SetDSN("https://24b828d4b8ea469da5b61941b6a3554a:d1de3fc962314598bcb3d04f010ce676@sentry.io/148972")
 }
