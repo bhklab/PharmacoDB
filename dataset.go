@@ -7,18 +7,6 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
-// DatasetReduced is a dataset with only two attributes
-type DatasetReduced struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
-
-// Dataset is a dataset datatype
-type Dataset struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
-
 // GetDatasets handles GET requests for /datasets
 func GetDatasets(c *gin.Context) {
 	var (

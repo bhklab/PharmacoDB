@@ -7,18 +7,6 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
-// DrugReduced is a drug with only two attributes
-type DrugReduced struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
-
-// Drug is a drug datatype
-type Drug struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
-
 // GetDrugs handles GET requests for /drugs
 func GetDrugs(c *gin.Context) {
 	var (

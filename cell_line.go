@@ -6,23 +6,7 @@ import (
 
 	"github.com/getsentry/raven-go"
 	"gopkg.in/gin-gonic/gin.v1"
-	"gopkg.in/guregu/null.v3"
 )
-
-// CellReduced is a cell line with only two attributes
-type CellReduced struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
-
-// Cell is a cell line datatype
-type Cell struct {
-	ID        int           `json:"id"`
-	Accession null.String   `json:"accession"`
-	Name      string        `json:"name"`
-	Tissue    TissueReduced `json:"tissue"`
-	Syn       []Synonym     `json:"synonyms"`
-}
 
 // GetCells handles GET requests for /cell_lines
 func GetCells(c *gin.Context) {
@@ -151,8 +135,8 @@ func GetCellIDs(c *gin.Context) {
 func GetCellByID(c *gin.Context) {
 	var (
 		cell    Cell
-		scname  ReSynonym
-		scnames []ReSynonym
+		scname  SynonymReduced
+		scnames []SynonymReduced
 		scn     Synonym
 		scns    []Synonym
 	)
@@ -197,6 +181,7 @@ func GetCellByID(c *gin.Context) {
 					b.Datasets = append(b.Datasets, syn.Dataset)
 					fmt.Println(syn.Dataset)
 					// something wrong is happening here (to be continued ...)
+					// also not handling 404 cell lines properly
 				}
 			}
 		} else {
@@ -209,7 +194,7 @@ func GetCellByID(c *gin.Context) {
 		}
 	}
 
-	cell.Syn = scns
+	cell.Synonyms = scns
 
 	c.IndentedJSON(http.StatusOK, cell)
 }

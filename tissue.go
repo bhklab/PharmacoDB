@@ -5,20 +5,7 @@ import (
 
 	raven "github.com/getsentry/raven-go"
 	"gopkg.in/gin-gonic/gin.v1"
-	"gopkg.in/guregu/null.v3"
 )
-
-// TissueReduced is a tissue with only two attributes
-type TissueReduced struct {
-	ID   int         `json:"id"`
-	Name null.String `json:"name"`
-}
-
-// Tissue is a tissue datatype
-type Tissue struct {
-	ID   int         `json:"id"`
-	Name null.String `json:"name"`
-}
 
 // GetTissues handles GET requests for /tissues
 func GetTissues(c *gin.Context) {
