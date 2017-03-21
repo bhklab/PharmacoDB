@@ -9,47 +9,47 @@ import (
 )
 
 // GetCells handles GET requests for /cell_lines
-func GetCells(c *gin.Context) {
-	var (
-		cell  CellReduced
-		cells []CellReduced
-	)
-
-	db := InitDB()
-	defer db.Close()
-
-	err := db.Ping()
-	if err != nil {
-		raven.CaptureError(err, nil)
-		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
-		c.Abort()
-		return
-	}
-
-	rows, err := db.Query("select cell_id, cell_name from cells;")
-	if err != nil {
-		raven.CaptureError(err, nil)
-		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
-		c.Abort()
-		return
-	}
-	for rows.Next() {
-		err = rows.Scan(&cell.ID, &cell.Name)
-		if err != nil {
-			raven.CaptureError(err, nil)
-			ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
-			c.Abort()
-			return
-		}
-		cells = append(cells, cell)
-	}
-	defer rows.Close()
-
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"count":      len(cells),
-		"cell_lines": cells,
-	})
-}
+// func GetCells(c *gin.Context) {
+// 	var (
+// 		cell  CellReduced
+// 		cells []CellReduced
+// 	)
+//
+// 	db := InitDB()
+// 	defer db.Close()
+//
+// 	err := db.Ping()
+// 	if err != nil {
+// 		raven.CaptureError(err, nil)
+// 		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+// 		c.Abort()
+// 		return
+// 	}
+//
+// 	rows, err := db.Query("select cell_id, cell_name from cells;")
+// 	if err != nil {
+// 		raven.CaptureError(err, nil)
+// 		ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+// 		c.Abort()
+// 		return
+// 	}
+// 	for rows.Next() {
+// 		err = rows.Scan(&cell.ID, &cell.Name)
+// 		if err != nil {
+// 			raven.CaptureError(err, nil)
+// 			ErrorHandler(c, http.StatusInternalServerError, "Internal Server Error")
+// 			c.Abort()
+// 			return
+// 		}
+// 		cells = append(cells, cell)
+// 	}
+// 	defer rows.Close()
+//
+// 	c.IndentedJSON(http.StatusOK, gin.H{
+// 		"count":      len(cells),
+// 		"cell_lines": cells,
+// 	})
+// }
 
 // GetCellStats handles GET requests for /cell_lines/stats
 func GetCellStats(c *gin.Context) {
