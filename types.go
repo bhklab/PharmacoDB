@@ -15,6 +15,12 @@ type (
 		Datasets []string `json:"datasets"`
 	}
 
+	// DataTypeReduced is a datatype with only ID and Name attributes.
+	DataTypeReduced struct {
+		ID   int         `json:"id"`
+		Name null.String `json:"name"`
+	}
+
 	// DatasetStat contains the number of a resource tested in a dataset.
 	DatasetStat struct {
 		Dataset int `json:"dataset"`
@@ -22,61 +28,29 @@ type (
 	}
 )
 
-type (
-	// CellReduced is a cell line with only ID and Name attributes.
-	CellReduced struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}
+// Cell is a cell line datatype.
+type Cell struct {
+	ID        int             `json:"id"`
+	Accession null.String     `json:"accession"`
+	Name      string          `json:"name"`
+	Tissue    DataTypeReduced `json:"tissue"`
+	Synonyms  []Synonym       `json:"synonyms"`
+}
 
-	// Cell is a datatype.
-	Cell struct {
-		ID        int           `json:"id"`
-		Accession null.String   `json:"accession"`
-		Name      string        `json:"name"`
-		Tissue    TissueReduced `json:"tissue"`
-		Synonyms  []Synonym     `json:"synonyms"`
-	}
-)
+// Tissue is a tissue datatype.
+type Tissue struct {
+	ID   int         `json:"id"`
+	Name null.String `json:"name"`
+}
 
-type (
-	// TissueReduced is a tissue with only ID and Name attributes.
-	TissueReduced struct {
-		ID   int         `json:"id"`
-		Name null.String `json:"name"`
-	}
+// Drug is a drug datatype.
+type Drug struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
 
-	// Tissue is a datatype.
-	Tissue struct {
-		ID   int         `json:"id"`
-		Name null.String `json:"name"`
-	}
-)
-
-type (
-	// DrugReduced is a drug with only ID and Name attributes.
-	DrugReduced struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
-	// Drug is a datatype.
-	Drug struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}
-)
-
-type (
-	// DatasetReduced is a dataset with only ID and Name attributes.
-	DatasetReduced struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
-	// Dataset is a datatype.
-	Dataset struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}
-)
+// Dataset is a dataset datatype.
+type Dataset struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}

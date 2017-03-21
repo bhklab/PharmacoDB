@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"net/http"
 	"os"
 
 	raven "github.com/getsentry/raven-go"
@@ -37,5 +38,76 @@ func handleError(c *gin.Context, err error, code int, message string) {
 			"status":  code,
 			"message": message,
 		},
+	})
+}
+
+// getDataTypes is an abstract GET request handler for /{datatype} endpoints.
+// Endpoints: /cell_lines, /tissues, /drugs, /datasets
+func getDataTypes(c *gin.Context, desc string, queryStr string) {
+	var (
+		item  DataTypeReduced
+		items []DataTypeReduced
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	rows, err := db.Query(queryStr)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&item.ID, &item.Name)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		items = append(items, item)
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"description": desc,
+		"count":       len(items),
+		"data":        items,
+	})
+}
+
+// getDataTypeStats is an abstract GET request handler for /{datatype}/stats endpoints.
+// Endpoints: /cell_lines/stats, /tissues/stats, /drugs/stats
+func getDataTypeStats(c *gin.Context, desc string, queryStr string) {
+	var (
+		stat  DatasetStat
+		stats []DatasetStat
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	rows, err := db.Query(queryStr)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&stat.Dataset, &stat.Count)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		stats = append(stats, stat)
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"description": desc,
+		"data":        stats,
 	})
 }
