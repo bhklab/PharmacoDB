@@ -4,9 +4,7 @@ import "gopkg.in/gin-gonic/gin.v1"
 
 // GetDrugs handles GET requests for /drugs endpoint.
 func GetDrugs(c *gin.Context) {
-	queryStr := "select drug_id, drug_name from drugs;"
-	desc := "List of all drugs in pharmacodb"
-	getDataTypes(c, desc, queryStr)
+	getDataTypes(c, "List of all drugs in pharmacodb", "select drug_id, drug_name from drugs;")
 }
 
 // GetDrugStats handles GET requests for /drugs/stats endpoint.
