@@ -146,3 +146,38 @@ func getDataTypeIDs(c *gin.Context, desc string, queryStr string) {
 		"data":        ids,
 	})
 }
+
+// getDataTypeNames is an abstract GET request handler for /{datatypes}/names endpoints.
+// Endpoints: /cell_lines/names, /tissues/names, /drugs/names, /datasets/names
+func getDataTypeNames(c *gin.Context, desc string, queryStr string) {
+	var (
+		name  string
+		names []string
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	rows, err := db.Query(queryStr)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&name)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		names = append(names, name)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"description": desc,
+		"data":        names,
+	})
+}

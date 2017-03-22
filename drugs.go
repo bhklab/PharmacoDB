@@ -16,3 +16,8 @@ func GetDrugStats(c *gin.Context) {
 func GetDrugIDs(c *gin.Context) {
 	getDataTypeIDs(c, "List of all drug IDs in pharmacodb", "select drug_id from drugs;")
 }
+
+// GetDrugNames handles GET requests for /drugs/names endpoint.
+func GetDrugNames(c *gin.Context) {
+	getDataTypeNames(c, "List of all drug names in pharmacodb", "select drug_name from drugs;")
+}
