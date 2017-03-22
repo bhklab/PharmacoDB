@@ -12,13 +12,16 @@ func main() {
 
 	router.StaticFile("/favicon.ico", "./favicon.ico")
 	router.NoRoute(func(c *gin.Context) {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{
-			"error": gin.H{
-				"status":            http.StatusBadRequest,
-				"message":           "Bad Request",
-				"suggestions":       "Check the official API documentation to see how to properly format endpoints/routes",
-				"documentation_url": "https://www.pharmacodb.com/docs/api",
-			},
+		var errs []gin.H
+		err := gin.H{
+			"status":            http.StatusBadRequest,
+			"message":           "Bad Request",
+			"suggestions":       "Check the official API documentation to see how to properly format endpoints/routes",
+			"documentation_url": "https://www.pharmacodb.com/docs/api",
+		}
+		errs = append(errs, err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": errs,
 		})
 	})
 
