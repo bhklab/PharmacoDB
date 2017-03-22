@@ -9,7 +9,5 @@ func GetTissues(c *gin.Context) {
 
 // GetTissueStats handles GET requests for /tissues/stats endpoint.
 func GetTissueStats(c *gin.Context) {
-	queryStr := "select dataset_id, tissues from dataset_statistics;"
-	desc := "Number of tissues tested in each dataset"
-	getDataTypeStats(c, desc, queryStr)
+	getDataTypeStats(c, "Number of tissues tested in each dataset", "select dataset_id, tissues from dataset_statistics;")
 }

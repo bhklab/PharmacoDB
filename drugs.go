@@ -9,7 +9,5 @@ func GetDrugs(c *gin.Context) {
 
 // GetDrugStats handles GET requests for /drugs/stats endpoint.
 func GetDrugStats(c *gin.Context) {
-	queryStr := "select dataset_id, drugs from dataset_statistics;"
-	desc := "Number of drugs tested in each dataset"
-	getDataTypeStats(c, desc, queryStr)
+	getDataTypeStats(c, "Number of drugs tested in each dataset", "select dataset_id, drugs from dataset_statistics;")
 }

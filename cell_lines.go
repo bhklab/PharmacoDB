@@ -9,7 +9,5 @@ func GetCells(c *gin.Context) {
 
 // GetCellStats handles GET requests for /cell_lines/stats endpoint.
 func GetCellStats(c *gin.Context) {
-	queryStr := "select dataset_id, cell_lines from dataset_statistics;"
-	desc := "Number of cell lines tested in each dataset"
-	getDataTypeStats(c, desc, queryStr)
+	getDataTypeStats(c, "Number of cell lines tested in each dataset", "select dataset_id, cell_lines from dataset_statistics;")
 }
