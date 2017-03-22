@@ -3,16 +3,16 @@ package main
 import "gopkg.in/guregu/null.v3"
 
 type (
-	// SynonymReduced is a synonym match between a name and a single dataset.
-	SynonymReduced struct {
-		Name    string `json:"name"`
-		Dataset string `json:"dataset"`
-	}
-
 	// Synonym is a synonym match between a name and multiple datasets.
 	Synonym struct {
 		Name     string   `json:"name"`
 		Datasets []string `json:"datasets"`
+	}
+
+	// SynonymReduced is a synonym match between a name and a single dataset.
+	SynonymReduced struct {
+		Name    string `json:"name"`
+		Dataset string `json:"dataset"`
 	}
 
 	// DataTypeReduced is a datatype with only ID and Name attributes.

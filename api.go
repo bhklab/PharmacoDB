@@ -26,15 +26,19 @@ func main() {
 	{
 		v1.GET("/cell_lines", GetCells)
 		v1.GET("/cell_lines/stats", GetCellStats)
+		v1.GET("/cell_lines/ids", GetCellIDs)
 
 		v1.GET("/tissues", GetTissues)
 		v1.GET("/tissues/stats", GetTissueStats)
+		v1.GET("/tissues/ids", GetTissueIDs)
 
 		v1.GET("/drugs", GetDrugs)
 		v1.GET("/drugs/stats", GetDrugStats)
+		v1.GET("/drugs/ids", GetDrugIDs)
 
 		v1.GET("/datasets", GetDatasets)
 		v1.GET("/datasets/stats", GetDatasetStats)
+		v1.GET("/datasets/ids", GetDatasetIDs)
 	}
 
 	router.Run(":3000")

@@ -11,3 +11,8 @@ func GetTissues(c *gin.Context) {
 func GetTissueStats(c *gin.Context) {
 	getDataTypeStats(c, "Number of tissues tested in each dataset", "select dataset_id, tissues from dataset_statistics;")
 }
+
+// GetTissueIDs handles GET requests for /tissues/ids endpoint.
+func GetTissueIDs(c *gin.Context) {
+	getDataTypeIDs(c, "List of all tissue IDs in pharmacodb", "select tissue_id from tissues;")
+}

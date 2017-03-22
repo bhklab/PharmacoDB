@@ -8,19 +8,16 @@ import (
 
 // GetDatasets handles GET requests for /datasets endpoint.
 func GetDatasets(c *gin.Context) {
-	queryStr := "select dataset_id, dataset_name from datasets;"
-	desc := "List of all datasets in pharmacodb"
-	getDataTypes(c, desc, queryStr)
+	getDataTypes(c, "List of all datasets in pharmacodb", "select dataset_id, dataset_name from datasets;")
 }
 
 // GetDatasetStats handles GET requests for /datasets/stats
 func GetDatasetStats(c *gin.Context) {
 	var (
-		cstat DatasetStat
-		tstat DatasetStat
-		dstat DatasetStat
-		estat DatasetStat
-
+		cstat  DatasetStat
+		tstat  DatasetStat
+		dstat  DatasetStat
+		estat  DatasetStat
 		cstats []DatasetStat
 		tstats []DatasetStat
 		dstats []DatasetStat
@@ -54,7 +51,7 @@ func GetDatasetStats(c *gin.Context) {
 		estats = append(estats, estat)
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"description": "Number of items tested in each dataset per datatype, as well as number of experiments carried out in each dataset",
 		"data": gin.H{
 			"cell_lines":  cstats,
@@ -63,4 +60,9 @@ func GetDatasetStats(c *gin.Context) {
 			"experiments": estats,
 		},
 	})
+}
+
+// GetDatasetIDs handles GET requests for /datasets/ids endpoint.
+func GetDatasetIDs(c *gin.Context) {
+	getDataTypeIDs(c, "List of all dataset IDs in pharmacodb", "select dataset_id from datasets;")
 }

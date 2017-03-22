@@ -70,7 +70,7 @@ func getDataTypes(c *gin.Context, desc string, queryStr string) {
 		items = append(items, item)
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"description": desc,
 		"count":       len(items),
 		"data":        items,
@@ -106,8 +106,43 @@ func getDataTypeStats(c *gin.Context, desc string, queryStr string) {
 		stats = append(stats, stat)
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"description": desc,
 		"data":        stats,
+	})
+}
+
+// getDataTypeIDs is an abstract GET request handler for /{datatypes}/ids endpoints.
+// Endpoints: /cell_lines/ids, /tissues/ids, /drugs/ids, /datasets/ids
+func getDataTypeIDs(c *gin.Context, desc string, queryStr string) {
+	var (
+		id  int
+		ids []int
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	rows, err := db.Query(queryStr)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&id)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		ids = append(ids, id)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"description": desc,
+		"data":        ids,
 	})
 }
