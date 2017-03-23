@@ -1,6 +1,11 @@
 package main
 
-import "gopkg.in/gin-gonic/gin.v1"
+import (
+	"fmt"
+	"net/http"
+
+	"gopkg.in/gin-gonic/gin.v1"
+)
 
 // GetDrugs handles GET requests for /drugs endpoint.
 func GetDrugs(c *gin.Context) {
@@ -20,4 +25,63 @@ func GetDrugIDs(c *gin.Context) {
 // GetDrugNames handles GET requests for /drugs/names endpoint.
 func GetDrugNames(c *gin.Context) {
 	getDataTypeNames(c, "List of all drug names in pharmacodb", "select drug_name from drugs;")
+}
+
+// GetDrugByID handles GET requests for /drugs/ids/:id endpoint.
+func GetDrugByID(c *gin.Context) {
+	var (
+		drug      Drug
+		syname    string
+		synsource string
+		syns      []Synonym
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	id := c.Param("id")
+	queryStr := "select d.drug_id, d.drug_name, s.source_name, sdn.drug_name from drugs d inner join source_drug_names sdn on sdn.drug_id = d.drug_id inner join sources s on s.source_id = sdn.source_id where d.drug_id = ?"
+	rows, err := db.Query(queryStr, id)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	exists := make(map[string]bool)
+	iter := 0
+	for rows.Next() {
+		err = rows.Scan(&drug.ID, &drug.Name, &synsource, &syname)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[syname] {
+			for i, syn := range syns {
+				if syn.Name == syname {
+					syns[i].Datasets = append(syns[i].Datasets, synsource)
+					break
+				}
+			}
+		} else {
+			var syn Synonym
+			syn.Name = syname
+			syn.Datasets = append(syn.Datasets, synsource)
+			syns = append(syns, syn)
+			exists[syname] = true
+		}
+		iter = 1
+	}
+	if iter == 0 {
+		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Tissue with ID - %s - not found in pharmacodb", id))
+		return
+	}
+	drug.Synonyms = syns
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"type": "drug",
+		"data": drug,
+	})
 }

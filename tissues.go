@@ -76,7 +76,7 @@ func GetTissueByID(c *gin.Context) {
 		iter = 1
 	}
 	if iter == 0 {
-		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Cell line with ID - %s - not found in pharmacodb", id))
+		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Tissue with ID - %s - not found in pharmacodb", id))
 		return
 	}
 	tissue.Synonyms = syns

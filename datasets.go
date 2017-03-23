@@ -71,3 +71,10 @@ func GetDatasetIDs(c *gin.Context) {
 func GetDatasetNames(c *gin.Context) {
 	getDataTypeNames(c, "List of all dataset names in pharmacodb", "select dataset_name from datasets;")
 }
+
+// GetDatasetByID handles GET requests for /datasets/ids/:id endpoints.
+func GetDatasetByID(c *gin.Context) {
+	var (
+		dset Dataset
+	)
+}

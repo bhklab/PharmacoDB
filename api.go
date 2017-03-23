@@ -40,6 +40,7 @@ func main() {
 		v1.GET("/drugs/stats", GetDrugStats)
 		v1.GET("/drugs/ids", GetDrugIDs)
 		v1.GET("/drugs/names", GetDrugNames)
+		v1.GET("/drugs/ids/:id", GetDrugByID)
 
 		v1.GET("/datasets", GetDatasets)
 		v1.GET("/datasets/stats", GetDatasetStats)
