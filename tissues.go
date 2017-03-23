@@ -9,8 +9,7 @@ import (
 
 // GetTissues handles GET requests for /tissues endpoint.
 func GetTissues(c *gin.Context) {
-	getDataTypes(c, "List of all tissues in pharmacodb",
-		"select tissue_id, tissue_name from tissues;")
+	getDataTypes(c, "List of all tissues in pharmacodb", "select tissue_id, tissue_name from tissues;")
 }
 
 // GetTissueStats handles GET requests for /tissues/stats endpoint.
