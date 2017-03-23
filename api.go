@@ -31,6 +31,7 @@ func main() {
 		v1.GET("/cell_lines/stats", GetCellStats)
 		v1.GET("/cell_lines/ids", GetCellIDs)
 		v1.GET("/cell_lines/names", GetCellNames)
+		v1.GET("/cell_lines/ids/:id", GetCellByID)
 
 		v1.GET("/tissues", GetTissues)
 		v1.GET("/tissues/stats", GetTissueStats)

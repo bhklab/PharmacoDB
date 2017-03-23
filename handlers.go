@@ -185,8 +185,10 @@ func getDataTypeNames(c *gin.Context, desc string, queryStr string) {
 	})
 }
 
-// getDataTypesByID is an abstract GET request handler for /{datatypes}/ids/:id endpoints.
-// Endpoints: /cell_lines/ids/:id, /tissues/ids/:id, /drugs/ids/:id, /datasets/ids/:id
-func getDataTypesByID(c *gin.Context, desc string, queryStr string) {
+// getDataTypeSynonyms returns a properly formed json of synonyms to be used by datatypes
+// Endpoints: /cell_lines/ids/:id, /cell_lines/names/:name,
+//            /tissues/ids/:id, /tissues/names/:name,
+//            /drugs/ids/:id, /drugs/names/:name
+func getDataTypeSynonyms() {
 
 }
