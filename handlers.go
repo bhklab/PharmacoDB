@@ -181,11 +181,3 @@ func getDataTypeNames(c *gin.Context, desc string, queryStr string) {
 		"data":        names,
 	})
 }
-
-// getDataTypeSynonyms returns a properly formed json of synonyms to be used by datatypes
-// Endpoints: /cell_lines/ids/:id, /cell_lines/names/:name,
-//            /tissues/ids/:id, /tissues/names/:name,
-//            /drugs/ids/:id, /drugs/names/:name
-func getDataTypeSynonyms() {
-
-}

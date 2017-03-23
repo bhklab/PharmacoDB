@@ -91,7 +91,7 @@ func GetDatasetByID(c *gin.Context) {
 		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Dataset with ID - %s - not found in pharmacodb", id))
 		return
 	} else if err != nil {
-		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
