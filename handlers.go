@@ -30,17 +30,14 @@ func initDB() (*sql.DB, error) {
 
 // Handle request error messages (all except no route match errors).
 func handleError(c *gin.Context, err error, code int, message string) {
-	var errs []gin.H
 	if err != nil {
 		raven.CaptureError(err, nil)
 	}
-	e := gin.H{
-		"code":    code,
-		"message": message,
-	}
-	errs = append(errs, e)
-	c.JSON(code, gin.H{
-		"errors": errs,
+	c.IndentedJSON(code, gin.H{
+		"error": gin.H{
+			"code":    code,
+			"message": message,
+		},
 	})
 }
 
@@ -55,25 +52,25 @@ func getDataTypes(c *gin.Context, desc string, queryStr string) {
 	db, err := initDB()
 	defer db.Close()
 	if err != nil {
-		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	rows, err := db.Query(queryStr)
 	defer rows.Close()
 	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	for rows.Next() {
 		err = rows.Scan(&item.ID, &item.Name)
 		if err != nil {
-			handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
 		items = append(items, item)
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"description": desc,
 		"count":       len(items),
 		"data":        items,
@@ -91,25 +88,25 @@ func getDataTypeStats(c *gin.Context, desc string, queryStr string) {
 	db, err := initDB()
 	defer db.Close()
 	if err != nil {
-		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	rows, err := db.Query(queryStr)
 	defer rows.Close()
 	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	for rows.Next() {
 		err = rows.Scan(&stat.Dataset, &stat.Count)
 		if err != nil {
-			handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
 		stats = append(stats, stat)
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"description": desc,
 		"data":        stats,
 	})
@@ -126,25 +123,25 @@ func getDataTypeIDs(c *gin.Context, desc string, queryStr string) {
 	db, err := initDB()
 	defer db.Close()
 	if err != nil {
-		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	rows, err := db.Query(queryStr)
 	defer rows.Close()
 	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	for rows.Next() {
 		err = rows.Scan(&id)
 		if err != nil {
-			handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
 		ids = append(ids, id)
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"description": desc,
 		"data":        ids,
 	})
@@ -161,25 +158,25 @@ func getDataTypeNames(c *gin.Context, desc string, queryStr string) {
 	db, err := initDB()
 	defer db.Close()
 	if err != nil {
-		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	rows, err := db.Query(queryStr)
 	defer rows.Close()
 	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	for rows.Next() {
 		err = rows.Scan(&name)
 		if err != nil {
-			handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
 		names = append(names, name)
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"description": desc,
 		"data":        names,
 	})

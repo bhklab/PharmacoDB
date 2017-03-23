@@ -40,7 +40,7 @@ func GetCellByID(c *gin.Context) {
 	db, err := initDB()
 	defer db.Close()
 	if err != nil {
-		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	id := c.Param("id")
@@ -48,7 +48,7 @@ func GetCellByID(c *gin.Context) {
 	rows, err := db.Query(queryStr, id)
 	defer rows.Close()
 	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	exists := make(map[string]bool)
@@ -56,7 +56,7 @@ func GetCellByID(c *gin.Context) {
 	for rows.Next() {
 		err = rows.Scan(&cell.ID, &cell.Accession, &cell.Name, &cell.Tissue.ID, &cell.Tissue.Name, &synsource, &syname)
 		if err != nil {
-			handleError(c, err, http.StatusInternalServerError, "Internal Server Error.")
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
 		if exists[syname] {
@@ -81,7 +81,7 @@ func GetCellByID(c *gin.Context) {
 	}
 	cell.Synonyms = syns
 
-	c.JSON(http.StatusOK, gin.H{
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"type": "cell line",
 		"data": cell,
 	})

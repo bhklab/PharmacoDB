@@ -51,7 +51,7 @@ func GetDatasetStats(c *gin.Context) {
 		estats = append(estats, estat)
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"description": "Number of items tested in each dataset per datatype, as well as number of experiments carried out in each dataset",
 		"data": gin.H{
 			"cell_lines":  cstats,

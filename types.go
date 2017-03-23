@@ -39,14 +39,16 @@ type Cell struct {
 
 // Tissue is a tissue datatype.
 type Tissue struct {
-	ID   int         `json:"id"`
-	Name null.String `json:"name"`
+	ID       int         `json:"id"`
+	Name     null.String `json:"name"`
+	Synonyms []Synonym   `json:"synonyms"`
 }
 
 // Drug is a drug datatype.
 type Drug struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID       int       `json:"id"`
+	Name     string    `json:"name"`
+	Synonyms []Synonym `json:"synonyms"`
 }
 
 // Dataset is a dataset datatype.
