@@ -46,6 +46,7 @@ func main() {
 		v1.GET("/datasets/stats", GetDatasetStats)
 		v1.GET("/datasets/ids", GetDatasetIDs)
 		v1.GET("/datasets/names", GetDatasetNames)
+		v1.GET("/datasets/ids/:id", GetDatasetByID)
 	}
 
 	router.Run(":3000")

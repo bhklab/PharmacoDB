@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"net/http"
 
 	"gopkg.in/gin-gonic/gin.v1"
@@ -74,7 +76,27 @@ func GetDatasetNames(c *gin.Context) {
 
 // GetDatasetByID handles GET requests for /datasets/ids/:id endpoints.
 func GetDatasetByID(c *gin.Context) {
-	var (
-		dset Dataset
-	)
+	var dataset Dataset
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	id := c.Param("id")
+	row := db.QueryRow("select dataset_id, dataset_name from datasets where dataset_id = ?", id)
+	err = row.Scan(&dataset.ID, &dataset.Name)
+	if err == sql.ErrNoRows {
+		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Dataset with ID - %s - not found in pharmacodb", id))
+		return
+	} else if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"type": "dataset",
+		"data": dataset,
+	})
 }
