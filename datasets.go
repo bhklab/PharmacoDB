@@ -74,9 +74,12 @@ func GetDatasetNames(c *gin.Context) {
 	getDataTypeNames(c, "List of all dataset names in pharmacodb", "select dataset_name from datasets;")
 }
 
-// GetDatasetByID handles GET requests for /datasets/ids/:id endpoints.
-func GetDatasetByID(c *gin.Context) {
-	var dataset Dataset
+// getDataset finds a dataset with either ID or name.
+func getDataset(c *gin.Context, ptype string) {
+	var (
+		dataset  Dataset
+		queryStr string
+	)
 
 	db, err := initDB()
 	defer db.Close()
@@ -84,11 +87,16 @@ func GetDatasetByID(c *gin.Context) {
 		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	id := c.Param("id")
-	row := db.QueryRow("select dataset_id, dataset_name from datasets where dataset_id = ?", id)
+	iden := c.Param(ptype)
+	if ptype == "id" {
+		queryStr = "select dataset_id, dataset_name from datasets where dataset_id = ?"
+	} else {
+		queryStr = "select dataset_id, dataset_name from datasets where dataset_name = ?"
+	}
+	row := db.QueryRow(queryStr, iden)
 	err = row.Scan(&dataset.ID, &dataset.Name)
 	if err == sql.ErrNoRows {
-		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Dataset with ID - %s - not found in pharmacodb", id))
+		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Dataset with %s - %s - not found in pharmacodb", ptype, iden))
 		return
 	} else if err != nil {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
@@ -99,4 +107,14 @@ func GetDatasetByID(c *gin.Context) {
 		"type": "dataset",
 		"data": dataset,
 	})
+}
+
+// GetDatasetByID handles GET requests for /datasets/ids/:id endpoints.
+func GetDatasetByID(c *gin.Context) {
+	getDataset(c, "id")
+}
+
+// GetDatasetByName handles GET requests for /datasets/names/:name endpoints.
+func GetDatasetByName(c *gin.Context) {
+	getDataset(c, "name")
 }
