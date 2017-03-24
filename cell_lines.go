@@ -27,13 +27,15 @@ func GetCellNames(c *gin.Context) {
 	getDataTypeNames(c, "List of all cell line names in pharmacodb", "select cell_name from cells;")
 }
 
-// GetCellByID handles GET requests for /cell_lines/ids/:id endpoint.
-func GetCellByID(c *gin.Context) {
+// getCell finds a cell line using either ID or name.
+func getCell(c *gin.Context, ctype string) {
 	var (
 		cell      Cell
 		syname    string
 		synsource string
 		syns      []Synonym
+		iden      string
+		queryStr  string
 	)
 
 	db, err := initDB()
@@ -42,9 +44,14 @@ func GetCellByID(c *gin.Context) {
 		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	id := c.Param("id")
-	queryStr := "select c.cell_id, c.accession_id, c.cell_name, t.tissue_id, t.tissue_name, s.source_name, scn.cell_name from cells c inner join tissues t on t.tissue_id = c.tissue_id inner join source_cell_names scn on scn.cell_id = c.cell_id inner join sources s on s.source_id = scn.source_id where c.cell_id = ?"
-	rows, err := db.Query(queryStr, id)
+	if ctype == "id" {
+		iden = c.Param("id")
+		queryStr = "select c.cell_id, c.accession_id, c.cell_name, t.tissue_id, t.tissue_name, s.source_name, scn.cell_name from cells c inner join tissues t on t.tissue_id = c.tissue_id inner join source_cell_names scn on scn.cell_id = c.cell_id inner join sources s on s.source_id = scn.source_id where c.cell_id = ?"
+	} else {
+		iden = c.Param("name")
+		queryStr = "select c.cell_id, c.accession_id, c.cell_name, t.tissue_id, t.tissue_name, s.source_name, scn.cell_name from cells c inner join tissues t on t.tissue_id = c.tissue_id inner join source_cell_names scn on scn.cell_id = c.cell_id inner join sources s on s.source_id = scn.source_id where c.cell_name = ?"
+	}
+	rows, err := db.Query(queryStr, iden)
 	defer rows.Close()
 	if err != nil {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
@@ -75,7 +82,7 @@ func GetCellByID(c *gin.Context) {
 		iter = 1
 	}
 	if iter == 0 {
-		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Cell line with ID - %s - not found in pharmacodb", id))
+		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Cell line with %s - %s - not found in pharmacodb", ctype, iden))
 		return
 	}
 	cell.Synonyms = syns
@@ -84,4 +91,14 @@ func GetCellByID(c *gin.Context) {
 		"type": "cell line",
 		"data": cell,
 	})
+}
+
+// GetCellByID handles GET requests for /cell_lines/ids/:id endpoint.
+func GetCellByID(c *gin.Context) {
+	getCell(c, "id")
+}
+
+// GetCellByName handles GET requests for /cell_lines/names/:name endpoint.
+func GetCellByName(c *gin.Context) {
+	getCell(c, "name")
 }
