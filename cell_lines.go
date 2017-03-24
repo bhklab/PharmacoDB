@@ -100,3 +100,18 @@ func GetCellByID(c *gin.Context) {
 func GetCellByName(c *gin.Context) {
 	getCell(c, "name")
 }
+
+// getCellDrugs finds all drugs tested with a cell line across datasets.
+func getCellDrugs(c *gin.Context, ptype string) {
+
+}
+
+// GetCellDrugsByID handles GET requests for /cell_lines/ids/:id/drugs endpoint.
+func GetCellDrugsByID(c *gin.Context) {
+	getCellDrugs(c, "id")
+}
+
+// GetCellDrugsByName handles GET requests for /cell_lines/names/:name/drugs endpoint.
+func GetCellDrugsByName(c *gin.Context) {
+	getCellDrugs(c, "name")
+}
