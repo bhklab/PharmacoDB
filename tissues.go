@@ -27,13 +27,13 @@ func GetTissueNames(c *gin.Context) {
 	getDataTypeNames(c, "List of all tissue names in pharmacodb", "select tissue_name from tissues;")
 }
 
-// GetTissueByID handles GET requests for /tissues/ids/:id endpoint.
-func GetTissueByID(c *gin.Context) {
+func getTissue(c *gin.Context, ptype string) {
 	var (
 		tissue    Tissue
 		syname    string
 		synsource string
 		syns      []Synonym
+		queryStr  string
 	)
 
 	db, err := initDB()
@@ -42,9 +42,13 @@ func GetTissueByID(c *gin.Context) {
 		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	id := c.Param("id")
-	queryStr := "select t.tissue_id, t.tissue_name, s.source_name, stn.tissue_name from tissues t inner join source_tissue_names stn on stn.tissue_id = t.tissue_id inner join sources s on s.source_id = stn.source_id where t.tissue_id = ?"
-	rows, err := db.Query(queryStr, id)
+	iden := c.Param(ptype)
+	if ptype == "id" {
+		queryStr = "select t.tissue_id, t.tissue_name, s.source_name, stn.tissue_name from tissues t inner join source_tissue_names stn on stn.tissue_id = t.tissue_id inner join sources s on s.source_id = stn.source_id where t.tissue_id = ?"
+	} else {
+		queryStr = "select t.tissue_id, t.tissue_name, s.source_name, stn.tissue_name from tissues t inner join source_tissue_names stn on stn.tissue_id = t.tissue_id inner join sources s on s.source_id = stn.source_id where t.tissue_name = ?"
+	}
+	rows, err := db.Query(queryStr, iden)
 	defer rows.Close()
 	if err != nil {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
@@ -75,7 +79,7 @@ func GetTissueByID(c *gin.Context) {
 		iter = 1
 	}
 	if iter == 0 {
-		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Tissue with ID - %s - not found in pharmacodb", id))
+		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Tissue with %s - %s - not found in pharmacodb", ptype, iden))
 		return
 	}
 	tissue.Synonyms = syns
@@ -84,4 +88,14 @@ func GetTissueByID(c *gin.Context) {
 		"type": "tissue",
 		"data": tissue,
 	})
+}
+
+// GetTissueByID handles GET requests for /tissues/ids/:id endpoint.
+func GetTissueByID(c *gin.Context) {
+	getTissue(c, "id")
+}
+
+// GetTissueByName handles GET requests for /tissues/names/:name endpoint.
+func GetTissueByName(c *gin.Context) {
+	getTissue(c, "name")
 }

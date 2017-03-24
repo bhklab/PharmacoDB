@@ -28,13 +28,12 @@ func GetCellNames(c *gin.Context) {
 }
 
 // getCell finds a cell line using either ID or name.
-func getCell(c *gin.Context, ctype string) {
+func getCell(c *gin.Context, ptype string) {
 	var (
 		cell      Cell
 		syname    string
 		synsource string
 		syns      []Synonym
-		iden      string
 		queryStr  string
 	)
 
@@ -44,11 +43,10 @@ func getCell(c *gin.Context, ctype string) {
 		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	if ctype == "id" {
-		iden = c.Param("id")
+	iden := c.Param(ptype)
+	if ptype == "id" {
 		queryStr = "select c.cell_id, c.accession_id, c.cell_name, t.tissue_id, t.tissue_name, s.source_name, scn.cell_name from cells c inner join tissues t on t.tissue_id = c.tissue_id inner join source_cell_names scn on scn.cell_id = c.cell_id inner join sources s on s.source_id = scn.source_id where c.cell_id = ?"
 	} else {
-		iden = c.Param("name")
 		queryStr = "select c.cell_id, c.accession_id, c.cell_name, t.tissue_id, t.tissue_name, s.source_name, scn.cell_name from cells c inner join tissues t on t.tissue_id = c.tissue_id inner join source_cell_names scn on scn.cell_id = c.cell_id inner join sources s on s.source_id = scn.source_id where c.cell_name = ?"
 	}
 	rows, err := db.Query(queryStr, iden)
@@ -82,7 +80,7 @@ func getCell(c *gin.Context, ctype string) {
 		iter = 1
 	}
 	if iter == 0 {
-		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Cell line with %s - %s - not found in pharmacodb", ctype, iden))
+		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Cell line with %s - %s - not found in pharmacodb", ptype, iden))
 		return
 	}
 	cell.Synonyms = syns

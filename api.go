@@ -36,6 +36,7 @@ func main() {
 		v1.GET("/tissues/ids", GetTissueIDs)
 		v1.GET("/tissues/ids/:id", GetTissueByID)
 		v1.GET("/tissues/names", GetTissueNames)
+		v1.GET("/tissues/names/:name", GetTissueByName)
 
 		v1.GET("/drugs", GetDrugs)
 		v1.GET("/drugs/stats", GetDrugStats)
