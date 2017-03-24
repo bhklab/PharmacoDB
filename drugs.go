@@ -27,13 +27,14 @@ func GetDrugNames(c *gin.Context) {
 	getDataTypeNames(c, "List of all drug names in pharmacodb", "select drug_name from drugs;")
 }
 
-// GetDrugByID handles GET requests for /drugs/ids/:id endpoint.
-func GetDrugByID(c *gin.Context) {
+// getDrug finds a drug using either ID or name.
+func getDrug(c *gin.Context, ptype string) {
 	var (
 		drug      Drug
 		syname    string
 		synsource string
 		syns      []Synonym
+		queryStr  string
 	)
 
 	db, err := initDB()
@@ -42,9 +43,13 @@ func GetDrugByID(c *gin.Context) {
 		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	id := c.Param("id")
-	queryStr := "select d.drug_id, d.drug_name, s.source_name, sdn.drug_name from drugs d inner join source_drug_names sdn on sdn.drug_id = d.drug_id inner join sources s on s.source_id = sdn.source_id where d.drug_id = ?"
-	rows, err := db.Query(queryStr, id)
+	iden := c.Param(ptype)
+	if ptype == "id" {
+		queryStr = "select d.drug_id, d.drug_name, s.source_name, sdn.drug_name from drugs d inner join source_drug_names sdn on sdn.drug_id = d.drug_id inner join sources s on s.source_id = sdn.source_id where d.drug_id = ?"
+	} else {
+		queryStr = "select d.drug_id, d.drug_name, s.source_name, sdn.drug_name from drugs d inner join source_drug_names sdn on sdn.drug_id = d.drug_id inner join sources s on s.source_id = sdn.source_id where d.drug_name = ?"
+	}
+	rows, err := db.Query(queryStr, iden)
 	defer rows.Close()
 	if err != nil {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
@@ -75,7 +80,7 @@ func GetDrugByID(c *gin.Context) {
 		iter = 1
 	}
 	if iter == 0 {
-		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Tissue with ID - %s - not found in pharmacodb", id))
+		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("Tissue with %s - %s - not found in pharmacodb", ptype, iden))
 		return
 	}
 	drug.Synonyms = syns
@@ -84,4 +89,14 @@ func GetDrugByID(c *gin.Context) {
 		"type": "drug",
 		"data": drug,
 	})
+}
+
+// GetDrugByID handles GET requests for /drugs/ids/:id endpoint.
+func GetDrugByID(c *gin.Context) {
+	getDrug(c, "id")
+}
+
+// GetDrugByName handles GET requests for /drugs/names/:name endpoint.
+func GetDrugByName(c *gin.Context) {
+	getDrug(c, "name")
 }

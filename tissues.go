@@ -27,6 +27,7 @@ func GetTissueNames(c *gin.Context) {
 	getDataTypeNames(c, "List of all tissue names in pharmacodb", "select tissue_name from tissues;")
 }
 
+// getTissue finds a tissue using either ID or name.
 func getTissue(c *gin.Context, ptype string) {
 	var (
 		tissue    Tissue
