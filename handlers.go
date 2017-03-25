@@ -41,6 +41,16 @@ func handleError(c *gin.Context, err error, code int, message string) {
 	})
 }
 
+// arrMember checks whether a string (str) is a member of an array of strings (arr).
+func arrMember(str string, arr []string) bool {
+	for _, b := range arr {
+		if b == str {
+			return true
+		}
+	}
+	return false
+}
+
 // getDataTypes is an abstract GET request handler for /{datatype} endpoints.
 // Endpoints: /cell_lines, /tissues, /drugs, /datasets
 func getDataTypes(c *gin.Context, desc string, queryStr string) {

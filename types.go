@@ -21,6 +21,13 @@ type (
 		Name null.String `json:"name"`
 	}
 
+	// CellDrug is a cell-drug-dataset relationship.
+	CellDrug struct {
+		Drug        string   `json:"drug"`
+		Datasets    []string `json:"datasets"`
+		Experiments int
+	}
+
 	// DatasetStat contains the number of a resource tested in a dataset.
 	DatasetStat struct {
 		Dataset int `json:"dataset"`

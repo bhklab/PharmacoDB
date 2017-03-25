@@ -103,7 +103,71 @@ func GetCellByName(c *gin.Context) {
 
 // getCellDrugs finds all drugs tested with a cell line across datasets.
 func getCellDrugs(c *gin.Context, ptype string) {
+	var (
+		queryStr string
+		drug     string
+		dataset  string
+		cdrugs   []CellDrug
+	)
 
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	iden := c.Param(ptype)
+	if ptype == "id" {
+		queryStr = "select dr.drug_name, da.dataset_name from experiments e inner join drugs dr on dr.drug_id = e.drug_id inner join datasets da on da.dataset_id = e.dataset_id where e.cell_id = ?"
+	} else {
+		queryStr = "select dr.drug_id, da.dataset_id from cells c inner join experiments e on e.cell_id = c.cell_id inner join drugs dr on dr.drug_id = e.drug_id inner join datasets da on da.dataset_id = e.dataset_id where c.cell_name = ?"
+	}
+	rows, err := db.Query(queryStr, iden)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	exists := make(map[string]bool)
+	iter := 0
+	for rows.Next() {
+		err = rows.Scan(&drug, &dataset)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[drug] {
+			for i, cd := range cdrugs {
+				if cd.Drug == drug {
+					if arrMember(dataset, cd.Datasets) {
+						cdrugs[i].Experiments++
+						break
+					}
+					cdrugs[i].Datasets = append(cdrugs[i].Datasets, dataset)
+					cdrugs[i].Experiments++
+					break
+				}
+			}
+		} else {
+			var cdrug CellDrug
+			cdrug.Drug = drug
+			cdrug.Datasets = append(cdrug.Datasets, dataset)
+			cdrug.Experiments = 1
+			cdrugs = append(cdrugs, cdrug)
+			exists[drug] = true
+		}
+		iter = 1
+	}
+	if iter == 0 {
+		handleError(c, nil, http.StatusNotFound, "No drug found tested with this cell line")
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"description": "List of drugs tested with cell line across datasets",
+		"count":       len(cdrugs),
+		"data":        cdrugs,
+	})
 }
 
 // GetCellDrugsByID handles GET requests for /cell_lines/ids/:id/drugs endpoint.
