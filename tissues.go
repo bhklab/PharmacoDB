@@ -100,3 +100,58 @@ func GetTissueByID(c *gin.Context) {
 func GetTissueByName(c *gin.Context) {
 	getTissue(c, "name")
 }
+
+func getTissueCells(c *gin.Context, ptype string) {
+	var (
+		queryStr string
+		cell     DataTypeReduced
+		cells    []DataTypeReduced
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	iden := c.Param(ptype)
+	if ptype == "id" {
+		queryStr = "select cell_id, cell_name from cells where tissue_id = ?"
+	} else {
+		queryStr = "select c.cell_id, c.cell_name from tissues t inner join cells c on c.tissue_id = t.tissue_id where t.tissue_name = ?"
+	}
+	rows, err := db.Query(queryStr, iden)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&cell.ID, &cell.Name)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		cells = append(cells, cell)
+	}
+	if len(cells) == 0 {
+		handleError(c, nil, http.StatusNotFound, "No cell line found of this tissue type in pharmacodb")
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"count":       len(cells),
+		"description": "List of cell lines of this tissue type",
+		"data":        cells,
+	})
+}
+
+// GetTissueCellsByID handles GET requests for /tissues/ids/:id/cell_lines endpoint.
+func GetTissueCellsByID(c *gin.Context) {
+	getTissueCells(c, "id")
+}
+
+// GetTissueCellsByName handles GET requests for /tissues/names/:name/cell_lines endpoint.
+func GetTissueCellsByName(c *gin.Context) {
+	getTissueCells(c, "name")
+}

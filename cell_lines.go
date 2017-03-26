@@ -159,7 +159,7 @@ func getCellDrugs(c *gin.Context, ptype string) {
 		iter = 1
 	}
 	if iter == 0 {
-		handleError(c, nil, http.StatusNotFound, "No drug found tested with this cell line")
+		handleError(c, nil, http.StatusNotFound, "No drugs found tested with this cell line")
 		return
 	}
 
