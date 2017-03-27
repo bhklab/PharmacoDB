@@ -101,6 +101,7 @@ func GetTissueByName(c *gin.Context) {
 	getTissue(c, "name")
 }
 
+// getTissueCells finds cell lines of a tissue type using ID or name.
 func getTissueCells(c *gin.Context, ptype string) {
 	var (
 		queryStr string
@@ -154,4 +155,83 @@ func GetTissueCellsByID(c *gin.Context) {
 // GetTissueCellsByName handles GET requests for /tissues/names/:name/cell_lines endpoint.
 func GetTissueCellsByName(c *gin.Context) {
 	getTissueCells(c, "name")
+}
+
+// getTissueDrugs finds drugs tested with a tissue type using ID or name.
+func getTissueDrugs(c *gin.Context, ptype string) {
+	var (
+		queryStr string
+		drug     string
+		dataset  string
+		tdrugs   []DrugDataset
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	iden := c.Param(ptype)
+	if ptype == "id" {
+		queryStr = "select dr.drug_name, da.dataset_name from tissues t inner join experiments e on e.tissue_id = t.tissue_id inner join drugs dr on dr.drug_id = e.drug_id inner join datasets da on da.dataset_id = e.dataset_id where t.tissue_id = ?"
+	} else {
+		queryStr = "select dr.drug_name, da.dataset_name from tissues t inner join experiments e on e.tissue_id = t.tissue_id inner join drugs dr on dr.drug_id = e.drug_id inner join datasets da on da.dataset_id = e.dataset_id where t.tissue_name = ?"
+	}
+	rows, err := db.Query(queryStr, iden)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	exists := make(map[string]bool)
+	iter := 0
+	for rows.Next() {
+		err = rows.Scan(&drug, &dataset)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[drug] {
+			for i, td := range tdrugs {
+				if td.Drug == drug {
+					if arrMember(dataset, td.Datasets) {
+						tdrugs[i].Experiments++
+						break
+					}
+					tdrugs[i].Datasets = append(tdrugs[i].Datasets, dataset)
+					tdrugs[i].Experiments++
+					break
+				}
+			}
+		} else {
+			var tdrug DrugDataset
+			tdrug.Drug = drug
+			tdrug.Datasets = append(tdrug.Datasets, dataset)
+			tdrug.Experiments = 1
+			tdrugs = append(tdrugs, tdrug)
+			exists[drug] = true
+		}
+		iter = 1
+	}
+	if iter == 0 {
+		handleError(c, nil, http.StatusNotFound, "No drugs found tested with this tissue")
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"description": "List of drugs tested with tissue across datasets",
+		"count":       len(tdrugs),
+		"data":        tdrugs,
+	})
+}
+
+// GetTissueDrugsByID handles GET requests for /tissues/ids/:id/drugs endpoint.
+func GetTissueDrugsByID(c *gin.Context) {
+	getTissueDrugs(c, "id")
+}
+
+// GetTissueDrugsByName handles GET requests for /tissues/names/:name/drugs endpoint.
+func GetTissueDrugsByName(c *gin.Context) {
+	getTissueDrugs(c, "name")
 }

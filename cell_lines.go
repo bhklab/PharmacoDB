@@ -107,7 +107,7 @@ func getCellDrugs(c *gin.Context, ptype string) {
 		queryStr string
 		drug     string
 		dataset  string
-		cdrugs   []CellDrug
+		cdrugs   []DrugDataset
 	)
 
 	db, err := initDB()
@@ -149,7 +149,7 @@ func getCellDrugs(c *gin.Context, ptype string) {
 				}
 			}
 		} else {
-			var cdrug CellDrug
+			var cdrug DrugDataset
 			cdrug.Drug = drug
 			cdrug.Datasets = append(cdrug.Datasets, dataset)
 			cdrug.Experiments = 1
