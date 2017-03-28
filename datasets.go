@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"gopkg.in/gin-gonic/gin.v1"
+	null "gopkg.in/guregu/null.v3"
 )
 
 // GetDatasets handles GET requests for /datasets endpoint.
@@ -117,4 +118,89 @@ func GetDatasetByID(c *gin.Context) {
 // GetDatasetByName handles GET requests for /datasets/names/:name endpoints.
 func GetDatasetByName(c *gin.Context) {
 	getDataset(c, "name")
+}
+
+// getDatasetCells finds all cell lines tested in a dataset.
+func getDatasetTypes(c *gin.Context, dtype string, iden string, queryStr string) {
+	var (
+		id        int
+		name      null.String
+		datatypes []DataTypeReduced
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	rows, err := db.Query(queryStr, iden)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	exists := make(map[null.String]bool)
+	iter := 0
+	for rows.Next() {
+		err = rows.Scan(&id, &name)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if !exists[name] {
+			var datatype DataTypeReduced
+			datatype.ID = id
+			datatype.Name = name
+			datatypes = append(datatypes, datatype)
+			exists[name] = true
+		}
+		iter = 1
+	}
+	if iter == 0 {
+		handleError(c, nil, http.StatusNotFound, fmt.Sprintf("No %s found tested in this cell line", dtype))
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"description": fmt.Sprintf("List of %s tested in dataset", dtype),
+		"count":       len(datatypes),
+		"data":        datatypes,
+	})
+}
+
+// GetDatasetCellsByID handles GET requests for /datasets/ids/:id/cell_lines endpoint.
+func GetDatasetCellsByID(c *gin.Context) {
+	queryStr := "select c.cell_id, c.cell_name from datasets d inner join experiments e on e.dataset_id = d.dataset_id inner join cells c on c.cell_id = e.cell_id where d.dataset_id = ?"
+	getDatasetTypes(c, "cell_lines", c.Param("id"), queryStr)
+}
+
+// GetDatasetCellsByName handles GET requests for /datasets/names/:name/cell_lines endpoint.
+func GetDatasetCellsByName(c *gin.Context) {
+	queryStr := "select c.cell_id, c.cell_name from datasets d inner join experiments e on e.dataset_id = d.dataset_id inner join cells c on c.cell_id = e.cell_id where d.dataset_name = ?"
+	getDatasetTypes(c, "cell_lines", c.Param("name"), queryStr)
+}
+
+// GetDatasetTissuesByID handles GET requests for /datasets/ids/:id/tissues endpoint.
+func GetDatasetTissuesByID(c *gin.Context) {
+	queryStr := "select t.tissue_id, t.tissue_name from datasets d inner join experiments e on e.dataset_id = d.dataset_id inner join tissues t on t.tissue_id = e.tissue_id where d.dataset_id = ?"
+	getDatasetTypes(c, "tissues", c.Param("id"), queryStr)
+}
+
+// GetDatasetTissuesByName handles GET requests for /datasets/names/:name/tissues endpoint.
+func GetDatasetTissuesByName(c *gin.Context) {
+	queryStr := "select t.tissue_id, t.tissue_name from datasets d inner join experiments e on e.dataset_id = d.dataset_id inner join tissues t on t.tissue_id = e.tissue_id where d.dataset_name = ?"
+	getDatasetTypes(c, "tissues", c.Param("name"), queryStr)
+}
+
+// GetDatasetDrugsByID handles GET requests for /datasets/ids/:id/drugs endpoint.
+func GetDatasetDrugsByID(c *gin.Context) {
+	queryStr := "select dr.drug_id, dr.drug_name from datasets da inner join experiments e on e.dataset_id = da.dataset_id inner join drugs dr on dr.drug_id = e.drug_id where da.dataset_id = ?"
+	getDatasetTypes(c, "drugs", c.Param("id"), queryStr)
+}
+
+// GetDatasetDrugsByName handles GET requests for /datasets/names/:name/drugs endpoint.
+func GetDatasetDrugsByName(c *gin.Context) {
+	queryStr := "select dr.drug_id, dr.drug_name from datasets da inner join experiments e on e.dataset_id = da.dataset_id inner join drugs dr on dr.drug_id = e.drug_id where da.dataset_name = ?"
+	getDatasetTypes(c, "drugs", c.Param("name"), queryStr)
 }

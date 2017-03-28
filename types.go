@@ -21,13 +21,6 @@ type (
 		Name null.String `json:"name"`
 	}
 
-	// DrugDataset is a datatype-drug-dataset relationship.
-	DrugDataset struct {
-		Drug        string   `json:"drug"`
-		Datasets    []string `json:"datasets"`
-		Experiments int
-	}
-
 	// CellDataset is a datatype-cell-dataset relationship.
 	CellDataset struct {
 		Cell        string   `json:"cell"`
@@ -38,6 +31,13 @@ type (
 	// TissueDataset is a datatype-tissue-dataset relationship.
 	TissueDataset struct {
 		Tissue      string   `json:"tissue"`
+		Datasets    []string `json:"datasets"`
+		Experiments int
+	}
+
+	// DrugDataset is a datatype-drug-dataset relationship.
+	DrugDataset struct {
+		Drug        string   `json:"drug"`
 		Datasets    []string `json:"datasets"`
 		Experiments int
 	}

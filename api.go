@@ -59,8 +59,14 @@ func main() {
 		v1.GET("/datasets/stats", GetDatasetStats)
 		v1.GET("/datasets/ids", GetDatasetIDs)
 		v1.GET("/datasets/ids/:id", GetDatasetByID)
+		v1.GET("/datasets/ids/:id/cell_lines", GetDatasetCellsByID)
+		v1.GET("/datasets/ids/:id/tissues", GetDatasetTissuesByID)
+		v1.GET("/datasets/ids/:id/drugs", GetDatasetDrugsByID)
 		v1.GET("/datasets/names", GetDatasetNames)
 		v1.GET("/datasets/names/:name", GetDatasetByName)
+		v1.GET("/datasets/names/:name/cell_lines", GetDatasetCellsByName)
+		v1.GET("/datasets/names/:name/tissues", GetDatasetTissuesByName)
+		v1.GET("/datasets/names/:name/drugs", GetDatasetDrugsByName)
 	}
 
 	router.Run(":3000")
