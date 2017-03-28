@@ -100,3 +100,82 @@ func GetDrugByID(c *gin.Context) {
 func GetDrugByName(c *gin.Context) {
 	getDrug(c, "name")
 }
+
+// getDrugCells finds cell lines tested with a drug across datasets.
+func getDrugCells(c *gin.Context, ptype string) {
+	var (
+		queryStr string
+		cell     string
+		dataset  string
+		dcells   []CellDataset
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	iden := c.Param(ptype)
+	if ptype == "id" {
+		queryStr = "select c.cell_name, da.dataset_name from drugs dr inner join experiments e on e.drug_id = dr.drug_id inner join cells c on c.cell_id = e.cell_id inner join datasets da on da.dataset_id = e.dataset_id where dr.drug_id = ?"
+	} else {
+		queryStr = "select c.cell_name, da.dataset_name from drugs dr inner join experiments e on e.drug_id = dr.drug_id inner join cells c on c.cell_id = e.cell_id inner join datasets da on da.dataset_id = e.dataset_id where dr.drug_name = ?"
+	}
+	rows, err := db.Query(queryStr, iden)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	exists := make(map[string]bool)
+	iter := 0
+	for rows.Next() {
+		err = rows.Scan(&cell, &dataset)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[cell] {
+			for i, dc := range dcells {
+				if dc.Cell == cell {
+					if arrMember(dataset, dc.Datasets) {
+						dcells[i].Experiments++
+						break
+					}
+					dcells[i].Datasets = append(dcells[i].Datasets, dataset)
+					dcells[i].Experiments++
+					break
+				}
+			}
+		} else {
+			var dcell CellDataset
+			dcell.Cell = cell
+			dcell.Datasets = append(dcell.Datasets, dataset)
+			dcell.Experiments = 1
+			dcells = append(dcells, dcell)
+			exists[cell] = true
+		}
+		iter = 1
+	}
+	if iter == 0 {
+		handleError(c, nil, http.StatusNotFound, "No cell lines found tested with this drug")
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"description": "List of cell lines tested with drug across datasets",
+		"count":       len(dcells),
+		"data":        dcells,
+	})
+}
+
+// GetDrugCellsByID handles GET requests for /drugs/ids/:id/cell_lines endpoint.
+func GetDrugCellsByID(c *gin.Context) {
+	getDrugCells(c, "id")
+}
+
+// GetDrugCellsByName handles GET requests for /drugs/names/:name/cell_lines endpoint.
+func GetDrugCellsByName(c *gin.Context) {
+	getDrugCells(c, "name")
+}

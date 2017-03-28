@@ -28,6 +28,13 @@ type (
 		Experiments int
 	}
 
+	// CellDataset is a datatype-cell-dataset relationship.
+	CellDataset struct {
+		Cell        string   `json:"cell"`
+		Datasets    []string `json:"datasets"`
+		Experiments int
+	}
+
 	// DatasetStat contains the number of a resource tested in a dataset.
 	DatasetStat struct {
 		Dataset int `json:"dataset"`
