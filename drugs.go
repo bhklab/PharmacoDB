@@ -179,3 +179,82 @@ func GetDrugCellsByID(c *gin.Context) {
 func GetDrugCellsByName(c *gin.Context) {
 	getDrugCells(c, "name")
 }
+
+// getDrugTissues finds tissues tested with a drug across datasets.
+func getDrugTissues(c *gin.Context, ptype string) {
+	var (
+		queryStr string
+		tissue   string
+		dataset  string
+		dtissues []TissueDataset
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	iden := c.Param(ptype)
+	if ptype == "id" {
+		queryStr = "select t.tissue_name, da.dataset_name from drugs dr inner join experiments e on e.drug_id = dr.drug_id inner join tissues t on t.tissue_id = e.tissue_id inner join datasets da on da.dataset_id = e.dataset_id where dr.drug_id = ?"
+	} else {
+		queryStr = "select t.tissue_name, da.dataset_name from drugs dr inner join experiments e on e.drug_id = dr.drug_id inner join tissues t on t.tissue_id = e.tissue_id inner join datasets da on da.dataset_id = e.dataset_id where dr.drug_name = ?"
+	}
+	rows, err := db.Query(queryStr, iden)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	exists := make(map[string]bool)
+	iter := 0
+	for rows.Next() {
+		err = rows.Scan(&tissue, &dataset)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[tissue] {
+			for i, dt := range dtissues {
+				if dt.Tissue == tissue {
+					if arrMember(dataset, dt.Datasets) {
+						dtissues[i].Experiments++
+						break
+					}
+					dtissues[i].Datasets = append(dtissues[i].Datasets, dataset)
+					dtissues[i].Experiments++
+					break
+				}
+			}
+		} else {
+			var dtissue TissueDataset
+			dtissue.Tissue = tissue
+			dtissue.Datasets = append(dtissue.Datasets, dataset)
+			dtissue.Experiments = 1
+			dtissues = append(dtissues, dtissue)
+			exists[tissue] = true
+		}
+		iter = 1
+	}
+	if iter == 0 {
+		handleError(c, nil, http.StatusNotFound, "No tissue found tested with this drug")
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"description": "List of tissues tested with drug across datasets",
+		"count":       len(dtissues),
+		"data":        dtissues,
+	})
+}
+
+// GetDrugTissuesByID handles GET requests for /drugs/ids/:id/tissues endpoint.
+func GetDrugTissuesByID(c *gin.Context) {
+	getDrugTissues(c, "id")
+}
+
+// GetDrugTissuesByName handles GET requests for /drugs/names/:name/tissues endpoint.
+func GetDrugTissuesByName(c *gin.Context) {
+	getDrugTissues(c, "name")
+}

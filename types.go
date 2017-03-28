@@ -35,6 +35,13 @@ type (
 		Experiments int
 	}
 
+	// TissueDataset is a datatype-tissue-dataset relationship.
+	TissueDataset struct {
+		Tissue      string   `json:"tissue"`
+		Datasets    []string `json:"datasets"`
+		Experiments int
+	}
+
 	// DatasetStat contains the number of a resource tested in a dataset.
 	DatasetStat struct {
 		Dataset int `json:"dataset"`
