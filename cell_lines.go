@@ -179,3 +179,7 @@ func GetCellDrugsByID(c *gin.Context) {
 func GetCellDrugsByName(c *gin.Context) {
 	getCellDrugs(c, "name")
 }
+
+func getCellDrugStats(c *gin.Context, ptype string) {
+
+}
