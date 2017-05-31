@@ -180,6 +180,75 @@ func GetCellDrugsByName(c *gin.Context) {
 	getCellDrugs(c, "name")
 }
 
+// getCellDrugStats finds number of drugs tested with cell line in datasets.
+// (currently, datasets with zero experiments are not returned by this method)
 func getCellDrugStats(c *gin.Context, ptype string) {
+	var (
+		drug     string
+		dataset  string
+		queryStr string
+		dstats   []DatasetStat
+	)
 
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	iden := c.Param(ptype)
+	if ptype == "id" {
+		queryStr = "select distinct drug_id, d.dataset_name from experiments e inner join datasets d on d.dataset_id = e.dataset_id where cell_id = ?;"
+	} else {
+		queryStr = "select distinct e.drug_id, d.dataset_name from cells c inner join experiments e on e.cell_id = c.cell_id inner join datasets d on d.dataset_id = e.dataset_id where c.cell_name = ?;"
+	}
+	rows, err := db.Query(queryStr, iden)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	exists := make(map[string]bool)
+	iter := 0
+	for rows.Next() {
+		err = rows.Scan(&drug, &dataset)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[dataset] {
+			for i, d := range dstats {
+				if d.Dataset == dataset {
+					dstats[i].Count++
+					break
+				}
+			}
+		} else {
+			var dstat DatasetStat
+			dstat.Dataset = dataset
+			dstat.Count = 1
+			dstats = append(dstats, dstat)
+			exists[dataset] = true
+		}
+		iter = 1
+	}
+	if iter == 0 {
+		handleError(c, nil, http.StatusNotFound, "No drugs found tested with this cell line")
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"description": "Number of drugs tested with cell line in datasets",
+		"data":        dstats,
+	})
+}
+
+// GetCellDrugStatsByID handles GET requests for /cell_lines/ids/:id/drugs/stats endpoint.
+func GetCellDrugStatsByID(c *gin.Context) {
+	getCellDrugStats(c, "id")
+}
+
+// GetCellDrugStatsByName handles GET requests for /cell_lines/names/:name/drugs/stats endpoint.
+func GetCellDrugStatsByName(c *gin.Context) {
+	getCellDrugStats(c, "name")
 }

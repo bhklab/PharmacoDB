@@ -44,8 +44,8 @@ type (
 
 	// DatasetStat contains the number of a resource tested in a dataset.
 	DatasetStat struct {
-		Dataset int `json:"dataset"`
-		Count   int `json:"count"`
+		Dataset string `json:"dataset"`
+		Count   int    `json:"count"`
 	}
 )
 

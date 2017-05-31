@@ -17,7 +17,7 @@ func main() {
 				"code":                 http.StatusBadRequest,
 				"message":              "Bad Request",
 				"suggestions":          "Check the official API documentation to see how to properly format endpoints/routes",
-				"v1_documentation_url": "https://www.pharmacodb.com/docs/api",
+				"v1_documentation_url": "http://www.pharmacodb.com/docs/api",
 			},
 		})
 	})
@@ -29,9 +29,11 @@ func main() {
 		v1.GET("/cell_lines/ids", GetCellIDs)
 		v1.GET("/cell_lines/ids/:id", GetCellByID)
 		v1.GET("/cell_lines/ids/:id/drugs", GetCellDrugsByID)
+		v1.GET("/cell_lines/ids/:id/drugs/stats", GetCellDrugStatsByID)
 		v1.GET("/cell_lines/names", GetCellNames)
 		v1.GET("/cell_lines/names/:name", GetCellByName)
 		v1.GET("/cell_lines/names/:name/drugs", GetCellDrugsByName)
+		v1.GET("/cell_lines/names/:name/drugs/stats", GetCellDrugStatsByName)
 
 		v1.GET("/tissues", GetTissues)
 		v1.GET("/tissues/stats", GetTissueStats)
