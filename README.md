@@ -1,1 +1,1 @@
-This is the pharmacodb backend API, implemented in GO.
+# PharmacoDb API
