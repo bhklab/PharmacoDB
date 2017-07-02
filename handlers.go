@@ -6,11 +6,12 @@ import (
 
 	raven "github.com/getsentry/raven-go"
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // Set Sentry DSN for internal error logging.
 func init() {
-	raven.SetDSN("https://24b828d4b8ea469da5b61941b6a3554a:d1de3fc962314598bcb3d04f010ce676@sentry.io/148972")
+	raven.SetDSN("https://71d8d1bc8e4843eeba979fdaadebe48b:df30d2048fc44b5185809f04ba9d2294@sentry.io/186627")
 }
 
 // Prepare database abstraction for later use.

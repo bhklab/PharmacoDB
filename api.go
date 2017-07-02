@@ -24,10 +24,14 @@ func main() {
 			message := info + "\n" + link
 			c.String(http.StatusOK, message)
 		})
-		// v1.GET("/cell_lines", handler)
-		// v1.GET("/tissues", handler)
-		// v1.GET("/drugs", handler)
-		// v1.GET("/datasets", handler)
+
+		v1.GET("/cell_lines", GetCells)
+
+		v1.GET("/tissues", GetCells)
+
+		v1.GET("/drugs", GetCells)
+
+		v1.GET("/datasets", GetCells)
 	}
 
 	// Responds with status code 400 (Bad Request) if no routers match the request url.
