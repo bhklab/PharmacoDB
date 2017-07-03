@@ -21,7 +21,7 @@ func main() {
 	v1 := router.Group("/v1")
 	{
 		v1.GET("/", func(c *gin.Context) {
-			info := "To use the API, add endpoints to request."
+			info := "To use the API, add endpoints to the request."
 			link := "For more information, visit: https://www.pharmacodb.com/docs/api"
 			message := info + "\n" + link
 			c.String(http.StatusOK, message)
