@@ -13,8 +13,9 @@ type Cell struct {
 	Name string  `json:"name"`
 }
 
-// GetCells ...
-func GetCells(c *gin.Context) {
+// IndexCell ...
+// Add ?page=123 && ?per-page=123 fields handling feature to method
+func IndexCell(c *gin.Context) {
 	var (
 		cell  Cell
 		cells []Cell
@@ -40,8 +41,8 @@ func GetCells(c *gin.Context) {
 		cells = append(cells, cell)
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{
-		"description": "List of all cell lines in PharmacoDB",
 		"count":       len(cells),
 		"data":        cells,
+		"description": "List of all cell lines in PharmacoDB",
 	})
 }
