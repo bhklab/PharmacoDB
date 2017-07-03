@@ -9,6 +9,8 @@ import (
 func main() {
 	router := gin.Default()
 
+	router.StaticFile("/favicon.ico", "./lib/foobar.png")
+
 	router.GET("/", func(c *gin.Context) {
 		welcome := "Welcome to PharmacoDB API."
 		link := "For more information, visit: https://www.pharmacodb.com/docs/api"
