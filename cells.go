@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,12 +15,13 @@ type Cell struct {
 	Name string  `json:"name"`
 }
 
-// IndexCell ...
+// IndexCell returns a list of all cell lines available in database (paginated by default).
+// The request responds to a url matching: /cell_lines?all=&page=&per_page=
+// To return all cell_lines in one call, do: /cell_lines?all=true
 func IndexCell(c *gin.Context) {
 	var (
 		cell  Cell
 		cells []Cell
-		total int
 	)
 
 	db, err := initDB()
@@ -45,20 +48,32 @@ func IndexCell(c *gin.Context) {
 			cells = append(cells, cell)
 		}
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"total":       len(cells),
 			"data":        cells,
+			"total":       len(cells),
 			"description": "List of all cell lines in PharmacoDB",
 		})
 		return
 	}
 
-	page := c.DefaultQuery("page", "1")
-	limit := c.DefaultQuery("limit", "30") // Need to fix the off-by-1 results
+	curPage := c.DefaultQuery("page", "1")
+	perPage := c.DefaultQuery("per_page", "30")
 
-	// Add handler for off-limit queries here
-	// Need testing for pages outside data limit
+	page, err := strconv.Atoi(curPage)
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	limit, err := strconv.Atoi(perPage)
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
 
-	query := "SELECT SQL_CALC_FOUND_ROWS cell_id, accession_id, cell_name FROM cells limit " + page + "," + limit + ";"
+	// TODO: Add link information (eg. first, prev, next, last) in response header.
+	// Also add safeguards for off-limit values outside data size
+
+	start := (page - 1) * limit
+	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS cell_id, accession_id, cell_name FROM cells limit %d,%d;", start, limit)
 	rows, err := db.Query(query)
 	defer rows.Close()
 	if err != nil {
@@ -74,6 +89,7 @@ func IndexCell(c *gin.Context) {
 		cells = append(cells, cell)
 	}
 	row := db.QueryRow("SELECT FOUND_ROWS();")
+	var total int
 	err = row.Scan(&total)
 	if err != nil {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
@@ -81,9 +97,9 @@ func IndexCell(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"data":        cells,
-		"description": "List of cell lines in PharmacoDB",
 		"page":        page,
-		"limit":       limit,
+		"per_page":    limit,
 		"total":       total,
+		"description": "List of all cell lines in PharmacoDB",
 	})
 }
