@@ -14,13 +14,13 @@ type Cell struct {
 }
 
 // IndexCell ...
-// Add ?page=123 && ?limit=123 fields handling feature to method
-// For example: http://localhost:4200/v1/cell_lines?page=1&limit=30
 func IndexCell(c *gin.Context) {
 	var (
 		cell  Cell
 		cells []Cell
+		total int
 	)
+
 	db, err := initDB()
 	defer db.Close()
 	if err != nil {
@@ -28,19 +28,43 @@ func IndexCell(c *gin.Context) {
 		return
 	}
 
-	rows, err := db.Query("SELECT SQL_CALC_FOUND_ROWS cell_id, accession_id, cell_name FROM cells limit 1,30;")
-	defer rows.Close()
-	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
-		return
-	}
-	total, err := db.Query(" SELECT FOUND_ROWS();")
-	defer rows.Close()
-	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+	all := c.DefaultQuery("all", "false")
+	if all == "true" {
+		rows, er := db.Query("SELECT cell_id, accession_id, cell_name FROM cells;")
+		defer rows.Close()
+		if er != nil {
+			handleError(c, er, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		for rows.Next() {
+			err = rows.Scan(&cell.ID, &cell.ACC, &cell.Name)
+			if err != nil {
+				handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+			cells = append(cells, cell)
+		}
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"total":       len(cells),
+			"data":        cells,
+			"description": "List of all cell lines in PharmacoDB",
+		})
 		return
 	}
 
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "30") // Need to fix the off-by-1 results
+
+	// Add handler for off-limit queries here
+	// Need testing for pages outside data limit
+
+	query := "SELECT SQL_CALC_FOUND_ROWS cell_id, accession_id, cell_name FROM cells limit " + page + "," + limit + ";"
+	rows, err := db.Query(query)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
 	for rows.Next() {
 		err = rows.Scan(&cell.ID, &cell.ACC, &cell.Name)
 		if err != nil {
@@ -49,9 +73,17 @@ func IndexCell(c *gin.Context) {
 		}
 		cells = append(cells, cell)
 	}
+	row := db.QueryRow("SELECT FOUND_ROWS();")
+	err = row.Scan(&total)
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
 	c.IndentedJSON(http.StatusOK, gin.H{
-		"count":       len(cells),
 		"data":        cells,
-		"description": "List of all cell lines in PharmacoDB",
+		"description": "List of cell lines in PharmacoDB",
+		"page":        page,
+		"limit":       limit,
+		"total":       total,
 	})
 }
