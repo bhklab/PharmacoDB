@@ -63,7 +63,7 @@ func IndexCell(c *gin.Context) {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	lim, err := strconv.Atoi(perPage)
+	limit, err := strconv.Atoi(perPage)
 	if err != nil {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -72,8 +72,8 @@ func IndexCell(c *gin.Context) {
 	// TODO: Add link information (eg. first, prev, next, last) in response header.
 	// Also add safeguards for off-limit values outside data size
 
-	start := (page - 1) * lim
-	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS cell_id, accession_id, cell_name FROM cells limit %d,%d;", start, lim)
+	s := (page - 1) * limit
+	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS cell_id, accession_id, cell_name FROM cells limit %d,%d;", s, limit)
 	rows, err := db.Query(query)
 	defer rows.Close()
 	if err != nil {
@@ -98,7 +98,7 @@ func IndexCell(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"data":        cells,
 		"page":        page,
-		"per_page":    lim,
+		"per_page":    limit,
 		"total":       total,
 		"description": "List of all cell lines in PharmacoDB",
 	})
