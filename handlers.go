@@ -46,7 +46,7 @@ func handleError(c *gin.Context, err error, code int, message string) {
 
 // writeHeaderLinks writes pagination links in response header.
 // Links available under 'Link' header, including (prev, next, first, last).
-func writeHeaderLinks(c *gin.Context, page int, total int, limit int, name string) {
+func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limit int) {
 	var (
 		prev    string
 		prevRel string
@@ -54,16 +54,16 @@ func writeHeaderLinks(c *gin.Context, page int, total int, limit int, name strin
 		nextRel string
 	)
 	lastPage := int(math.Ceil(float64(total) / float64(limit)))
-	first := fmt.Sprintf("<https://api.pharmacodb.com/v1/%s?page=%d&per_page=%d>", name, 1, limit)
+	first := fmt.Sprintf("<https://api.pharmacodb.com/v1%s?page=%d&per_page=%d>", endpoint, 1, limit)
 	if (page > 1) && (page <= lastPage) {
-		prev = fmt.Sprintf("<https://api.pharmacodb.com/v1/%s?page=%d&per_page=%d>", name, page-1, limit)
+		prev = fmt.Sprintf("<https://api.pharmacodb.com/v1%s?page=%d&per_page=%d>", endpoint, page-1, limit)
 		prevRel = "; rel=\"prev\", "
 	}
 	if (page >= 1) && (page < lastPage) {
-		next = fmt.Sprintf("<https://api.pharmacodb.com/v1/%s?page=%d&per_page=%d>", name, page+1, limit)
+		next = fmt.Sprintf("<https://api.pharmacodb.com/v1%s?page=%d&per_page=%d>", endpoint, page+1, limit)
 		nextRel = "; rel=\"next\", "
 	}
-	last := fmt.Sprintf("<https://api.pharmacodb.com/v1/%s?page=%d&per_page=%d>", name, lastPage, limit)
+	last := fmt.Sprintf("<https://api.pharmacodb.com/v1%s?page=%d&per_page=%d>", endpoint, lastPage, limit)
 
 	linknp := prev + prevRel + next + nextRel
 	linkfl := first + "; rel=\"first\", " + last + "; rel=\"last\""

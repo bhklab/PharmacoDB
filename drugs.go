@@ -91,7 +91,7 @@ func IndexDrug(c *gin.Context) {
 	}
 
 	// Write pagination links in response header.
-	writeHeaderLinks(c, page, total, limit, "drugs")
+	writeHeaderLinks(c, "/drugs", page, total, limit)
 
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"data":        drugs,
