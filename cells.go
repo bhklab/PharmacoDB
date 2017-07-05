@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -55,6 +56,11 @@ func IndexCell(c *gin.Context) {
 		return
 	}
 
+	// Paginate response using page and per_page values.
+	// Default: page=1 and per_page=30
+	// If user does not explicitely give values, default returned.
+	// Hence, /cell_lines response is the same as /cell_lines?page=1&per_page=30
+
 	curPage := c.DefaultQuery("page", "1")
 	perPage := c.DefaultQuery("per_page", "30")
 
@@ -68,9 +74,6 @@ func IndexCell(c *gin.Context) {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-
-	// TODO: Add link information (eg. first, prev, next, last) in response header.
-	// Also add safeguards for off-limit values outside data size
 
 	s := (page - 1) * limit
 	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS cell_id, accession_id, cell_name FROM cells limit %d,%d;", s, limit)
@@ -95,6 +98,26 @@ func IndexCell(c *gin.Context) {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
+
+	// Define pagination links using page and limit.
+	var (
+		prev string
+		next string
+	)
+	lastPage := int(math.Ceil(float64(total) / float64(limit)))
+	first := fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=1&per_page=%d>; rel=\"first\", ", limit)
+	if page != 1 {
+		prev = fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>; rel=\"prev\", ", page-1, limit)
+	}
+	if page != lastPage {
+		next = fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>; rel=\"next\", ", page+1, limit)
+	}
+
+	last := fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>; rel=\"last\"", lastPage, limit)
+	link := first + prev + next + last
+	// Write links to response header.
+	c.Writer.Header().Set("Link", link)
+
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"data":        cells,
 		"page":        page,
