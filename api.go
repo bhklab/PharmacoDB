@@ -2,10 +2,7 @@ package main
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/gin-contrib/cache"
-	"github.com/gin-contrib/cache/persistence"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,7 +18,8 @@ func main() {
 		c.String(http.StatusOK, message)
 	})
 
-	store := persistence.NewInMemoryStore(time.Second)
+	// store for caching page
+	// store := persistence.NewInMemoryStore(time.Second)
 
 	v1 := router.Group("/v1")
 	{
@@ -32,7 +30,10 @@ func main() {
 			c.String(http.StatusOK, message)
 		})
 
-		v1.GET("/cell_lines", cache.CachePage(store, time.Duration(-1), IndexCell))
+		// Example for endpoint caching
+		// v1.GET("/cell_lines", cache.CachePage(store, time.Duration(-1), IndexCell))
+
+		v1.GET("/cell_lines", IndexCell)
 
 		v1.GET("/tissues", IndexCell)
 
