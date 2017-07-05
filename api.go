@@ -42,6 +42,7 @@ func main() {
 		v1.GET("/datasets", IndexDataset)
 
 		v1.GET("/experiments", IndexExperiment)
+		v1.GET("/experiments/:id", ShowExperiment)
 	}
 
 	// Responds with status code 400 (Bad Request) if no routers match the request url.

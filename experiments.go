@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -8,16 +9,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Experiment is an experiment datatype.
-type Experiment struct {
-	ID      int     `json:"experiment_id"`
-	Cell    Cell    `json:"cell_line"`
-	Tissue  Tissue  `json:"tissue"`
-	Drug    Drug    `json:"drug"`
-	Dataset Dataset `json:"dataset"`
+// DoseResponse is a dose_response datatype.
+type DoseResponse struct {
+	Dose     float64 `json:"dose"`
+	Response float64 `json:"response"`
 }
 
-// IndexExperiment ...
+// Experiment is an experiment datatype.
+type Experiment struct {
+	ID      int            `json:"experiment_id"`
+	Cell    Cell           `json:"cell_line"`
+	Tissue  Tissue         `json:"tissue"`
+	Drug    Drug           `json:"drug"`
+	Dataset Dataset        `json:"dataset"`
+	DR      []DoseResponse `json:"dose_responses,omitempty"`
+}
+
+// IndexExperiment returns a list of all experiments currently in database.
 func IndexExperiment(c *gin.Context) {
 	var (
 		experiment  Experiment
@@ -81,5 +89,61 @@ func IndexExperiment(c *gin.Context) {
 		"data":        experiments,
 		"total":       total,
 		"description": "List of all experiments in PharmacoDB",
+	})
+}
+
+// ShowExperiment returns dose response data for a specific experiment id.
+func ShowExperiment(c *gin.Context) {
+	var (
+		experiment   Experiment
+		doseResponse DoseResponse
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	id := c.Param("id")
+	SQL1 := "SELECT e.experiment_id, c.cell_id, c.cell_name, t.tissue_id, t.tissue_name, "
+	SQL2 := "d.drug_id, d.drug_name, da.dataset_id, da.dataset_name FROM experiments e "
+	SQL3 := "JOIN cells c ON c.cell_id = e.cell_id JOIN tissues t ON t.tissue_id = e.tissue_id "
+	SQL4 := "JOIN drugs d ON d.drug_id = e.drug_id JOIN datasets da ON da.dataset_id = e.dataset_id WHERE e.experiment_id = ?;"
+	selectSQL := SQL1 + SQL2 + SQL3 + SQL4
+	row := db.QueryRow(selectSQL, id)
+	err = row.Scan(&experiment.ID, &experiment.Cell.ID, &experiment.Cell.Name, &experiment.Tissue.ID, &experiment.Tissue.Name, &experiment.Drug.ID, &experiment.Drug.Name, &experiment.Dataset.ID, &experiment.Dataset.Name)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			errMessage := fmt.Sprintf("Experiment with ID:%s not found in database", id)
+			handleError(c, nil, http.StatusNotFound, errMessage)
+		} else {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+
+	query := "SELECT dose, response FROM dose_responses WHERE experiment_id = ?;"
+	rows, err := db.Query(query, id)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&doseResponse.Dose, &doseResponse.Response)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		experiment.DR = append(experiment.DR, doseResponse)
+	}
+
+	desc := fmt.Sprintf("Dose/Response data for experiment with ID:%s", id)
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"data":        experiment,
+		"description": desc,
 	})
 }
