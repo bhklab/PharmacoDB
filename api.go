@@ -35,7 +35,7 @@ func main() {
 
 		v1.GET("/cell_lines", IndexCell)
 
-		v1.GET("/tissues", IndexCell)
+		v1.GET("/tissues", IndexTissue)
 
 		v1.GET("/drugs", IndexCell)
 
