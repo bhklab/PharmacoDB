@@ -99,22 +99,27 @@ func IndexCell(c *gin.Context) {
 		return
 	}
 
-	// Define pagination links using page and limit.
 	var (
-		prev string
-		next string
+		prev    string
+		prevRel string
+		next    string
+		nextRel string
 	)
+	// Define pagination links using page and limit.
 	lastPage := int(math.Ceil(float64(total) / float64(limit)))
-	first := fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=1&per_page=%d>; rel=\"first\", ", limit)
-	if page != 1 {
-		prev = fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>; rel=\"prev\", ", page-1, limit)
+	first := fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>", 1, limit)
+	if (page > 1) && (page <= lastPage) {
+		prev = fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>", page-1, limit)
+		prevRel = "; rel=\"prev\", "
 	}
-	if page != lastPage {
-		next = fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>; rel=\"next\", ", page+1, limit)
+	if (page >= 1) && (page < lastPage) {
+		next = fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>", page+1, limit)
+		nextRel = "; rel=\"next\", "
 	}
-
-	last := fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>; rel=\"last\"", lastPage, limit)
-	link := first + prev + next + last
+	last := fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>", lastPage, limit)
+	link1 := first + "; rel=\"first\", " + prev + prevRel
+	link2 := next + nextRel + last + "; rel=\"last\""
+	link := link1 + link2
 	// Write links to response header.
 	c.Writer.Header().Set("Link", link)
 
