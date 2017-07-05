@@ -19,6 +19,7 @@ type Cell struct {
 // IndexCell returns a list of all cell lines currently in database.
 // Result is paginated by default, using: /cell_lines?page=int&per_page=int.
 // To return all cell_lines in one call (without pagination), do: /cell_lines?all=true.
+// Pagination links are available in response Link header.
 func IndexCell(c *gin.Context) {
 	var (
 		cell  Cell
