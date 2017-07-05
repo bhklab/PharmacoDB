@@ -16,9 +16,9 @@ type Cell struct {
 	Name string  `json:"name"`
 }
 
-// IndexCell returns a list of all cell lines available in database (paginated by default).
-// The request responds to a url matching: /cell_lines?all=&page=&per_page=
-// To return all cell_lines in one call, do: /cell_lines?all=true
+// IndexCell returns a list of all cell lines currently in database.
+// Result is paginated by default, using: /cell_lines?page=int&per_page=int.
+// To return all cell_lines in one call (without pagination), do: /cell_lines?all=true.
 func IndexCell(c *gin.Context) {
 	var (
 		cell  Cell
@@ -56,10 +56,9 @@ func IndexCell(c *gin.Context) {
 		return
 	}
 
-	// Paginate response using page and per_page values.
-	// Default: page=1 and per_page=30
-	// If user does not explicitely give values, default returned.
-	// Hence, /cell_lines response is the same as /cell_lines?page=1&per_page=30
+	// Paginate response using page and per_page request values.
+	// Default: page=1 and per_page=30.
+	// Hence, /cell_lines is equivalent to /cell_lines?page=1&per_page=30 by default.
 
 	curPage := c.DefaultQuery("page", "1")
 	perPage := c.DefaultQuery("per_page", "30")
@@ -99,13 +98,14 @@ func IndexCell(c *gin.Context) {
 		return
 	}
 
+	// Write pagination links in response header.
+
 	var (
 		prev    string
 		prevRel string
 		next    string
 		nextRel string
 	)
-	// Define pagination links using page and limit.
 	lastPage := int(math.Ceil(float64(total) / float64(limit)))
 	first := fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>", 1, limit)
 	if (page > 1) && (page <= lastPage) {
@@ -117,10 +117,11 @@ func IndexCell(c *gin.Context) {
 		nextRel = "; rel=\"next\", "
 	}
 	last := fmt.Sprintf("<https://api.pharmacodb.com/v1/cell_lines?page=%d&per_page=%d>", lastPage, limit)
-	link1 := first + "; rel=\"first\", " + prev + prevRel
-	link2 := next + nextRel + last + "; rel=\"last\""
-	link := link1 + link2
-	// Write links to response header.
+
+	linknp := prev + prevRel + next + nextRel
+	linkfl := first + "; rel=\"first\", " + last + "; rel=\"last\""
+	link := linknp + linkfl
+
 	c.Writer.Header().Set("Link", link)
 
 	c.IndentedJSON(http.StatusOK, gin.H{
