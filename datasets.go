@@ -67,7 +67,8 @@ func IndexDataset(c *gin.Context) {
 	}
 
 	s := (page - 1) * limit
-	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS dataset_id, dataset_name FROM datasets limit %d,%d;", s, limit)
+	selectSQL := "SELECT dataset_id, dataset_name FROM datasets"
+	query := fmt.Sprintf("%s limit %d,%d;", selectSQL, s, limit)
 	rows, err := db.Query(query)
 	defer rows.Close()
 	if err != nil {
@@ -82,7 +83,7 @@ func IndexDataset(c *gin.Context) {
 		}
 		datasets = append(datasets, dataset)
 	}
-	row := db.QueryRow("SELECT FOUND_ROWS();")
+	row := db.QueryRow("SELECT COUNT(*) FROM datasets;")
 	var total int
 	err = row.Scan(&total)
 	if err != nil {

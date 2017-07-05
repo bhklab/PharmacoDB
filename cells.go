@@ -11,7 +11,7 @@ import (
 // Cell is a cell_line datatype.
 type Cell struct {
 	ID     int     `json:"id"`
-	ACC    *string `json:"accession_id"`
+	ACC    *string `json:"accession_id,omitempty"`
 	Name   string  `json:"name"`
 	Tissue *Tissue `json:"tissue,omitempty"`
 }
@@ -71,7 +71,8 @@ func IndexCell(c *gin.Context) {
 	}
 
 	s := (page - 1) * limit
-	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS cell_id, accession_id, cell_name FROM cells limit %d,%d;", s, limit)
+	selectSQL := "SELECT cell_id, accession_id, cell_name FROM cells"
+	query := fmt.Sprintf("%s limit %d,%d;", selectSQL, s, limit)
 	rows, err := db.Query(query)
 	defer rows.Close()
 	if err != nil {
@@ -86,7 +87,7 @@ func IndexCell(c *gin.Context) {
 		}
 		cells = append(cells, cell)
 	}
-	row := db.QueryRow("SELECT FOUND_ROWS();")
+	row := db.QueryRow("SELECT COUNT(*) FROM cells;")
 	var total int
 	err = row.Scan(&total)
 	if err != nil {

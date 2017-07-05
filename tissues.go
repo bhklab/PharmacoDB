@@ -67,7 +67,8 @@ func IndexTissue(c *gin.Context) {
 	}
 
 	s := (page - 1) * limit
-	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS tissue_id, tissue_name FROM tissues limit %d,%d;", s, limit)
+	selectSQL := "SELECT tissue_id, tissue_name FROM tissues"
+	query := fmt.Sprintf("%s limit %d,%d;", selectSQL, s, limit)
 	rows, err := db.Query(query)
 	defer rows.Close()
 	if err != nil {
@@ -82,7 +83,7 @@ func IndexTissue(c *gin.Context) {
 		}
 		tissues = append(tissues, tissue)
 	}
-	row := db.QueryRow("SELECT FOUND_ROWS();")
+	row := db.QueryRow("SELECT COUNT(*) FROM tissues;")
 	var total int
 	err = row.Scan(&total)
 	if err != nil {

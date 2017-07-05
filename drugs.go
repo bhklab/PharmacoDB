@@ -67,7 +67,8 @@ func IndexDrug(c *gin.Context) {
 	}
 
 	s := (page - 1) * limit
-	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS drug_id, drug_name FROM drugs limit %d,%d;", s, limit)
+	selectSQL := "SELECT drug_id, drug_name FROM drugs"
+	query := fmt.Sprintf("%s limit %d,%d;", selectSQL, s, limit)
 	rows, err := db.Query(query)
 	defer rows.Close()
 	if err != nil {
@@ -82,7 +83,7 @@ func IndexDrug(c *gin.Context) {
 		}
 		drugs = append(drugs, drug)
 	}
-	row := db.QueryRow("SELECT FOUND_ROWS();")
+	row := db.QueryRow("SELECT COUNT(*) FROM drugs;")
 	var total int
 	err = row.Scan(&total)
 	if err != nil {
