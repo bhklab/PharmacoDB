@@ -2,6 +2,8 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
+	"math"
 	"os"
 
 	raven "github.com/getsentry/raven-go"
@@ -40,4 +42,32 @@ func handleError(c *gin.Context, err error, code int, message string) {
 			"message": message,
 		},
 	})
+}
+
+// writeHeaderLinks writes pagination links in response header.
+// Links available under 'Link' header, including (prev, next, first, last).
+func writeHeaderLinks(c *gin.Context, page int, total int, limit int, name string) {
+	var (
+		prev    string
+		prevRel string
+		next    string
+		nextRel string
+	)
+	lastPage := int(math.Ceil(float64(total) / float64(limit)))
+	first := fmt.Sprintf("<https://api.pharmacodb.com/v1/%s?page=%d&per_page=%d>", name, 1, limit)
+	if (page > 1) && (page <= lastPage) {
+		prev = fmt.Sprintf("<https://api.pharmacodb.com/v1/%s?page=%d&per_page=%d>", name, page-1, limit)
+		prevRel = "; rel=\"prev\", "
+	}
+	if (page >= 1) && (page < lastPage) {
+		next = fmt.Sprintf("<https://api.pharmacodb.com/v1/%s?page=%d&per_page=%d>", name, page+1, limit)
+		nextRel = "; rel=\"next\", "
+	}
+	last := fmt.Sprintf("<https://api.pharmacodb.com/v1/%s?page=%d&per_page=%d>", name, lastPage, limit)
+
+	linknp := prev + prevRel + next + nextRel
+	linkfl := first + "; rel=\"first\", " + last + "; rel=\"last\""
+	link := linknp + linkfl
+
+	c.Writer.Header().Set("Link", link)
 }

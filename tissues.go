@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"net/http"
 	"strconv"
 
@@ -30,7 +29,7 @@ func IndexTissue(c *gin.Context) {
 	}
 
 	all := c.DefaultQuery("all", "false")
-	if all == "true" {
+	if isTrue, _ := strconv.ParseBool(all); isTrue {
 		rows, er := db.Query("SELECT tissue_id, tissue_name FROM tissues;")
 		defer rows.Close()
 		if er != nil {
@@ -92,30 +91,7 @@ func IndexTissue(c *gin.Context) {
 	}
 
 	// Write pagination links in response header.
-
-	var (
-		prev    string
-		prevRel string
-		next    string
-		nextRel string
-	)
-	lastPage := int(math.Ceil(float64(total) / float64(limit)))
-	first := fmt.Sprintf("<https://api.pharmacodb.com/v1/tissues?page=%d&per_page=%d>", 1, limit)
-	if (page > 1) && (page <= lastPage) {
-		prev = fmt.Sprintf("<https://api.pharmacodb.com/v1/tissues?page=%d&per_page=%d>", page-1, limit)
-		prevRel = "; rel=\"prev\", "
-	}
-	if (page >= 1) && (page < lastPage) {
-		next = fmt.Sprintf("<https://api.pharmacodb.com/v1/tissues?page=%d&per_page=%d>", page+1, limit)
-		nextRel = "; rel=\"next\", "
-	}
-	last := fmt.Sprintf("<https://api.pharmacodb.com/v1/tissues?page=%d&per_page=%d>", lastPage, limit)
-
-	linknp := prev + prevRel + next + nextRel
-	linkfl := first + "; rel=\"first\", " + last + "; rel=\"last\""
-	link := linknp + linkfl
-
-	c.Writer.Header().Set("Link", link)
+	writeHeaderLinks(c, page, total, limit, "tissues")
 
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"data":        tissues,

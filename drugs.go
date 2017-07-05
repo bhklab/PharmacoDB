@@ -8,21 +8,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Cell is a cell_line datatype.
-type Cell struct {
-	ID     int     `json:"id"`
-	ACC    *string `json:"accession_id"`
-	Name   string  `json:"name"`
-	Tissue *Tissue `json:"tissue,omitempty"`
+// Drug is a drug datatype.
+type Drug struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
-// IndexCell returns a list of all cell lines currently in database.
-// To get all data in one request: /cell_lines?all=true
-// To get paginated data: /cell_lines?page=1&per_page=30 (links in header)
-func IndexCell(c *gin.Context) {
+// IndexDrug returns a list of all drugs currently in database.
+func IndexDrug(c *gin.Context) {
 	var (
-		cell  Cell
-		cells []Cell
+		drug  Drug
+		drugs []Drug
 	)
 
 	db, err := initDB()
@@ -34,24 +30,24 @@ func IndexCell(c *gin.Context) {
 
 	all := c.DefaultQuery("all", "false")
 	if isTrue, _ := strconv.ParseBool(all); isTrue {
-		rows, er := db.Query("SELECT cell_id, accession_id, cell_name FROM cells;")
+		rows, er := db.Query("SELECT drug_id, drug_name FROM drugs;")
 		defer rows.Close()
 		if er != nil {
 			handleError(c, er, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
 		for rows.Next() {
-			err = rows.Scan(&cell.ID, &cell.ACC, &cell.Name)
+			err = rows.Scan(&drug.ID, &drug.Name)
 			if err != nil {
 				handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 				return
 			}
-			cells = append(cells, cell)
+			drugs = append(drugs, drug)
 		}
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        cells,
-			"total":       len(cells),
-			"description": "List of all cell lines in PharmacoDB",
+			"data":        drugs,
+			"total":       len(drugs),
+			"description": "List of all drugs in PharmacoDB",
 		})
 		return
 	}
@@ -71,7 +67,7 @@ func IndexCell(c *gin.Context) {
 	}
 
 	s := (page - 1) * limit
-	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS cell_id, accession_id, cell_name FROM cells limit %d,%d;", s, limit)
+	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS drug_id, drug_name FROM drugs limit %d,%d;", s, limit)
 	rows, err := db.Query(query)
 	defer rows.Close()
 	if err != nil {
@@ -79,12 +75,12 @@ func IndexCell(c *gin.Context) {
 		return
 	}
 	for rows.Next() {
-		err = rows.Scan(&cell.ID, &cell.ACC, &cell.Name)
+		err = rows.Scan(&drug.ID, &drug.Name)
 		if err != nil {
 			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		cells = append(cells, cell)
+		drugs = append(drugs, drug)
 	}
 	row := db.QueryRow("SELECT FOUND_ROWS();")
 	var total int
@@ -95,13 +91,13 @@ func IndexCell(c *gin.Context) {
 	}
 
 	// Write pagination links in response header.
-	writeHeaderLinks(c, page, total, limit, "cell_lines")
+	writeHeaderLinks(c, page, total, limit, "drugs")
 
 	c.IndentedJSON(http.StatusOK, gin.H{
-		"data":        cells,
+		"data":        drugs,
 		"page":        page,
 		"per_page":    limit,
 		"total":       total,
-		"description": "List of all cell lines in PharmacoDB",
+		"description": "List of all drugs in PharmacoDB",
 	})
 }
