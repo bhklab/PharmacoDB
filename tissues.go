@@ -95,8 +95,6 @@ func IndexTissue(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"data":        tissues,
-		"page":        page,
-		"per_page":    limit,
 		"total":       total,
 		"description": "List of all tissues in PharmacoDB",
 	})

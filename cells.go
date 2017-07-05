@@ -99,8 +99,6 @@ func IndexCell(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"data":        cells,
-		"page":        page,
-		"per_page":    limit,
 		"total":       total,
 		"description": "List of all cell lines in PharmacoDB",
 	})

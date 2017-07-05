@@ -95,8 +95,6 @@ func IndexDataset(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"data":        datasets,
-		"page":        page,
-		"per_page":    limit,
 		"total":       total,
 		"description": "List of all datasets in PharmacoDB",
 	})
