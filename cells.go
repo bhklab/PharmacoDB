@@ -11,9 +11,10 @@ import (
 
 // Cell is a cell_line datatype.
 type Cell struct {
-	ID   int     `json:"id"`
-	ACC  *string `json:"accession_id"`
-	Name string  `json:"name"`
+	ID     int     `json:"id"`
+	ACC    *string `json:"accession_id"`
+	Name   string  `json:"name"`
+	Tissue *Tissue `json:"tissue,omitempty"`
 }
 
 // IndexCell returns a list of all cell lines currently in database.
@@ -56,10 +57,6 @@ func IndexCell(c *gin.Context) {
 		})
 		return
 	}
-
-	// Paginate response using page and per_page request values.
-	// Default: page=1 and per_page=30.
-	// Hence, /cell_lines is equivalent to /cell_lines?page=1&per_page=30 by default.
 
 	curPage := c.DefaultQuery("page", "1")
 	perPage := c.DefaultQuery("per_page", "30")
