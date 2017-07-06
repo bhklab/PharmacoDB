@@ -102,3 +102,8 @@ func IndexCell(c *gin.Context) {
 		"description": "List of all cell lines in PharmacoDB",
 	})
 }
+
+// ShowCell ...
+func ShowCell(c *gin.Context) {
+
+}
