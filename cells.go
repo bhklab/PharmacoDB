@@ -32,8 +32,7 @@ func IndexCell(c *gin.Context) {
 
 	shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 
-	all := c.DefaultQuery("all", "false")
-	if isTrue, _ := strconv.ParseBool(all); isTrue {
+	if isTrue, _ := strconv.ParseBool(c.DefaultQuery("all", "true")); isTrue {
 		rows, er := db.Query("SELECT cell_id, accession_id, cell_name FROM cells;")
 		defer rows.Close()
 		if er != nil {
@@ -64,19 +63,8 @@ func IndexCell(c *gin.Context) {
 		return
 	}
 
-	curPage := c.DefaultQuery("page", "1")
-	perPage := c.DefaultQuery("per_page", "30")
-
-	page, err := strconv.Atoi(curPage)
-	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
-		return
-	}
-	limit, err := strconv.Atoi(perPage)
-	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
-		return
-	}
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 
 	s := (page - 1) * limit
 	selectSQL := "SELECT cell_id, accession_id, cell_name FROM cells"

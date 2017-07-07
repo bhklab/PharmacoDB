@@ -39,20 +39,9 @@ func IndexExperiment(c *gin.Context) {
 		return
 	}
 
-	curPage := c.DefaultQuery("page", "1")
-	perPage := c.DefaultQuery("per_page", "10")
 	shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-
-	page, err := strconv.Atoi(curPage)
-	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
-		return
-	}
-	limit, err := strconv.Atoi(perPage)
-	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
-		return
-	}
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "10"))
 
 	// Set max limit per_page to 100
 	if limit > 100 {
@@ -155,8 +144,7 @@ func ShowExperiment(c *gin.Context) {
 	}
 
 	desc := fmt.Sprintf("Dose/Response data for experiment with ID:%s", id)
-	shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-	if shouldIndent {
+	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
 			"data":        experiment,
 			"description": desc,

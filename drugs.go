@@ -30,8 +30,7 @@ func IndexDrug(c *gin.Context) {
 
 	shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 
-	all := c.DefaultQuery("all", "false")
-	if isTrue, _ := strconv.ParseBool(all); isTrue {
+	if isTrue, _ := strconv.ParseBool(c.DefaultQuery("all", "false")); isTrue {
 		rows, er := db.Query("SELECT drug_id, drug_name FROM drugs;")
 		defer rows.Close()
 		if er != nil {
@@ -62,19 +61,8 @@ func IndexDrug(c *gin.Context) {
 		return
 	}
 
-	curPage := c.DefaultQuery("page", "1")
-	perPage := c.DefaultQuery("per_page", "30")
-
-	page, err := strconv.Atoi(curPage)
-	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
-		return
-	}
-	limit, err := strconv.Atoi(perPage)
-	if err != nil {
-		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
-		return
-	}
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 
 	s := (page - 1) * limit
 	selectSQL := "SELECT drug_id, drug_name FROM drugs"
