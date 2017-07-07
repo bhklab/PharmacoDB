@@ -41,6 +41,7 @@ func IndexExperiment(c *gin.Context) {
 
 	curPage := c.DefaultQuery("page", "1")
 	perPage := c.DefaultQuery("per_page", "10")
+	shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 
 	page, err := strconv.Atoi(curPage)
 	if err != nil {
@@ -51,6 +52,11 @@ func IndexExperiment(c *gin.Context) {
 	if err != nil {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
+	}
+
+	// Set max limit per_page to 100
+	if limit > 100 {
+		limit = 100
 	}
 
 	s := (page - 1) * limit
@@ -85,11 +91,19 @@ func IndexExperiment(c *gin.Context) {
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/experiments", page, total, limit)
 
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"data":        experiments,
-		"total":       total,
-		"description": "List of all experiments in PharmacoDB",
-	})
+	if shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data":        experiments,
+			"total":       total,
+			"description": "List of all experiments in PharmacoDB",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data":        experiments,
+			"total":       total,
+			"description": "List of all experiments in PharmacoDB",
+		})
+	}
 }
 
 // ShowExperiment returns dose response data for a specific experiment id.
@@ -141,9 +155,16 @@ func ShowExperiment(c *gin.Context) {
 	}
 
 	desc := fmt.Sprintf("Dose/Response data for experiment with ID:%s", id)
-
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"data":        experiment,
-		"description": desc,
-	})
+	shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	if shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data":        experiment,
+			"description": desc,
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data":        experiment,
+			"description": desc,
+		})
+	}
 }

@@ -28,6 +28,8 @@ func IndexTissue(c *gin.Context) {
 		return
 	}
 
+	shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+
 	all := c.DefaultQuery("all", "false")
 	if isTrue, _ := strconv.ParseBool(all); isTrue {
 		rows, er := db.Query("SELECT tissue_id, tissue_name FROM tissues;")
@@ -44,11 +46,19 @@ func IndexTissue(c *gin.Context) {
 			}
 			tissues = append(tissues, tissue)
 		}
-		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        tissues,
-			"total":       len(tissues),
-			"description": "List of all tissues in PharmacoDB",
-		})
+		if shouldIndent {
+			c.IndentedJSON(http.StatusOK, gin.H{
+				"data":        tissues,
+				"total":       len(tissues),
+				"description": "List of all tissues in PharmacoDB",
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"data":        tissues,
+				"total":       len(tissues),
+				"description": "List of all tissues in PharmacoDB",
+			})
+		}
 		return
 	}
 
@@ -94,9 +104,17 @@ func IndexTissue(c *gin.Context) {
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/tissues", page, total, limit)
 
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"data":        tissues,
-		"total":       total,
-		"description": "List of all tissues in PharmacoDB",
-	})
+	if shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data":        tissues,
+			"total":       total,
+			"description": "List of all tissues in PharmacoDB",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data":        tissues,
+			"total":       total,
+			"description": "List of all tissues in PharmacoDB",
+		})
+	}
 }

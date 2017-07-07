@@ -28,6 +28,8 @@ func IndexDrug(c *gin.Context) {
 		return
 	}
 
+	shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+
 	all := c.DefaultQuery("all", "false")
 	if isTrue, _ := strconv.ParseBool(all); isTrue {
 		rows, er := db.Query("SELECT drug_id, drug_name FROM drugs;")
@@ -44,11 +46,19 @@ func IndexDrug(c *gin.Context) {
 			}
 			drugs = append(drugs, drug)
 		}
-		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        drugs,
-			"total":       len(drugs),
-			"description": "List of all drugs in PharmacoDB",
-		})
+		if shouldIndent {
+			c.IndentedJSON(http.StatusOK, gin.H{
+				"data":        drugs,
+				"total":       len(drugs),
+				"description": "List of all drugs in PharmacoDB",
+			})
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"data":        drugs,
+				"total":       len(drugs),
+				"description": "List of all drugs in PharmacoDB",
+			})
+		}
 		return
 	}
 
@@ -94,9 +104,17 @@ func IndexDrug(c *gin.Context) {
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/drugs", page, total, limit)
 
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"data":        drugs,
-		"total":       total,
-		"description": "List of all drugs in PharmacoDB",
-	})
+	if shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data":        drugs,
+			"total":       total,
+			"description": "List of all drugs in PharmacoDB",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data":        drugs,
+			"total":       total,
+			"description": "List of all drugs in PharmacoDB",
+		})
+	}
 }
