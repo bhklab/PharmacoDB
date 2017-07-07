@@ -51,7 +51,7 @@ func main() {
 
 	// Responds with status code 400 (Bad Request) if no routers match the request url.
 	router.NoRoute(func(c *gin.Context) {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": gin.H{
 				"code":              http.StatusBadRequest,
 				"message":           "Bad Request",

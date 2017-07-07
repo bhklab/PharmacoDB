@@ -36,7 +36,7 @@ func handleError(c *gin.Context, err error, code int, message string) {
 	if err != nil {
 		raven.CaptureError(err, nil)
 	}
-	c.IndentedJSON(code, gin.H{
+	c.JSON(code, gin.H{
 		"error": gin.H{
 			"code":    code,
 			"message": message,
