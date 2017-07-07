@@ -32,7 +32,7 @@ func IndexCell(c *gin.Context) {
 
 	shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 
-	if isTrue, _ := strconv.ParseBool(c.DefaultQuery("all", "true")); isTrue {
+	if isTrue, _ := strconv.ParseBool(c.DefaultQuery("all", "false")); isTrue {
 		rows, er := db.Query("SELECT cell_id, accession_id, cell_name FROM cells;")
 		defer rows.Close()
 		if er != nil {
