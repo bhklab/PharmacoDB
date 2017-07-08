@@ -34,7 +34,7 @@ func main() {
 		// v1.GET("/cell_lines", cache.CachePage(store, time.Duration(-1), IndexCell))
 
 		v1.GET("/cell_lines", IndexCell)
-		// v1.GET("/cell_lines/:id", ShowCell)
+		v1.GET("/cell_lines/:id", ShowCell)
 
 		v1.GET("/tissues", IndexTissue)
 		// v1.GET("/tissues/:id", ShowTissue)

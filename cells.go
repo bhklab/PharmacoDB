@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -110,7 +111,76 @@ func IndexCell(c *gin.Context) {
 	}
 }
 
-// ShowCell ...
+// ShowCell returns a cell line using ID, Name or Accession ID.
 func ShowCell(c *gin.Context) {
+	var (
+		cell Cell
+		// syn  Synonym
+	)
+	tissue := &Tissue{}
 
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	id := c.Param("id")
+	searchType := c.DefaultQuery("type", "id")
+
+	SQL1 := "SELECT c.cell_id, c.accession_id, c.cell_name, t.tissue_id, t.tissue_name "
+	SQL2 := "FROM cells c JOIN tissues t on t.tissue_id = c.tissue_id WHERE "
+	var SQL3 string
+	if searchType == "name" {
+		SQL3 = "c.cell_name LIKE ?;"
+	} else if searchType == "accession" {
+		SQL3 = "c.accession_id LIKE ?;"
+	} else {
+		SQL3 = "c.cell_id LIKE ?;"
+	}
+	SQL := SQL1 + SQL2 + SQL3
+	row := db.QueryRow(SQL, id)
+	err = row.Scan(&cell.ID, &cell.ACC, &cell.Name, &tissue.ID, &tissue.Name)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			message := fmt.Sprintf("Cell line with ID:%s not found in database", id)
+			handleError(c, nil, http.StatusNotFound, message)
+		} else {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+	cell.Tissue = tissue
+
+	q1 := "SELECT s.cell_name, d.dataset_id, d.dataset_name FROM source_cell_names s "
+	q2 := "JOIN datasets d ON d.dataset_id = s.source_id WHERE s.cell_id = ?;"
+	query := q1 + q2
+	rows, err := db.Query(query, cell.ID)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	// TODO : Finish synonyms handling and return synonyms with cell line result
+	for rows.Next() {
+		// err = rows.Scan(&cell.ID, &cell.ACC, &cell.Name)
+		// if err != nil {
+		// 	handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		// 	return
+		// }
+		// cells = append(cells, cell)
+	}
+
+	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data": cell,
+			"type": "cell_line",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data": cell,
+			"type": "cell_line",
+		})
+	}
 }

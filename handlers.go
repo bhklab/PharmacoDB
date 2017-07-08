@@ -11,8 +11,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// Synonym is a match between a datatype name and
-// the multiple datasets that use the name.
+// Synonym is a match between a datatype name and datasets that use the name.
 type Synonym struct {
 	Name     string    `json:"name"`
 	Datasets []Dataset `json:"datasets"`
