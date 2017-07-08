@@ -10,8 +10,9 @@ import (
 
 // Drug is a drug datatype.
 type Drug struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   int       `json:"id"`
+	Name string    `json:"name"`
+	SYNS []Synonym `json:"synonyms,omitempty"`
 }
 
 // IndexDrug returns a list of all drugs currently in database.

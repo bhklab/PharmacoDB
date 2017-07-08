@@ -10,8 +10,9 @@ import (
 
 // Tissue is a tissue datatype.
 type Tissue struct {
-	ID   int     `json:"id"`
-	Name *string `json:"name,omitempty"`
+	ID   int       `json:"id"`
+	Name *string   `json:"name,omitempty"`
+	SYNS []Synonym `json:"synonyms,omitempty"`
 }
 
 // IndexTissue returns a list of all tissues currently in database.

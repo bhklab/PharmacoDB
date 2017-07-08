@@ -11,6 +11,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// Synonym is a match between a datatype name and
+// the multiple datasets that use the name.
+type Synonym struct {
+	Name     string    `json:"name"`
+	Datasets []Dataset `json:"datasets"`
+}
+
 // Set Sentry DSN for internal error logging.
 func init() {
 	raven.SetDSN("https://71d8d1bc8e4843eeba979fdaadebe48b:df30d2048fc44b5185809f04ba9d2294@sentry.io/186627")
