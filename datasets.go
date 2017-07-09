@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -103,6 +104,53 @@ func IndexDataset(c *gin.Context) {
 			"data":        datasets,
 			"total":       total,
 			"description": "List of all datasets in PharmacoDB",
+		})
+	}
+}
+
+// ShowDataset returns a dataset using ID or Name.
+func ShowDataset(c *gin.Context) {
+	var dataset Dataset
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	id := c.Param("id")
+	searchType := c.DefaultQuery("type", "id")
+
+	SQL1 := "SELECT dataset_id, dataset_name FROM datasets WHERE "
+	var SQL2 string
+	if searchByName(searchType) {
+		SQL2 = "dataset_name LIKE ?;"
+	} else {
+		SQL2 = "dataset_id LIKE ?;"
+	}
+	SQL := SQL1 + SQL2
+	row := db.QueryRow(SQL, id)
+	err = row.Scan(&dataset.ID, &dataset.Name)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			message := fmt.Sprintf("Dataset with ID:%s not found in database", id)
+			handleError(c, nil, http.StatusNotFound, message)
+		} else {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+
+	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data": dataset,
+			"type": "dataset",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data": dataset,
+			"type": "dataset",
 		})
 	}
 }

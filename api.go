@@ -37,7 +37,7 @@ func main() {
 		v1.GET("/drugs/:id", ShowDrug)
 
 		v1.GET("/datasets", IndexDataset)
-		// v1.GET("/datasets/:id", ShowDataset)
+		v1.GET("/datasets/:id", ShowDataset)
 
 		v1.GET("/experiments", IndexExperiment)
 		v1.GET("/experiments/:id", ShowExperiment)
