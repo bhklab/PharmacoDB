@@ -60,6 +60,11 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
+// searchByName returns true if a string is equal to "name", and false otherwise.
+func searchByName(a string) bool {
+	return a == "name"
+}
+
 // writeHeaderLinks writes pagination links in response header.
 // Links available under 'Link' header, including (prev, next, first, last).
 func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limit int) {

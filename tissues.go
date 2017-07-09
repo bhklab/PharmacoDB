@@ -109,7 +109,7 @@ func IndexTissue(c *gin.Context) {
 	}
 }
 
-// ShowTissue returns ...
+// ShowTissue returns a tissue using ID or Name.
 func ShowTissue(c *gin.Context) {
 	var (
 		tissue   Tissue
@@ -129,7 +129,7 @@ func ShowTissue(c *gin.Context) {
 
 	SQL1 := "SELECT tissue_id, tissue_name FROM tissues WHERE "
 	var SQL2 string
-	if searchType == "name" {
+	if searchByName(searchType) {
 		SQL2 = "tissue_name LIKE ?;"
 	} else {
 		SQL2 = "tissue_id LIKE ?;"

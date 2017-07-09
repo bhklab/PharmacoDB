@@ -133,7 +133,7 @@ func ShowCell(c *gin.Context) {
 	SQL1 := "SELECT c.cell_id, c.accession_id, c.cell_name, t.tissue_id, t.tissue_name "
 	SQL2 := "FROM cells c JOIN tissues t ON t.tissue_id = c.tissue_id WHERE "
 	var SQL3 string
-	if searchType == "name" {
+	if searchByName(searchType) {
 		SQL3 = "c.cell_name LIKE ?;"
 	} else if searchType == "accession" {
 		SQL3 = "c.accession_id LIKE ?;"
