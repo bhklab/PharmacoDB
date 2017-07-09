@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -104,6 +105,94 @@ func IndexTissue(c *gin.Context) {
 			"data":        tissues,
 			"total":       total,
 			"description": "List of all tissues in PharmacoDB",
+		})
+	}
+}
+
+// ShowTissue returns ...
+func ShowTissue(c *gin.Context) {
+	var (
+		tissue   Tissue
+		synonym  Synonym
+		synonyms []Synonym
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	id := c.Param("id")
+	searchType := c.DefaultQuery("type", "id")
+
+	SQL1 := "SELECT tissue_id, tissue_name FROM tissues WHERE "
+	var SQL2 string
+	if searchType == "name" {
+		SQL2 = "tissue_name LIKE ?;"
+	} else {
+		SQL2 = "tissue_id LIKE ?;"
+	}
+	SQL := SQL1 + SQL2
+	row := db.QueryRow(SQL, id)
+	err = row.Scan(&tissue.ID, &tissue.Name)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			message := fmt.Sprintf("Tissue with ID:%s not found in database", id)
+			handleError(c, nil, http.StatusNotFound, message)
+		} else {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+
+	q1 := "SELECT s.tissue_name, d.dataset_name FROM source_tissue_names s "
+	q2 := "JOIN datasets d ON d.dataset_id = s.source_id WHERE s.tissue_id = ?;"
+	query := q1 + q2
+	rows, err := db.Query(query, tissue.ID)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	var (
+		synonymName string
+		datasetName string
+	)
+	exists := make(map[string]bool)
+	for rows.Next() {
+		err = rows.Scan(&synonymName, &datasetName)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[synonymName] {
+			for i, syn := range synonyms {
+				if syn.Name == synonymName && !stringInSlice(datasetName, syn.Datasets) {
+					synonyms[i].Datasets = append(synonyms[i].Datasets, datasetName)
+					break
+				}
+			}
+		} else {
+			synonym.Name = synonymName
+			var newSynDatasets []string
+			synonym.Datasets = append(newSynDatasets, datasetName)
+			synonyms = append(synonyms, synonym)
+			exists[synonymName] = true
+		}
+	}
+	tissue.SYNS = synonyms
+
+	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data": tissue,
+			"type": "tissue",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data": tissue,
+			"type": "tissue",
 		})
 	}
 }

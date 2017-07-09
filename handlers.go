@@ -50,6 +50,16 @@ func handleError(c *gin.Context, err error, code int, message string) {
 	})
 }
 
+// stringInSlice returns true if list contains a string, and false otherwise.
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 // writeHeaderLinks writes pagination links in response header.
 // Links available under 'Link' header, including (prev, next, first, last).
 func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limit int) {
@@ -76,14 +86,4 @@ func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limi
 	link := linknp + linkfl
 
 	c.Writer.Header().Set("Link", link)
-}
-
-// stringInSlice returns true if list contains a string, and false otherwise.
-func stringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
 }
