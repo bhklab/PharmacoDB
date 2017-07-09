@@ -13,8 +13,8 @@ import (
 
 // Synonym is a match between a datatype name and datasets that use the name.
 type Synonym struct {
-	Name     string    `json:"name"`
-	Datasets []Dataset `json:"datasets"`
+	Name     string   `json:"name"`
+	Datasets []string `json:"datasets"`
 }
 
 // Set Sentry DSN for internal error logging.
@@ -76,4 +76,14 @@ func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limi
 	link := linknp + linkfl
 
 	c.Writer.Header().Set("Link", link)
+}
+
+// stringInSlice returns true if list contains a string, and false otherwise.
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }

@@ -114,8 +114,9 @@ func IndexCell(c *gin.Context) {
 // ShowCell returns a cell line using ID, Name or Accession ID.
 func ShowCell(c *gin.Context) {
 	var (
-		cell Cell
-		// syn  Synonym
+		cell     Cell
+		synonym  Synonym
+		synonyms []Synonym
 	)
 	tissue := &Tissue{}
 
@@ -130,7 +131,7 @@ func ShowCell(c *gin.Context) {
 	searchType := c.DefaultQuery("type", "id")
 
 	SQL1 := "SELECT c.cell_id, c.accession_id, c.cell_name, t.tissue_id, t.tissue_name "
-	SQL2 := "FROM cells c JOIN tissues t on t.tissue_id = c.tissue_id WHERE "
+	SQL2 := "FROM cells c JOIN tissues t ON t.tissue_id = c.tissue_id WHERE "
 	var SQL3 string
 	if searchType == "name" {
 		SQL3 = "c.cell_name LIKE ?;"
@@ -153,7 +154,7 @@ func ShowCell(c *gin.Context) {
 	}
 	cell.Tissue = tissue
 
-	q1 := "SELECT s.cell_name, d.dataset_id, d.dataset_name FROM source_cell_names s "
+	q1 := "SELECT s.cell_name, d.dataset_name FROM source_cell_names s "
 	q2 := "JOIN datasets d ON d.dataset_id = s.source_id WHERE s.cell_id = ?;"
 	query := q1 + q2
 	rows, err := db.Query(query, cell.ID)
@@ -162,15 +163,33 @@ func ShowCell(c *gin.Context) {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	// TODO : Finish synonyms handling and return synonyms with cell line result
+	var (
+		synonymName string
+		datasetName string
+	)
+	exists := make(map[string]bool)
 	for rows.Next() {
-		// err = rows.Scan(&cell.ID, &cell.ACC, &cell.Name)
-		// if err != nil {
-		// 	handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
-		// 	return
-		// }
-		// cells = append(cells, cell)
+		err = rows.Scan(&synonymName, &datasetName)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[synonymName] {
+			for i, syn := range synonyms {
+				if syn.Name == synonymName && !stringInSlice(datasetName, syn.Datasets) {
+					synonyms[i].Datasets = append(synonyms[i].Datasets, datasetName)
+					break
+				}
+			}
+		} else {
+			synonym.Name = synonymName
+			var newSynDatasets []string
+			synonym.Datasets = append(newSynDatasets, datasetName)
+			synonyms = append(synonyms, synonym)
+			exists[synonymName] = true
+		}
 	}
+	cell.SYNS = synonyms
 
 	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
