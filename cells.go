@@ -203,3 +203,100 @@ func ShowCell(c *gin.Context) {
 		})
 	}
 }
+
+// CellDrugs returns a list of drugs tested with a cell line, and
+// number of experiments carried out with each drug.
+func CellDrugs(c *gin.Context) {
+	type DD struct {
+		Drug     string   `json:"drug"`
+		Datasets []string `json:"datasets"`
+		Count    int      `json:"experiment-count"`
+	}
+	var (
+		cellID      int
+		drugName    string
+		datasetName string
+		experiment  DD
+		experiments []DD
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	id := c.Param("id")
+	searchType := c.DefaultQuery("type", "id")
+
+	SQL1 := "SELECT cell_id FROM cells WHERE "
+	var SQL2 string
+	if searchByName(searchType) {
+		SQL2 = "cell_name LIKE ?;"
+	} else if searchType == "accession" {
+		SQL2 = "accession_id LIKE ?;"
+	} else {
+		SQL2 = "cell_id LIKE ?;"
+	}
+	SQL := SQL1 + SQL2
+	row := db.QueryRow(SQL, id)
+	err = row.Scan(&cellID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			message := fmt.Sprintf("Cell line with ID:%s not found in database", id)
+			handleError(c, nil, http.StatusNotFound, message)
+		} else {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+
+	q1 := "SELECT d.drug_name, da.dataset_name FROM experiments e JOIN drugs d ON d.drug_id = e.drug_id "
+	q2 := "JOIN datasets da ON da.dataset_id = e.dataset_id WHERE e.cell_id = ?"
+	query := q1 + q2
+	rows, err := db.Query(query, cellID)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	exists := make(map[string]bool)
+	for rows.Next() {
+		err = rows.Scan(&drugName, &datasetName)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[drugName] {
+			for i, exp := range experiments {
+				if exp.Drug == drugName && !stringInSlice(datasetName, exp.Datasets) {
+					experiments[i].Datasets = append(experiments[i].Datasets, datasetName)
+					experiments[i].Count++
+					break
+				}
+			}
+		} else {
+			experiment.Drug = drugName
+			var newExpDatasets []string
+			experiment.Datasets = append(newExpDatasets, datasetName)
+			experiment.Count = 1
+			experiments = append(experiments, experiment)
+			exists[drugName] = true
+		}
+	}
+
+	desc := "List of drugs tested with cell line, and number of experiments carried out with each drug"
+
+	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data":        experiments,
+			"description": desc,
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data":        experiments,
+			"description": desc,
+		})
+	}
+}
