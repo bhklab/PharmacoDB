@@ -1,12 +1,20 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
 	router := gin.Default()
 
 	router.StaticFile("/favicon.ico", "./lib/foobar.png")
@@ -61,6 +69,6 @@ func main() {
 		})
 	})
 
-	// Listen and serve on 0.0.0.0:4200
-	router.Run(":4200")
+	// Listen and serve on specified port
+	router.Run(":" + port)
 }
