@@ -383,7 +383,7 @@ func DatasetDrugs(c *gin.Context) {
 	}
 
 	// Write pagination links in response header.
-	writeHeaderLinks(c, "/datasets/:id/cell_lines", page, total, limit)
+	writeHeaderLinks(c, "/datasets/:id/drugs", page, total, limit)
 
 	if shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
