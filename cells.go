@@ -206,11 +206,6 @@ func ShowCell(c *gin.Context) {
 // CellDrugs returns a list of drugs tested with a cell line, and
 // number of experiments carried out with each drug.
 func CellDrugs(c *gin.Context) {
-	type DD struct {
-		Drug     string   `json:"drug"`
-		Datasets []string `json:"datasets"`
-		Count    int      `json:"experiment-count"`
-	}
 	var (
 		cellID      int
 		drugName    string
@@ -260,6 +255,7 @@ func CellDrugs(c *gin.Context) {
 		return
 	}
 	exists := make(map[string]bool)
+	count := 0
 	for rows.Next() {
 		err = rows.Scan(&drugName, &datasetName)
 		if err != nil {
@@ -282,6 +278,12 @@ func CellDrugs(c *gin.Context) {
 			experiments = append(experiments, experiment)
 			exists[drugName] = true
 		}
+		count++
+	}
+
+	if count == 0 {
+		handleError(c, nil, http.StatusNotFound, "No drugs found tested with this cell line")
+		return
 	}
 
 	desc := "List of drugs tested with cell line, and number of experiments carried out with each drug"
@@ -290,11 +292,13 @@ func CellDrugs(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, gin.H{
 			"data":        experiments,
 			"description": desc,
+			"total":       len(experiments),
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
 			"data":        experiments,
 			"description": desc,
+			"total":       len(experiments),
 		})
 	}
 }

@@ -17,6 +17,13 @@ type Synonym struct {
 	Datasets []string `json:"datasets"`
 }
 
+// DD is a Drug-Dataset experiment data.
+type DD struct {
+	Drug     string   `json:"drug"`
+	Datasets []string `json:"datasets"`
+	Count    int      `json:"experiment-count"`
+}
+
 // Set Sentry DSN for internal error logging.
 func init() {
 	raven.SetDSN("https://71d8d1bc8e4843eeba979fdaadebe48b:df30d2048fc44b5185809f04ba9d2294@sentry.io/186627")
