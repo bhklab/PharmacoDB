@@ -44,6 +44,7 @@ func main() {
 		v1.GET("/datasets", IndexDataset)
 		v1.GET("/datasets/:id", ShowDataset)
 		v1.GET("/datasets/:id/cell_lines", DatasetCells)
+		v1.GET("/datasets/:id/drugs", DatasetDrugs)
 
 		v1.GET("/experiments", IndexExperiment)
 		v1.GET("/experiments/:id", ShowExperiment)
