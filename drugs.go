@@ -197,7 +197,7 @@ func ShowDrug(c *gin.Context) {
 	}
 }
 
-// DrugCells returns a list of cell lines tested with a drug, and
+// DrugCells returns a list of cell lines tested against a drug, and
 // number of experiments carried out with each cell line.
 func DrugCells(c *gin.Context) {
 	type DD struct {
@@ -287,6 +287,112 @@ func DrugCells(c *gin.Context) {
 	}
 
 	desc := "List of cell lines tested against drug, and number of experiments carried out"
+
+	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data":        experiments,
+			"description": desc,
+			"total":       len(experiments),
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data":        experiments,
+			"description": desc,
+			"total":       len(experiments),
+		})
+	}
+}
+
+// DrugTissues returns a list of tissues tested against a drug, and
+// number of experiments carried out with each tissue.
+func DrugTissues(c *gin.Context) {
+	type DD struct {
+		Tissue   string   `json:"tissue"`
+		Datasets []string `json:"datasets"`
+		Count    int      `json:"experiment-count"`
+	}
+
+	var (
+		drugID      int
+		tissueName  string
+		datasetName string
+		experiment  DD
+		experiments []DD
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	id := c.Param("id")
+	searchType := c.DefaultQuery("type", "id")
+
+	SQL1 := "SELECT drug_id FROM drugs WHERE "
+	var SQL2 string
+	if searchByName(searchType) {
+		SQL2 = "drug_name LIKE ?;"
+	} else {
+		SQL2 = "drug_id LIKE ?;"
+	}
+	SQL := SQL1 + SQL2
+	row := db.QueryRow(SQL, id)
+	err = row.Scan(&drugID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			handleError(c, nil, http.StatusNotFound, "Drug not found in database")
+		} else {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+
+	q1 := "SELECT t.tissue_name, da.dataset_name FROM experiments e JOIN tissues t ON t.tissue_id = e.tissue_id "
+	q2 := "JOIN datasets da ON da.dataset_id = e.dataset_id WHERE e.drug_id = ?;"
+	query := q1 + q2
+	rows, err := db.Query(query, drugID)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	exists := make(map[string]bool)
+	count := 0
+	for rows.Next() {
+		err = rows.Scan(&tissueName, &datasetName)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		if exists[tissueName] {
+			for i, exp := range experiments {
+				if exp.Tissue == tissueName {
+					if !stringInSlice(datasetName, exp.Datasets) {
+						experiments[i].Datasets = append(experiments[i].Datasets, datasetName)
+					}
+					experiments[i].Count++
+					break
+				}
+			}
+		} else {
+			experiment.Tissue = tissueName
+			var newExpDatasets []string
+			experiment.Datasets = append(newExpDatasets, datasetName)
+			experiment.Count = 1
+			experiments = append(experiments, experiment)
+			exists[tissueName] = true
+		}
+		count++
+	}
+
+	if count == 0 {
+		handleError(c, nil, http.StatusNotFound, "No tissues found tested against this drug")
+		return
+	}
+
+	desc := "List of tissues tested against drug, and number of experiments carried out"
 
 	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
