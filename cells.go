@@ -51,15 +51,13 @@ func IndexCell(c *gin.Context) {
 		}
 		if shouldIndent {
 			c.IndentedJSON(http.StatusOK, gin.H{
-				"data":        cells,
-				"total":       len(cells),
-				"description": "List of all cell lines in PharmacoDB",
+				"data":  cells,
+				"total": len(cells),
 			})
 		} else {
 			c.JSON(http.StatusOK, gin.H{
-				"data":        cells,
-				"total":       len(cells),
-				"description": "List of all cell lines in PharmacoDB",
+				"data":  cells,
+				"total": len(cells),
 			})
 		}
 		return
@@ -98,15 +96,13 @@ func IndexCell(c *gin.Context) {
 
 	if shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        cells,
-			"total":       total,
-			"description": "List of all cell lines in PharmacoDB",
+			"data":  cells,
+			"total": total,
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"data":        cells,
-			"total":       total,
-			"description": "List of all cell lines in PharmacoDB",
+			"data":  cells,
+			"total": total,
 		})
 	}
 }
@@ -294,19 +290,15 @@ func CellDrugs(c *gin.Context) {
 		return
 	}
 
-	desc := "List of drugs tested with cell line, and number of experiments carried out with each drug"
-
 	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        experiments,
-			"description": desc,
-			"total":       len(experiments),
+			"data":  experiments,
+			"total": len(experiments),
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"data":        experiments,
-			"description": desc,
-			"total":       len(experiments),
+			"data":  experiments,
+			"total": len(experiments),
 		})
 	}
 }

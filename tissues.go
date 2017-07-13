@@ -49,15 +49,13 @@ func IndexTissue(c *gin.Context) {
 		}
 		if shouldIndent {
 			c.IndentedJSON(http.StatusOK, gin.H{
-				"data":        tissues,
-				"total":       len(tissues),
-				"description": "List of all tissues in PharmacoDB",
+				"data":  tissues,
+				"total": len(tissues),
 			})
 		} else {
 			c.JSON(http.StatusOK, gin.H{
-				"data":        tissues,
-				"total":       len(tissues),
-				"description": "List of all tissues in PharmacoDB",
+				"data":  tissues,
+				"total": len(tissues),
 			})
 		}
 		return
@@ -96,15 +94,13 @@ func IndexTissue(c *gin.Context) {
 
 	if shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        tissues,
-			"total":       total,
-			"description": "List of all tissues in PharmacoDB",
+			"data":  tissues,
+			"total": total,
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"data":        tissues,
-			"total":       total,
-			"description": "List of all tissues in PharmacoDB",
+			"data":  tissues,
+			"total": total,
 		})
 	}
 }
@@ -242,6 +238,7 @@ func TissueCells(c *gin.Context) {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
+	count := 0
 	for rows.Next() {
 		err = rows.Scan(&cell.ID, &cell.Name)
 		if err != nil {
@@ -249,21 +246,23 @@ func TissueCells(c *gin.Context) {
 			return
 		}
 		cells = append(cells, cell)
+		count++
 	}
 
-	desc := fmt.Sprintf("List of all cell lines of %s tissue type in PharmacoDB", tissueName)
+	if count == 0 {
+		handleError(c, nil, http.StatusNotFound, "No cell lines found of this tissue type in PharmacoDB")
+		return
+	}
 
 	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        cells,
-			"total":       len(cells),
-			"description": desc,
+			"data":  cells,
+			"total": len(cells),
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"data":        cells,
-			"total":       len(cells),
-			"description": desc,
+			"data":  cells,
+			"total": len(cells),
 		})
 	}
 }
@@ -357,19 +356,15 @@ func TissueDrugs(c *gin.Context) {
 		return
 	}
 
-	desc := "List of drugs tested with tissue, and number of experiments carried out with each drug"
-
 	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        experiments,
-			"description": desc,
-			"total":       len(experiments),
+			"data":  experiments,
+			"total": len(experiments),
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"data":        experiments,
-			"description": desc,
-			"total":       len(experiments),
+			"data":  experiments,
+			"total": len(experiments),
 		})
 	}
 }

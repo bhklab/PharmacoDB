@@ -49,15 +49,13 @@ func IndexDrug(c *gin.Context) {
 		}
 		if shouldIndent {
 			c.IndentedJSON(http.StatusOK, gin.H{
-				"data":        drugs,
-				"total":       len(drugs),
-				"description": "List of all drugs in PharmacoDB",
+				"data":  drugs,
+				"total": len(drugs),
 			})
 		} else {
 			c.JSON(http.StatusOK, gin.H{
-				"data":        drugs,
-				"total":       len(drugs),
-				"description": "List of all drugs in PharmacoDB",
+				"data":  drugs,
+				"total": len(drugs),
 			})
 		}
 		return
@@ -96,15 +94,13 @@ func IndexDrug(c *gin.Context) {
 
 	if shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        drugs,
-			"total":       total,
-			"description": "List of all drugs in PharmacoDB",
+			"data":  drugs,
+			"total": total,
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"data":        drugs,
-			"total":       total,
-			"description": "List of all drugs in PharmacoDB",
+			"data":  drugs,
+			"total": total,
 		})
 	}
 }
@@ -286,19 +282,15 @@ func DrugCells(c *gin.Context) {
 		return
 	}
 
-	desc := "List of cell lines tested against drug, and number of experiments carried out"
-
 	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        experiments,
-			"description": desc,
-			"total":       len(experiments),
+			"data":  experiments,
+			"total": len(experiments),
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"data":        experiments,
-			"description": desc,
-			"total":       len(experiments),
+			"data":  experiments,
+			"total": len(experiments),
 		})
 	}
 }
@@ -392,19 +384,15 @@ func DrugTissues(c *gin.Context) {
 		return
 	}
 
-	desc := "List of tissues tested against drug, and number of experiments carried out"
-
 	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
 		c.IndentedJSON(http.StatusOK, gin.H{
-			"data":        experiments,
-			"description": desc,
-			"total":       len(experiments),
+			"data":  experiments,
+			"total": len(experiments),
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"data":        experiments,
-			"description": desc,
-			"total":       len(experiments),
+			"data":  experiments,
+			"total": len(experiments),
 		})
 	}
 }
