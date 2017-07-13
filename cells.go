@@ -206,6 +206,12 @@ func ShowCell(c *gin.Context) {
 // CellDrugs returns a list of drugs tested with a cell line, and
 // number of experiments carried out with each drug.
 func CellDrugs(c *gin.Context) {
+	type DD struct {
+		Drug     string   `json:"drug"`
+		Datasets []string `json:"datasets"`
+		Count    int      `json:"experiment-count"`
+	}
+
 	var (
 		cellID      int
 		drugName    string
@@ -264,8 +270,10 @@ func CellDrugs(c *gin.Context) {
 		}
 		if exists[drugName] {
 			for i, exp := range experiments {
-				if exp.Drug == drugName && !stringInSlice(datasetName, exp.Datasets) {
-					experiments[i].Datasets = append(experiments[i].Datasets, datasetName)
+				if exp.Drug == drugName {
+					if !stringInSlice(datasetName, exp.Datasets) {
+						experiments[i].Datasets = append(experiments[i].Datasets, datasetName)
+					}
 					experiments[i].Count++
 					break
 				}
