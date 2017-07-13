@@ -145,8 +145,7 @@ func ShowCell(c *gin.Context) {
 	err = row.Scan(&cell.ID, &cell.ACC, &cell.Name, &tissue.ID, &tissue.Name)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			message := fmt.Sprintf("Cell line with ID:%s not found in database", id)
-			handleError(c, nil, http.StatusNotFound, message)
+			handleError(c, nil, http.StatusNotFound, "Cell line not found in database")
 		} else {
 			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		}
@@ -244,8 +243,7 @@ func CellDrugs(c *gin.Context) {
 	err = row.Scan(&cellID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			message := fmt.Sprintf("Cell line with ID:%s not found in database", id)
-			handleError(c, nil, http.StatusNotFound, message)
+			handleError(c, nil, http.StatusNotFound, "Cell line not found in database")
 		} else {
 			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
 		}

@@ -196,3 +196,74 @@ func ShowTissue(c *gin.Context) {
 		})
 	}
 }
+
+// TissueCells returns a list of all cell lines of a specific tissue type.
+func TissueCells(c *gin.Context) {
+	var (
+		tissueID   int
+		tissueName string
+		cell       Cell
+		cells      []Cell
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	id := c.Param("id")
+	searchType := c.DefaultQuery("type", "id")
+
+	SQL1 := "SELECT tissue_id, tissue_name FROM tissues WHERE "
+	var SQL2 string
+	if searchByName(searchType) {
+		SQL2 = "tissue_name LIKE ?;"
+	} else {
+		SQL2 = "tissue_id LIKE ?;"
+	}
+	SQL := SQL1 + SQL2
+	row := db.QueryRow(SQL, id)
+	err = row.Scan(&tissueID, &tissueName)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			handleError(c, nil, http.StatusNotFound, "Tissue not found in database")
+		} else {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+
+	query := "SELECT cell_id, cell_name FROM cells WHERE tissue_id = ?;"
+	rows, err := db.Query(query, tissueID)
+	defer rows.Close()
+	if err != nil {
+		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&cell.ID, &cell.Name)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		cells = append(cells, cell)
+	}
+
+	desc := fmt.Sprintf("List of all cell lines of %s tissue type in PharmacoDB", tissueName)
+
+	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data":        cells,
+			"total":       len(cells),
+			"description": desc,
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data":        cells,
+			"total":       len(cells),
+			"description": desc,
+		})
+	}
+}
