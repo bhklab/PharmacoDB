@@ -1,5 +1,4 @@
-# Using this file, code owners will be automatically requested for reviews
-# whenever a pull request changes any owned files.
+# Using this file, maintainers will be automatically requested for reviews
+# whenever a pull request changes any specified files.
 
-# These owners will be the default owners for everything in the repo.
-*       @assefamaru @kofiav @psmirnov
+*       @assefamaru
