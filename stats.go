@@ -104,3 +104,54 @@ func DrugCountPerDataset(c *gin.Context) {
 		})
 	}
 }
+
+// CellDrugsPerDataset returns the number of drugs tested against a particular cell line per dataset.
+func CellDrugsPerDataset(c *gin.Context) {
+	type DatasetDrugCount struct {
+		Dataset Dataset `json:"dataset"`
+		Count   int     `json:"drug-count"`
+	}
+	var (
+		ddc  DatasetDrugCount
+		ddcs []DatasetDrugCount
+	)
+
+	db, err := initDB()
+	defer db.Close()
+	if err != nil {
+		handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	id := c.Param("id")
+
+	q1 := "SELECT d.dataset_id, d.dataset_name, (SELECT COUNT(DISTINCT e.drug_id) "
+	q2 := "FROM experiments e WHERE e.dataset_id = d.dataset_id AND e.cell_id = ?) as drug_count FROM datasets d;"
+	query := q1 + q2
+	rows, er := db.Query(query, id)
+	defer rows.Close()
+	if er != nil {
+		handleError(c, er, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	for rows.Next() {
+		err = rows.Scan(&ddc.Dataset.ID, &ddc.Dataset.Name, &ddc.Count)
+		if err != nil {
+			handleError(c, err, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		ddcs = append(ddcs, ddc)
+	}
+
+	if shouldIndent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true")); shouldIndent {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"data":           ddcs,
+			"total-datasets": len(ddcs),
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data":           ddcs,
+			"total-datasets": len(ddcs),
+		})
+	}
+}
