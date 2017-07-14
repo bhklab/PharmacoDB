@@ -60,7 +60,8 @@ func main() {
 		v1.GET("/stats/cell_tissues", CellCountPerTissue)
 		v1.GET("/stats/drug_datasets", DrugCountPerDataset)
 		v1.GET("/stats/cell_lines/:id", CellDrugsPerDataset)
-		v1.GET("/stats/cell_drug_comb/:cell_id/:drug_id", CellDrugExperiments)
+		v1.GET("/stats/cell_line_drug/:cell_id/:drug_id", CellDrugExperiments)
+		v1.GET("/stats/dataset_cell_line/:cell_id/:dataset_id", CellDatasetExperiments)
 	}
 
 	// Responds with status code 400 (Bad Request) if no routers match the request url.
