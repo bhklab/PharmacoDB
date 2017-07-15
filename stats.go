@@ -156,6 +156,12 @@ func CellDrugsPerDataset(c *gin.Context) {
 	}
 }
 
+// CellCountPerDataset returns ...
+func CellCountPerDataset(c *gin.Context) {
+	type CC struct {
+	}
+}
+
 // CellDrugExperiments returns all dose/response data for a cell line and drug combination.
 func CellDrugExperiments(c *gin.Context) {
 	var (
