@@ -9,15 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Cell is a cell_line datatype.
-type Cell struct {
-	ID     int       `json:"id"`
-	ACC    *string   `json:"accession_id,omitempty"`
-	Name   string    `json:"name"`
-	Tissue *Tissue   `json:"tissue,omitempty"`
-	SYNS   []Synonym `json:"synonyms,omitempty"`
-}
-
 // IndexCell returns a list of all cell lines currently in database.
 func IndexCell(c *gin.Context) {
 	var (

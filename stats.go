@@ -158,8 +158,24 @@ func CellDrugsPerDataset(c *gin.Context) {
 
 // CellCountPerDataset returns ...
 func CellCountPerDataset(c *gin.Context) {
-	type CC struct {
-	}
+	// type CC struct {
+	// 	Dataset Dataset `json:"dataset"`
+	// 	Count   int     `json:"cell-count"`
+	// }
+	// var (
+	// 	tissueID int
+	// 	cc CC
+	// 	ccs []CC
+	// )
+	//
+	// db, err := initDB()
+	// defer db.Close()
+	// if err != nil {
+	// 	handleError(c, nil, http.StatusInternalServerError, "Internal Server Error")
+	// 	return
+	// }
+	//
+	//
 }
 
 // CellDrugExperiments returns all dose/response data for a cell line and drug combination.
@@ -260,6 +276,7 @@ func CellDatasetExperiments(c *gin.Context) {
 	}
 	selectSQL := SQL1 + SQL2 + SQL3 + SQL4 + SQL5
 	rrows, _ := db.Query(selectSQL, cellID, datasetID)
+	defer rrows.Close()
 	for rrows.Next() {
 		err = rrows.Scan(&experiment.ID, &experiment.Cell.ID, &experiment.Cell.Name, &experiment.Tissue.ID, &experiment.Tissue.Name, &experiment.Drug.ID, &experiment.Drug.Name, &experiment.Dataset.ID, &experiment.Dataset.Name)
 		if err != nil {

@@ -9,22 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// DoseResponse is a dose_response datatype.
-type DoseResponse struct {
-	Dose     float64 `json:"dose"`
-	Response float64 `json:"response"`
-}
-
-// Experiment is an experiment datatype.
-type Experiment struct {
-	ID      int            `json:"experiment_id"`
-	Cell    Cell           `json:"cell_line"`
-	Tissue  Tissue         `json:"tissue"`
-	Drug    Drug           `json:"drug"`
-	Dataset Dataset        `json:"dataset"`
-	DR      []DoseResponse `json:"dose_responses,omitempty"`
-}
-
 // IndexExperiment returns a list of all experiments currently in database.
 func IndexExperiment(c *gin.Context) {
 	var (
@@ -127,8 +111,7 @@ func ShowExperiment(c *gin.Context) {
 		return
 	}
 
-	query := "SELECT dose, response FROM dose_responses WHERE experiment_id = ?;"
-	rows, err := db.Query(query, id)
+	rows, err := db.Query("SELECT dose, response FROM dose_responses WHERE experiment_id = ?;", id)
 	defer rows.Close()
 	if err != nil {
 		handleError(c, err, http.StatusInternalServerError, "Internal Server Error")

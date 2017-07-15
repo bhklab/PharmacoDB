@@ -29,7 +29,7 @@ func main() {
 	v1 := router.Group("/v1")
 	{
 		v1.GET("/", func(c *gin.Context) {
-			info := "To use the API, add endpoints to the request."
+			info := "Welcome to PharmacoDB API."
 			link := "For more information, visit: https://www.pharmacodb.com/docs/api"
 			message := info + "\n" + link
 			c.String(http.StatusOK, message)
@@ -60,7 +60,8 @@ func main() {
 		v1.GET("/stats/cell_lines", CellCountPerTissue)
 		v1.GET("/stats/cell_lines/:id/drugs", CellDrugsPerDataset)
 		v1.GET("/stats/tissues", CellCountPerTissue)
-		v1.GET("/stats/tissues/:id/cell_lines", CellCountPerDataset)
+		// v1.GET("/stats/tissues/:id/cell_lines", CellCountPerDataset)
+		// v1.GET("/stats/tissues/:id/drugs", TissueDrugsPerDataset)
 		v1.GET("/stats/datasets/drugs_count", DrugCountPerDataset)
 		v1.GET("/stats/experiments/x/:cell_id/:drug_id", CellDrugExperiments)
 		v1.GET("/stats/experiments/y/:cell_id/:dataset_id", CellDatasetExperiments)

@@ -9,13 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Tissue is a tissue datatype.
-type Tissue struct {
-	ID   int       `json:"id"`
-	Name *string   `json:"name,omitempty"`
-	SYNS []Synonym `json:"synonyms,omitempty"`
-}
-
 // IndexTissue returns a list of all tissues currently in database.
 func IndexTissue(c *gin.Context) {
 	var (
