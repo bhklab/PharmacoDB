@@ -1,1 +1,44 @@
 package main
+
+import (
+	"log"
+
+	raven "github.com/getsentry/raven-go"
+)
+
+// ErrorType is a type of error.
+type ErrorType int
+
+// API error types.
+const (
+	ErrorTypePrivate ErrorType = 0
+	ErrorTypePublic  ErrorType = 1
+)
+
+// Error is an internal error structure.
+type Error struct {
+	Error   error
+	Type    ErrorType
+	Code    int
+	Message string
+}
+
+// Sentry DSN for internal error logging.
+func init() {
+	raven.SetDSN("https://71d8d1bc8e4843eeba979fdaadebe48b:df30d2048fc44b5185809f04ba9d2294@sentry.io/186627")
+}
+
+// NewError returns an empty error
+func NewError() Error {
+	return Error{}
+}
+
+// SetType sets the type for an error.
+func (err Error) SetType(et ErrorType) {
+	switch et {
+	case ErrorTypePrivate, ErrorTypePublic:
+		err.Type = et
+	default:
+		log.Fatal("Error type is not recognized as either private or public.")
+	}
+}

@@ -16,7 +16,6 @@ func main() {
 	// Set environment mode.
 	SetMode(*mode)
 
-	c := APIConfiguration{Mode: *mode, Port: *port}
 	// Start server
-	Init(c)
+	Init(APIConfiguration{Mode: *mode, Port: *port})
 }

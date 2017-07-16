@@ -15,9 +15,6 @@ func TestSetMode(t *testing.T) {
 	SetMode(TestMode)
 	assert.Equal(t, TestMode, Mode())
 
-	//SetMode("foobar")
-	//assert.Fail(t, "API mode unknown: ", "foobar")
-
 	SetMode(DebugMode)
 	assert.Equal(t, DebugMode, Mode())
 }
