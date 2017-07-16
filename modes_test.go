@@ -1,0 +1,23 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestSetMode(t *testing.T) {
+	assert.Equal(t, DebugMode, Mode())
+
+	SetMode(ReleaseMode)
+	assert.Equal(t, ReleaseMode, Mode())
+
+	SetMode(TestMode)
+	assert.Equal(t, TestMode, Mode())
+
+	//SetMode("foobar")
+	//assert.Fail(t, "API mode unknown: ", "foobar")
+
+	SetMode(DebugMode)
+	assert.Equal(t, DebugMode, Mode())
+}

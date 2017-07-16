@@ -12,8 +12,8 @@ const (
 var apiMode = DebugMode
 
 // SetMode sets server environment mode.
-func SetMode(e string) {
-	switch e {
+func SetMode(mode string) {
+	switch mode {
 	case DebugMode:
 		apiMode = DebugMode
 	case ReleaseMode:
@@ -21,7 +21,7 @@ func SetMode(e string) {
 	case TestMode:
 		apiMode = TestMode
 	default:
-		log.Fatal("API mode unknown: " + e)
+		log.Fatal("API mode unknown: " + mode)
 	}
 }
 
