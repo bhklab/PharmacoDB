@@ -10,10 +10,12 @@ func main() {
 		mode = flag.String("mode", "debug", "environment mode")
 		port = flag.String("port", "8080", "server port")
 	)
+
 	flag.Parse()
+
 	// Set environment mode.
 	SetMode(*mode)
-	// Initialize API configuration context.
+
 	e := APIConfiguration{Mode: *mode, Port: *port}
 	// Start server
 	Init(e)
