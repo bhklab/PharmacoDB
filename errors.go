@@ -6,10 +6,11 @@ import (
 	raven "github.com/getsentry/raven-go"
 )
 
-// ErrorType is a type of error.
+// ErrorType is one of
+// private or public (0 or 1).
 type ErrorType int
 
-// API error types.
+// Error types.
 const (
 	ErrorTypePrivate ErrorType = 0
 	ErrorTypePublic  ErrorType = 1

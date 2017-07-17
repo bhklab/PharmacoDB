@@ -13,7 +13,7 @@ func main() {
 
 	flag.Parse()
 
-	// Set environment mode.
+	// Set environment mode
 	SetMode(*mode)
 
 	// Start server
