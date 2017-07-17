@@ -1,6 +1,6 @@
 package main
 
-import "log"
+import "fmt"
 
 // API server environment modes.
 const (
@@ -21,7 +21,7 @@ func SetMode(mode string) {
 	case TestMode:
 		apiMode = TestMode
 	default:
-		log.Fatal("API mode unknown: " + mode)
+		panic(fmt.Errorf("API mode '%s' not recognized", mode))
 	}
 }
 

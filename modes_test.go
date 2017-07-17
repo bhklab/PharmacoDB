@@ -17,4 +17,6 @@ func TestSetMode(t *testing.T) {
 
 	SetMode(DebugMode)
 	assert.Equal(t, DebugMode, Mode())
+
+	assert.Panics(t, func() { SetMode("NotRealMode") }, "The code did not panic")
 }

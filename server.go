@@ -1,6 +1,7 @@
 package main
 
-// Init ...
-func Init(conf APIConfiguration) {
+// Init API server.
+// Wrapper for the gin router.
+func Init(e APIConfiguration) {
 
 }

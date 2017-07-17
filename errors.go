@@ -1,10 +1,6 @@
 package main
 
-import (
-	"log"
-
-	raven "github.com/getsentry/raven-go"
-)
+import raven "github.com/getsentry/raven-go"
 
 // ErrorType is one of
 // private or public (0 or 1).
@@ -32,14 +28,4 @@ func init() {
 // NewError returns an empty error
 func NewError() Error {
 	return Error{}
-}
-
-// SetType sets the type for an error.
-func (err Error) SetType(et ErrorType) {
-	switch et {
-	case ErrorTypePrivate, ErrorTypePublic:
-		err.Type = et
-	default:
-		log.Fatal("Error type is not recognized as either private or public.")
-	}
 }
