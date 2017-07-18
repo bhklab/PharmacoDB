@@ -31,9 +31,9 @@ func Count(table string) (int, error) {
 	return count, nil
 }
 
-// CustomJSON outputs response as either indented or non-indented
+// RenderJSON outputs response as either indented or non-indented
 // depending on setting by parent function.
-func CustomJSON(c *gin.Context, obj gin.H, indent bool) {
+func RenderJSON(c *gin.Context, obj gin.H, indent bool) {
 	if indent {
 		c.IndentedJSON(http.StatusOK, obj)
 	} else {
@@ -87,7 +87,7 @@ func CellsHandler(c *gin.Context) {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		CustomJSON(c, gin.H{"data": cells, "total": len(cells)}, indent)
+		RenderJSON(c, gin.H{"data": cells, "total": len(cells)}, indent)
 		return
 	}
 	cells, err := ListPaginatedCells(page, limit)
@@ -102,7 +102,7 @@ func CellsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/cell_lines", page, count, limit)
-	CustomJSON(c, gin.H{"data": cells, "total": count}, indent)
+	RenderJSON(c, gin.H{"data": cells, "total": count}, indent)
 }
 
 // TissuesHandler is a handler for '/tissues' endpoint.
@@ -120,7 +120,7 @@ func TissuesHandler(c *gin.Context) {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		CustomJSON(c, gin.H{"data": tissues, "total": len(tissues)}, indent)
+		RenderJSON(c, gin.H{"data": tissues, "total": len(tissues)}, indent)
 		return
 	}
 	tissues, err := ListPaginatedTissues(page, limit)
@@ -135,7 +135,7 @@ func TissuesHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/tissues", page, count, limit)
-	CustomJSON(c, gin.H{"data": tissues, "total": count}, indent)
+	RenderJSON(c, gin.H{"data": tissues, "total": count}, indent)
 }
 
 // DrugsHandler is a handler for '/drugs' endpoint.
@@ -153,7 +153,7 @@ func DrugsHandler(c *gin.Context) {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		CustomJSON(c, gin.H{"data": drugs, "total": len(drugs)}, indent)
+		RenderJSON(c, gin.H{"data": drugs, "total": len(drugs)}, indent)
 		return
 	}
 	drugs, err := ListPaginatedDrugs(page, limit)
@@ -168,7 +168,7 @@ func DrugsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/drugs", page, count, limit)
-	CustomJSON(c, gin.H{"data": drugs, "total": count}, indent)
+	RenderJSON(c, gin.H{"data": drugs, "total": count}, indent)
 }
 
 // DatasetsHandler is a handler for '/datasets' endpoint.
@@ -186,7 +186,7 @@ func DatasetsHandler(c *gin.Context) {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		CustomJSON(c, gin.H{"data": datasets, "total": len(datasets)}, indent)
+		RenderJSON(c, gin.H{"data": datasets, "total": len(datasets)}, indent)
 		return
 	}
 	datasets, err := ListPaginatedDatasets(page, limit)
@@ -201,7 +201,7 @@ func DatasetsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/datasets", page, count, limit)
-	CustomJSON(c, gin.H{"data": datasets, "total": count}, indent)
+	RenderJSON(c, gin.H{"data": datasets, "total": count}, indent)
 }
 
 // ExperimentsHandler is a handler for '/experiments' endpoint.
@@ -227,5 +227,5 @@ func ExperimentsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/experiments", page, count, limit)
-	CustomJSON(c, gin.H{"data": experiments, "total": count}, indent)
+	RenderJSON(c, gin.H{"data": experiments, "total": count}, indent)
 }
