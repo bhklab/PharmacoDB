@@ -28,15 +28,15 @@ var routes = Routes{
 	Route{GET, "/cell_lines", CellsHandler},
 	Route{GET, "/cell_lines/:id", CellsHandler},
 	// Tissues routes
-	Route{GET, "/Tissues", CellsHandler},
-	Route{GET, "/Tissues/:id", CellsHandler},
+	Route{GET, "/tissues", TissuesHandler},
+	Route{GET, "/tissues/:id", CellsHandler},
 	// Drugs routes
-	Route{GET, "/Drugs", CellsHandler},
-	Route{GET, "/Drugs/:id", CellsHandler},
+	Route{GET, "/drugs", CellsHandler},
+	Route{GET, "/drugs/:id", CellsHandler},
 	// Datasets routes
-	Route{GET, "/Datasets", CellsHandler},
-	Route{GET, "/Datasets/:id", CellsHandler},
+	Route{GET, "/datasets", CellsHandler},
+	Route{GET, "/datasets/:id", CellsHandler},
 	// Experiments routes
-	Route{GET, "/Experiments", CellsHandler},
-	Route{GET, "/Experiments/:id", CellsHandler},
+	Route{GET, "/experiments", CellsHandler},
+	Route{GET, "/experiments/:id", CellsHandler},
 }

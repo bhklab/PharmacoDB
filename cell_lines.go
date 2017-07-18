@@ -14,7 +14,7 @@ func PaginatedCells(page int, limit int) (Cells, error) {
 		return nil, err
 	}
 	s := (page - 1) * limit
-	query := fmt.Sprintf("SELECT cell_id, accession_id, cell_name FROM cells limit %d,%d;", s, limit)
+	query := fmt.Sprintf("SELECT cell_id, accession_id, cell_name FROM cells LIMIT %d,%d;", s, limit)
 	rows, err := db.Query(query)
 	defer rows.Close()
 	if err != nil {

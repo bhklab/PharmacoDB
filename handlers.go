@@ -42,7 +42,7 @@ func CustomJSON(c *gin.Context, obj gin.H, indent bool) {
 }
 
 // writeHeaderLinks writes pagination links in response header.
-// Links available under 'Link' header, including (prev, next, first, last).
+// Links available under 'Link' header, including (first, prev, next, last).
 func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limit int) {
 	var (
 		prev    string
@@ -68,7 +68,7 @@ func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limi
 	c.Writer.Header().Set("Link", link)
 }
 
-// CellsHandler is a handler for '/cell_lines'.
+// CellsHandler is a handler for '/cell_lines' endpoint.
 // Lists all cell lines in database.
 func CellsHandler(c *gin.Context) {
 	// Optional parameters
@@ -103,4 +103,37 @@ func CellsHandler(c *gin.Context) {
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/cell_lines", page, count, limit)
 	CustomJSON(c, gin.H{"data": cells, "total": count}, indent)
+}
+
+// TissuesHandler is a handler for '/tissues' endpoint.
+// Lists all tissues in database.
+func TissuesHandler(c *gin.Context) {
+	// Optional parameters (same as CellsHandler)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+
+	if listAll {
+		tissues, err := NonPaginatedTissues()
+		if err != nil {
+			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		CustomJSON(c, gin.H{"data": tissues, "total": len(tissues)}, indent)
+		return
+	}
+	tissues, err := PaginatedTissues(page, limit)
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	count, err := Count("tissues")
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	// Write pagination links in response header.
+	writeHeaderLinks(c, "/tissues", page, count, limit)
+	CustomJSON(c, gin.H{"data": tissues, "total": count}, indent)
 }
