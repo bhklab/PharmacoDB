@@ -62,7 +62,12 @@ func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limi
 		relNext = "; rel=\"next\", "
 	}
 	link := first + relFirst + prev + relPrev + next + relNext + last + relLast
+	// Write all custom headers.
 	c.Writer.Header().Set("Link", link)
+	c.Writer.Header().Set("Pagination-Last-Page", strconv.Itoa(lastPage))
+	c.Writer.Header().Set("Pagination-Current-Page", strconv.Itoa(page))
+	c.Writer.Header().Set("Pagination-Per-Page", strconv.Itoa(limit))
+	c.Writer.Header().Set("Total-Records", strconv.Itoa(total))
 }
 
 // CellsHandler is a handler for '/cell_lines' endpoint.
@@ -83,7 +88,8 @@ func CellsHandler(c *gin.Context) {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		RenderJSON(c, indent, gin.H{"data": cells, "total": len(cells)})
+		c.Writer.Header().Set("Total-Records", strconv.Itoa(len(cells)))
+		RenderJSON(c, indent, cells)
 		return
 	}
 	cells, err := PaginatedCells(page, limit)
@@ -98,7 +104,7 @@ func CellsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/cell_lines", page, count, limit)
-	RenderJSON(c, indent, gin.H{"data": cells, "total": count})
+	RenderJSON(c, indent, cells)
 }
 
 // TissuesHandler is a handler for '/tissues' endpoint.
@@ -115,7 +121,8 @@ func TissuesHandler(c *gin.Context) {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		RenderJSON(c, indent, gin.H{"data": tissues, "total": len(tissues)})
+		c.Writer.Header().Set("Total-Records", strconv.Itoa(len(tissues)))
+		RenderJSON(c, indent, tissues)
 		return
 	}
 	tissues, err := PaginatedTissues(page, limit)
@@ -130,7 +137,7 @@ func TissuesHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/tissues", page, count, limit)
-	RenderJSON(c, indent, gin.H{"data": tissues, "total": count})
+	RenderJSON(c, indent, tissues)
 }
 
 // DrugsHandler is a handler for '/drugs' endpoint.
@@ -147,7 +154,8 @@ func DrugsHandler(c *gin.Context) {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		RenderJSON(c, indent, gin.H{"data": drugs, "total": len(drugs)})
+		c.Writer.Header().Set("Total-Records", strconv.Itoa(len(drugs)))
+		RenderJSON(c, indent, drugs)
 		return
 	}
 	drugs, err := PaginatedDrugs(page, limit)
@@ -162,7 +170,7 @@ func DrugsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/drugs", page, count, limit)
-	RenderJSON(c, indent, gin.H{"data": drugs, "total": count})
+	RenderJSON(c, indent, drugs)
 }
 
 // DatasetsHandler is a handler for '/datasets' endpoint.
@@ -179,7 +187,8 @@ func DatasetsHandler(c *gin.Context) {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		RenderJSON(c, indent, gin.H{"data": datasets, "total": len(datasets)})
+		c.Writer.Header().Set("Total-Records", strconv.Itoa(len(datasets)))
+		RenderJSON(c, indent, datasets)
 		return
 	}
 	datasets, err := PaginatedDatasets(page, limit)
@@ -194,7 +203,7 @@ func DatasetsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/datasets", page, count, limit)
-	RenderJSON(c, indent, gin.H{"data": datasets, "total": count})
+	RenderJSON(c, indent, datasets)
 }
 
 // ExperimentsHandler is a handler for '/experiments' endpoint.
@@ -220,5 +229,5 @@ func ExperimentsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/experiments", page, count, limit)
-	RenderJSON(c, indent, gin.H{"data": experiments, "total": count})
+	RenderJSON(c, indent, experiments)
 }
