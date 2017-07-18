@@ -9,9 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// HandlerFunc is a gin HandlerFunc.
-type HandlerFunc gin.HandlerFunc
-
 // Count returns the total number of records in table,
 // or error in case of failure.
 func Count(table string) (int, error) {
@@ -33,7 +30,7 @@ func Count(table string) (int, error) {
 
 // RenderJSON outputs response as either indented or non-indented
 // depending on setting by parent function.
-func RenderJSON(c *gin.Context, obj gin.H, indent bool) {
+func RenderJSON(c *gin.Context, indent bool, obj interface{}) {
 	if indent {
 		c.IndentedJSON(http.StatusOK, obj)
 	} else {
@@ -80,14 +77,13 @@ func CellsHandler(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-
 	if listAll {
 		cells, err := ListAllCells()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		RenderJSON(c, gin.H{"data": cells, "total": len(cells)}, indent)
+		RenderJSON(c, indent, gin.H{"data": cells, "total": len(cells)})
 		return
 	}
 	cells, err := ListPaginatedCells(page, limit)
@@ -102,7 +98,7 @@ func CellsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/cell_lines", page, count, limit)
-	RenderJSON(c, gin.H{"data": cells, "total": count}, indent)
+	RenderJSON(c, indent, gin.H{"data": cells, "total": count})
 }
 
 // TissuesHandler is a handler for '/tissues' endpoint.
@@ -113,14 +109,13 @@ func TissuesHandler(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-
 	if listAll {
 		tissues, err := ListAllTissues()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		RenderJSON(c, gin.H{"data": tissues, "total": len(tissues)}, indent)
+		RenderJSON(c, indent, gin.H{"data": tissues, "total": len(tissues)})
 		return
 	}
 	tissues, err := ListPaginatedTissues(page, limit)
@@ -135,7 +130,7 @@ func TissuesHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/tissues", page, count, limit)
-	RenderJSON(c, gin.H{"data": tissues, "total": count}, indent)
+	RenderJSON(c, indent, gin.H{"data": tissues, "total": count})
 }
 
 // DrugsHandler is a handler for '/drugs' endpoint.
@@ -146,14 +141,13 @@ func DrugsHandler(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-
 	if listAll {
 		drugs, err := ListAllDrugs()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		RenderJSON(c, gin.H{"data": drugs, "total": len(drugs)}, indent)
+		RenderJSON(c, indent, gin.H{"data": drugs, "total": len(drugs)})
 		return
 	}
 	drugs, err := ListPaginatedDrugs(page, limit)
@@ -168,7 +162,7 @@ func DrugsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/drugs", page, count, limit)
-	RenderJSON(c, gin.H{"data": drugs, "total": count}, indent)
+	RenderJSON(c, indent, gin.H{"data": drugs, "total": count})
 }
 
 // DatasetsHandler is a handler for '/datasets' endpoint.
@@ -179,14 +173,13 @@ func DatasetsHandler(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-
 	if listAll {
 		datasets, err := ListAllDatasets()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
-		RenderJSON(c, gin.H{"data": datasets, "total": len(datasets)}, indent)
+		RenderJSON(c, indent, gin.H{"data": datasets, "total": len(datasets)})
 		return
 	}
 	datasets, err := ListPaginatedDatasets(page, limit)
@@ -201,7 +194,7 @@ func DatasetsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/datasets", page, count, limit)
-	RenderJSON(c, gin.H{"data": datasets, "total": count}, indent)
+	RenderJSON(c, indent, gin.H{"data": datasets, "total": count})
 }
 
 // ExperimentsHandler is a handler for '/experiments' endpoint.
@@ -227,5 +220,5 @@ func ExperimentsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/experiments", page, count, limit)
-	RenderJSON(c, gin.H{"data": experiments, "total": count}, indent)
+	RenderJSON(c, indent, gin.H{"data": experiments, "total": count})
 }
