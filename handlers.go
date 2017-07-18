@@ -137,3 +137,36 @@ func TissuesHandler(c *gin.Context) {
 	writeHeaderLinks(c, "/tissues", page, count, limit)
 	CustomJSON(c, gin.H{"data": tissues, "total": count}, indent)
 }
+
+// DrugsHandler is a handler for '/drugs' endpoint.
+// Lists all drugs in database.
+func DrugsHandler(c *gin.Context) {
+	// Optional parameters (same as CellsHandler)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+
+	if listAll {
+		drugs, err := NonPaginatedDrugs()
+		if err != nil {
+			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		CustomJSON(c, gin.H{"data": drugs, "total": len(drugs)}, indent)
+		return
+	}
+	drugs, err := PaginatedDrugs(page, limit)
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	count, err := Count("drugs")
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	// Write pagination links in response header.
+	writeHeaderLinks(c, "/drugs", page, count, limit)
+	CustomJSON(c, gin.H{"data": drugs, "total": count}, indent)
+}
