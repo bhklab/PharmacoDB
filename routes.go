@@ -33,5 +33,5 @@ var routes = Routes{
 	// Datasets routes
 	Route{GET, "/datasets", DatasetsHandler},
 	// Experiments routes
-	Route{GET, "/experiments", CellsHandler},
+	Route{GET, "/experiments", ExperimentsHandler},
 }

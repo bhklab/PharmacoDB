@@ -21,7 +21,7 @@ func Count(table string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	query := "SELECT COUNT(*) FROM " + table
+	query := "SELECT COUNT(*) FROM " + table + ";"
 	row := db.QueryRow(query)
 	err = row.Scan(&count)
 	if err != nil {
@@ -69,10 +69,10 @@ func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limi
 }
 
 // CellsHandler is a handler for '/cell_lines' endpoint.
-// Lists all cell lines in database.
+// Lists all cell lines in database (paginated and non-paginated).
 func CellsHandler(c *gin.Context) {
 	// Optional parameters
-	// page and limit are used for paginated response (default).
+	// Page and limit are used for paginated response (default).
 	// If listAll is set to true, it takes precedence over page and limit,
 	//    returning all cell lines (without pagination).
 	// Response indented by default, can be set to false for non-indented responses.
@@ -106,9 +106,9 @@ func CellsHandler(c *gin.Context) {
 }
 
 // TissuesHandler is a handler for '/tissues' endpoint.
-// Lists all tissues in database.
+// Lists all tissues in database (paginated and non-paginated).
 func TissuesHandler(c *gin.Context) {
-	// Optional parameters (same as CellsHandler)
+	// Optional parameters (see CellsHandler)
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
@@ -139,9 +139,9 @@ func TissuesHandler(c *gin.Context) {
 }
 
 // DrugsHandler is a handler for '/drugs' endpoint.
-// Lists all drugs in database.
+// Lists all drugs in database (paginated and non-paginated).
 func DrugsHandler(c *gin.Context) {
-	// Optional parameters (same as CellsHandler)
+	// Optional parameters (see CellsHandler)
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
@@ -172,9 +172,9 @@ func DrugsHandler(c *gin.Context) {
 }
 
 // DatasetsHandler is a handler for '/datasets' endpoint.
-// Lists all datasets in database.
+// Lists all datasets in database (paginated and non-paginated).
 func DatasetsHandler(c *gin.Context) {
-	// Optional parameters (same as CellsHandler)
+	// Optional parameters (see CellsHandler)
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
@@ -202,4 +202,30 @@ func DatasetsHandler(c *gin.Context) {
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/datasets", page, count, limit)
 	CustomJSON(c, gin.H{"data": datasets, "total": count}, indent)
+}
+
+// ExperimentsHandler is a handler for '/experiments' endpoint.
+// Lists all experiments in database (paginated only).
+func ExperimentsHandler(c *gin.Context) {
+	// Optional parameters (see CellsHandler)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	// Set max limit per_page to 1000
+	if limit > 1000 {
+		limit = 1000
+	}
+	experiments, err := ListPaginatedExperiments(page, limit)
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	count, err := Count("experiments")
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	// Write pagination links in response header.
+	writeHeaderLinks(c, "/experiments", page, count, limit)
+	CustomJSON(c, gin.H{"data": experiments, "total": count}, indent)
 }
