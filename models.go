@@ -51,6 +51,9 @@ type Experiment struct {
 	DoseResponses DoseResponses `json:"dose_responses,omitempty"`
 }
 
+// Experiments is a collection of Experiment.
+type Experiments []Experiment
+
 // DoseResponse is model for dose/response data.
 type DoseResponse struct {
 	Dose     float64 `json:"dose"`
