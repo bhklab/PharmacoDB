@@ -26,6 +26,7 @@ type Routes []Route
 var routes = Routes{
 	// Cell lines routes
 	Route{GET, "/cell_lines", CellsHandler},
+	Route{GET, "/cell_lines/:id", CellsHandler},
 	// Tissues routes
 	Route{GET, "/tissues", TissuesHandler},
 	// Drugs routes

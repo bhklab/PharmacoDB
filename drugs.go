@@ -2,8 +2,8 @@ package main
 
 import "fmt"
 
-// ListPaginatedDrugs returns a list of paginated drugs.
-func ListPaginatedDrugs(page int, limit int) (Drugs, error) {
+// PaginatedDrugs returns a list of paginated drugs.
+func PaginatedDrugs(page int, limit int) (Drugs, error) {
 	var (
 		drug  Drug
 		drugs Drugs
@@ -32,8 +32,8 @@ func ListPaginatedDrugs(page int, limit int) (Drugs, error) {
 	return drugs, nil
 }
 
-// ListAllDrugs returns a list of all drugs without pagination.
-func ListAllDrugs() (Drugs, error) {
+// NonPaginatedDrugs returns a list of all drugs without pagination.
+func NonPaginatedDrugs() (Drugs, error) {
 	var (
 		drug  Drug
 		drugs Drugs

@@ -2,8 +2,8 @@ package main
 
 import "fmt"
 
-// ListPaginatedExperiments returns a list of paginated experiments.
-func ListPaginatedExperiments(page int, limit int) (Experiments, error) {
+// PaginatedExperiments returns a list of paginated experiments.
+func PaginatedExperiments(page int, limit int) (Experiments, error) {
 	var (
 		experiment  Experiment
 		experiments Experiments

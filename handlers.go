@@ -78,7 +78,7 @@ func CellsHandler(c *gin.Context) {
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 	if listAll {
-		cells, err := ListAllCells()
+		cells, err := NonPaginatedCells()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
@@ -86,7 +86,7 @@ func CellsHandler(c *gin.Context) {
 		RenderJSON(c, indent, gin.H{"data": cells, "total": len(cells)})
 		return
 	}
-	cells, err := ListPaginatedCells(page, limit)
+	cells, err := PaginatedCells(page, limit)
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -110,7 +110,7 @@ func TissuesHandler(c *gin.Context) {
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 	if listAll {
-		tissues, err := ListAllTissues()
+		tissues, err := NonPaginatedTissues()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
@@ -118,7 +118,7 @@ func TissuesHandler(c *gin.Context) {
 		RenderJSON(c, indent, gin.H{"data": tissues, "total": len(tissues)})
 		return
 	}
-	tissues, err := ListPaginatedTissues(page, limit)
+	tissues, err := PaginatedTissues(page, limit)
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -142,7 +142,7 @@ func DrugsHandler(c *gin.Context) {
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 	if listAll {
-		drugs, err := ListAllDrugs()
+		drugs, err := NonPaginatedDrugs()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
@@ -150,7 +150,7 @@ func DrugsHandler(c *gin.Context) {
 		RenderJSON(c, indent, gin.H{"data": drugs, "total": len(drugs)})
 		return
 	}
-	drugs, err := ListPaginatedDrugs(page, limit)
+	drugs, err := PaginatedDrugs(page, limit)
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -174,7 +174,7 @@ func DatasetsHandler(c *gin.Context) {
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 	if listAll {
-		datasets, err := ListAllDatasets()
+		datasets, err := NonPaginatedDatasets()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
@@ -182,7 +182,7 @@ func DatasetsHandler(c *gin.Context) {
 		RenderJSON(c, indent, gin.H{"data": datasets, "total": len(datasets)})
 		return
 	}
-	datasets, err := ListPaginatedDatasets(page, limit)
+	datasets, err := PaginatedDatasets(page, limit)
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -208,7 +208,7 @@ func ExperimentsHandler(c *gin.Context) {
 	if limit > 1000 {
 		limit = 1000
 	}
-	experiments, err := ListPaginatedExperiments(page, limit)
+	experiments, err := PaginatedExperiments(page, limit)
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 		return

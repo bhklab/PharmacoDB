@@ -2,8 +2,8 @@ package main
 
 import "fmt"
 
-// ListPaginatedCells returns a list of paginated cell lines.
-func ListPaginatedCells(page int, limit int) (Cells, error) {
+// PaginatedCells returns a list of paginated cell lines.
+func PaginatedCells(page int, limit int) (Cells, error) {
 	var (
 		cell  Cell
 		cells Cells
@@ -32,8 +32,8 @@ func ListPaginatedCells(page int, limit int) (Cells, error) {
 	return cells, nil
 }
 
-// ListAllCells returns a list of all cell lines without pagination.
-func ListAllCells() (Cells, error) {
+// NonPaginatedCells returns a list of all cell lines without pagination.
+func NonPaginatedCells() (Cells, error) {
 	var (
 		cell  Cell
 		cells Cells

@@ -2,8 +2,8 @@ package main
 
 import "fmt"
 
-// ListPaginatedDatasets returns a list of paginated datasets.
-func ListPaginatedDatasets(page int, limit int) (Datasets, error) {
+// PaginatedDatasets returns a list of paginated datasets.
+func PaginatedDatasets(page int, limit int) (Datasets, error) {
 	var (
 		dataset  Dataset
 		datasets Datasets
@@ -32,8 +32,8 @@ func ListPaginatedDatasets(page int, limit int) (Datasets, error) {
 	return datasets, nil
 }
 
-// ListAllDatasets returns a list of all datasets without pagination.
-func ListAllDatasets() (Datasets, error) {
+// NonPaginatedDatasets returns a list of all datasets without pagination.
+func NonPaginatedDatasets() (Datasets, error) {
 	var (
 		dataset  Dataset
 		datasets Datasets
