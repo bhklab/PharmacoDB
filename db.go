@@ -3,6 +3,8 @@ package main
 import (
 	"database/sql"
 	"os"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // DBAuthInfo contains username, password and database name information.
@@ -20,14 +22,14 @@ var DB DBAuthInfo
 // SetDB sets DB with local connection data
 // using environment variables.
 func SetDB() {
-	if DB.User = os.Getenv("MYSQL_USER_V1"); DB.User == "" {
-		panic("OS enviroment variable 'MYSQL_USER_V1' is missing")
+	if DB.User = os.Getenv("DB_USER_V1"); DB.User == "" {
+		panic("OS enviroment variable 'DB_USER_V1' is missing")
 	}
-	if DB.Pass = os.Getenv("MYSQL_PASS_V1"); DB.Pass == "" {
-		panic("OS enviroment variable 'MYSQL_PASS_V1' is missing")
+	if DB.Pass = os.Getenv("DB_PASS_V1"); DB.Pass == "" {
+		panic("OS enviroment variable 'DB_PASS_V1' is missing")
 	}
-	if DB.Name = os.Getenv("MYSQL_NAME_V1"); DB.Name == "" {
-		panic("OS enviroment variable 'MYSQL_NAME_V1' is missing")
+	if DB.Name = os.Getenv("DB_NAME_V1"); DB.Name == "" {
+		panic("OS enviroment variable 'DB_NAME_V1' is missing")
 	}
 }
 
