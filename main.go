@@ -22,25 +22,25 @@ func main() {
 	// -> version: default is v1
 	flag.BoolVar(&osMode, "os-mode", false, "set true if using os environment variables for mode")
 	flag.BoolVar(&osPort, "os-port", false, "set true if using os environment variables for port")
-	flag.StringVar(&mode, "mode", "debug", "environment mode")
+	flag.StringVar(&mode, "mode", "release", "environment mode")
 	flag.StringVar(&port, "port", "8080", "server port")
 	flag.StringVar(&version, "version", "v1", "api version")
 
 	flag.Parse()
 
 	if osMode {
-		// Use environment variables for mode
+		// Use environment variables for mode.
 		mode = os.Getenv("MODE")
 	}
 	if osPort {
-		// Use environment variables for port
+		// Use environment variables for port.
 		if port = os.Getenv("PORT"); port == "" {
 			panic("PORT environment variable needs to be set with appropriate port value")
 		}
 	}
 
 	// Set environment mode, panic if mode
-	// is not recognized
+	// is not recognized.
 	SetMode(mode)
 
 	// Set API port.
@@ -50,9 +50,9 @@ func main() {
 	SetAPIVersion(version)
 
 	// Set DB using environment variables, and
-	// panic if fields are missing (not filled)
+	// panic if fields are missing (not filled).
 	SetDB()
 
-	// Start server
+	// Start server.
 	Init()
 }

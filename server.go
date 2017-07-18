@@ -22,6 +22,9 @@ func Init() {
 		gin.SetMode(gin.TestMode)
 	}
 
+	// Serve favicon.
+	router.StaticFile("/favicon.ico", "./static/images/favicon.png")
+
 	v := router.Group(APIVersion())
 
 	for _, route := range routes {
