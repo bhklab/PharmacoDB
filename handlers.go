@@ -82,7 +82,7 @@ func CellsHandler(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 
 	if listAll {
-		cells, err := NonPaginatedCells()
+		cells, err := ListAllCells()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
@@ -90,7 +90,7 @@ func CellsHandler(c *gin.Context) {
 		CustomJSON(c, gin.H{"data": cells, "total": len(cells)}, indent)
 		return
 	}
-	cells, err := PaginatedCells(page, limit)
+	cells, err := ListPaginatedCells(page, limit)
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -115,7 +115,7 @@ func TissuesHandler(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 
 	if listAll {
-		tissues, err := NonPaginatedTissues()
+		tissues, err := ListAllTissues()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
@@ -123,7 +123,7 @@ func TissuesHandler(c *gin.Context) {
 		CustomJSON(c, gin.H{"data": tissues, "total": len(tissues)}, indent)
 		return
 	}
-	tissues, err := PaginatedTissues(page, limit)
+	tissues, err := ListPaginatedTissues(page, limit)
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -148,7 +148,7 @@ func DrugsHandler(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 
 	if listAll {
-		drugs, err := NonPaginatedDrugs()
+		drugs, err := ListAllDrugs()
 		if err != nil {
 			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 			return
@@ -156,7 +156,7 @@ func DrugsHandler(c *gin.Context) {
 		CustomJSON(c, gin.H{"data": drugs, "total": len(drugs)}, indent)
 		return
 	}
-	drugs, err := PaginatedDrugs(page, limit)
+	drugs, err := ListPaginatedDrugs(page, limit)
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -169,4 +169,37 @@ func DrugsHandler(c *gin.Context) {
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/drugs", page, count, limit)
 	CustomJSON(c, gin.H{"data": drugs, "total": count}, indent)
+}
+
+// DatasetsHandler is a handler for '/datasets' endpoint.
+// Lists all datasets in database.
+func DatasetsHandler(c *gin.Context) {
+	// Optional parameters (same as CellsHandler)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+
+	if listAll {
+		datasets, err := ListAllDatasets()
+		if err != nil {
+			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		CustomJSON(c, gin.H{"data": datasets, "total": len(datasets)}, indent)
+		return
+	}
+	datasets, err := ListPaginatedDatasets(page, limit)
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	count, err := Count("datasets")
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	// Write pagination links in response header.
+	writeHeaderLinks(c, "/datasets", page, count, limit)
+	CustomJSON(c, gin.H{"data": datasets, "total": count}, indent)
 }

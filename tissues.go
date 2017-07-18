@@ -2,8 +2,8 @@ package main
 
 import "fmt"
 
-// PaginatedTissues returns a list of paginated tissues.
-func PaginatedTissues(page int, limit int) (Tissues, error) {
+// ListPaginatedTissues returns a list of paginated tissues.
+func ListPaginatedTissues(page int, limit int) (Tissues, error) {
 	var (
 		tissue  Tissue
 		tissues Tissues
@@ -32,8 +32,8 @@ func PaginatedTissues(page int, limit int) (Tissues, error) {
 	return tissues, nil
 }
 
-// NonPaginatedTissues returns a list of all tissues without pagination.
-func NonPaginatedTissues() (Tissues, error) {
+// ListAllTissues returns a list of all tissues without pagination.
+func ListAllTissues() (Tissues, error) {
 	var (
 		tissue  Tissue
 		tissues Tissues

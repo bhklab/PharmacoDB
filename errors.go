@@ -33,26 +33,26 @@ func NewError() Error {
 }
 
 // CreateError creates a new error with fields filled.
-func CreateError(etype ErrorType, code int, message string) Error {
-	if etype != ErrorTypePrivate && etype != ErrorTypePublic {
+func CreateError(typ ErrorType, code int, message string) Error {
+	if typ != ErrorTypePrivate && typ != ErrorTypePublic {
 		panic("Error type needs to be either ErrorTypePrivate or ErrorTypePublic")
 	} else {
-		return Error{Type: etype, Code: code, Message: message}
+		return Error{Type: typ, Code: code, Message: message}
 	}
 }
 
 // LogPrivateError sends private errors to sentry
 // for internal error logging.
-func LogPrivateError(etype ErrorType, e error) {
-	if etype != ErrorTypePrivate {
+func LogPrivateError(typ ErrorType, err error) {
+	if typ != ErrorTypePrivate {
 		panic("Error type needs to be ErrorTypePrivate for private error logging")
 	}
-	raven.CaptureError(e, nil)
+	raven.CaptureError(err, nil)
 }
 
 // LogPublicError returns error response to user
-func LogPublicError(c *gin.Context, etype ErrorType, code int, message string) {
-	if etype != ErrorTypePublic {
+func LogPublicError(c *gin.Context, typ ErrorType, code int, message string) {
+	if typ != ErrorTypePublic {
 		panic("Error type needs to be ErrorTypePublic for public error logging")
 	}
 	c.JSON(code, gin.H{"error": gin.H{"code": code, "message": message}})
