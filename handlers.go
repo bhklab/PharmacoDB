@@ -298,6 +298,24 @@ func DatasetsHandler(c *gin.Context) {
 	RenderJSONwithMeta(c, indent, page, limit, count, include, datasets)
 }
 
+// DatasetHandler is a handler for '/datasets/:id' endpoint.
+// Returns a single dataset.
+func DatasetHandler(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	typ := c.DefaultQuery("type", "id")
+	id := c.Param("id")
+	dataset, err := FindDataset(id, typ)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogPublicError(c, ErrorTypePublic, http.StatusNotFound, "Dataset Not Found")
+		} else {
+			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+	RenderJSON(c, indent, dataset)
+}
+
 // ExperimentsHandler is a handler for '/experiments' endpoint.
 // Lists all experiments in database (paginated only).
 func ExperimentsHandler(c *gin.Context) {

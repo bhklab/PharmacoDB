@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+)
 
 // PaginatedDatasets returns a list of paginated datasets.
 func PaginatedDatasets(page int, limit int) (Datasets, error) {
@@ -58,4 +61,31 @@ func NonPaginatedDatasets() (Datasets, error) {
 		datasets = append(datasets, dataset)
 	}
 	return datasets, nil
+}
+
+// FindDataset returns a dataset, queried using id or name.
+func FindDataset(id string, typ string) (Dataset, error) {
+	var (
+		dataset Dataset
+		query   string
+	)
+	db, err := InitDB()
+	defer db.Close()
+	if err != nil {
+		return dataset, err
+	}
+	if sameString(typ, "name") {
+		query = "SELECT dataset_id, dataset_name FROM datasets WHERE dataset_name LIKE ?;"
+	} else {
+		query = "SELECT dataset_id, dataset_name FROM datasets WHERE dataset_id LIKE ?;"
+	}
+	row := db.QueryRow(query, id)
+	err = row.Scan(&dataset.ID, &dataset.Name)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			LogPrivateError(ErrorTypePrivate, err)
+		}
+		return dataset, err
+	}
+	return dataset, nil
 }

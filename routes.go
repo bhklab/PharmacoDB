@@ -32,6 +32,7 @@ var routes = Routes{
 	Route{GET, "/drugs", DrugsHandler},
 	Route{GET, "/drugs/:id", DrugHandler},
 	Route{GET, "/datasets", DatasetsHandler},
+	Route{GET, "/datasets/:id", DatasetHandler},
 	Route{GET, "/experiments", ExperimentsHandler},
 	Route{GET, "/stats", ExperimentsHandler},
 }
