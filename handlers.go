@@ -186,6 +186,28 @@ func TissuesHandler(c *gin.Context) {
 	RenderJSONwithMeta(c, indent, page, limit, count, include, tissues)
 }
 
+// TissueHandler is a handler for '/tissues/:id' endpoint.
+// Returns a single tissue.
+func TissueHandler(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	typ := c.DefaultQuery("type", "id")
+	id := c.Param("id")
+	tissue, err := FindTissue(id, typ)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogPublicError(c, ErrorTypePublic, http.StatusNotFound, "Tissue Not Found")
+		} else {
+			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+	err = tissue.Annotate()
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+	}
+	RenderJSON(c, indent, tissue)
+}
+
 // DrugsHandler is a handler for '/drugs' endpoint.
 // Lists all drugs in database (paginated and non-paginated).
 func DrugsHandler(c *gin.Context) {

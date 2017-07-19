@@ -1,59 +1,6 @@
 package main
 
-import "fmt"
-
-// API server environment modes.
-const (
-	DebugMode   string = "debug"   // for development
-	ReleaseMode string = "release" // for production
-	TestMode    string = "test"    // for testing
-)
-
-var apiMode = ReleaseMode
-
-// SetMode sets server environment mode.
-func SetMode(mode string) {
-	switch mode {
-	case DebugMode:
-		apiMode = DebugMode
-	case ReleaseMode:
-		apiMode = ReleaseMode
-	case TestMode:
-		apiMode = TestMode
-	default:
-		panic(fmt.Errorf("API mode '%s' not recognized", mode))
-	}
-}
-
-// Mode returns current server environment mode.
-func Mode() string {
-	return apiMode
-}
-
-var apiPort string
-
-// SetPort sets API port.
-func SetPort(port string) {
-	apiPort = port
-}
-
-// Port returns current api port.
-func Port() string {
-	return apiPort
-}
-
-// API version is set at the start of server.
-var apiVersion string
-
-// SetAPIVersion sets current API version.
-func SetAPIVersion(v string) {
-	apiVersion = v
-}
-
-// APIVersion returns the current API version.
-func APIVersion() string {
-	return apiVersion
-}
+import "reflect"
 
 // sameString returns true if a == b, and false otherwise.
 func sameString(a string, b string) bool {
@@ -68,4 +15,54 @@ func stringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// DataTypeInterface is an interface struct for all db datatypes.
+type DataTypeInterface struct {
+	obj interface{}
+}
+
+// Annotates adds annotation to an interface to any data type.
+// [ Mock abstraction model ]
+func (obj DataTypeInterface) Annotates(query string) error {
+	var (
+		annotation     Annotation
+		annotations    Annotations
+		annotationName string
+		datasetName    string
+	)
+	db, err := InitDB()
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+	rows, err := db.Query(query, reflect.ValueOf(obj).FieldByName("ID"))
+	defer rows.Close()
+	if err != nil {
+		LogPrivateError(ErrorTypePrivate, err)
+		return err
+	}
+	exists := make(map[string]bool)
+	for rows.Next() {
+		err = rows.Scan(&annotationName, &datasetName)
+		if err != nil {
+			LogPrivateError(ErrorTypePrivate, err)
+			return err
+		}
+		if exists[annotationName] {
+			for i, a := range annotations {
+				if a.Name == annotationName && !stringInSlice(datasetName, a.Datasets) {
+					annotations[i].Datasets = append(annotations[i].Datasets, datasetName)
+				}
+			}
+		} else {
+			var datasetsNew []string
+			annotation.Name = annotationName
+			annotation.Datasets = append(datasetsNew, datasetName)
+			annotations = append(annotations, annotation)
+			exists[annotationName] = true
+		}
+	}
+	reflect.ValueOf(obj).FieldByName("Annotations").Elem().Set(reflect.ValueOf(annotations))
+	return nil
 }
