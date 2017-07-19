@@ -15,30 +15,9 @@ const (
 	ErrorTypePublic  ErrorType = 1
 )
 
-// Error is an internal error structure.
-type Error struct {
-	Type    ErrorType
-	Code    int
-	Message string
-}
-
 // Sentry DSN for internal error logging.
 func init() {
 	raven.SetDSN("https://71d8d1bc8e4843eeba979fdaadebe48b:df30d2048fc44b5185809f04ba9d2294@sentry.io/186627")
-}
-
-// NewError returns an empty error
-func NewError() Error {
-	return Error{}
-}
-
-// CreateError creates a new error with fields filled.
-func CreateError(typ ErrorType, code int, message string) Error {
-	if typ != ErrorTypePrivate && typ != ErrorTypePublic {
-		panic("Error type needs to be either ErrorTypePrivate or ErrorTypePublic")
-	} else {
-		return Error{Type: typ, Code: code, Message: message}
-	}
 }
 
 // LogPrivateError sends private errors to sentry
@@ -55,5 +34,5 @@ func LogPublicError(c *gin.Context, typ ErrorType, code int, message string) {
 	if typ != ErrorTypePublic {
 		panic("Error type needs to be ErrorTypePublic for public error logging")
 	}
-	c.JSON(code, gin.H{"error": gin.H{"code": code, "message": message}})
+	c.JSON(code, gin.H{"code": code, "message": message})
 }
