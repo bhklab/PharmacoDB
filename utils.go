@@ -54,3 +54,18 @@ func SetAPIVersion(v string) {
 func APIVersion() string {
 	return apiVersion
 }
+
+// sameString returns true if a == b, and false otherwise.
+func sameString(a string, b string) bool {
+	return a == b
+}
+
+// stringInSlice returns true if list contains a string, and false otherwise.
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}

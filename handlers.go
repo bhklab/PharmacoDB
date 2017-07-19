@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"math"
 	"net/http"
@@ -125,6 +126,30 @@ func CellsHandler(c *gin.Context) {
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/cell_lines", page, count, limit)
 	RenderJSONwithMeta(c, indent, page, limit, count, include, cells)
+}
+
+// CellHandler is a handler for '/cell_lines/:id' endpoint.
+// Returns a single cell line.
+func CellHandler(c *gin.Context) {
+	// Optional parameters
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	typ := c.DefaultQuery("type", "id")
+	// path parameter
+	id := c.Param("id")
+	cell, err := FindCell(id, typ)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogPublicError(c, ErrorTypePublic, http.StatusNotFound, "Cell Line Not Found")
+		} else {
+			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+	err = cell.Annotate()
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+	}
+	RenderJSON(c, indent, cell)
 }
 
 // TissuesHandler is a handler for '/tissues' endpoint.
