@@ -45,12 +45,7 @@ func RenderJSONwithMeta(c *gin.Context, indent bool, page int, limit int, count 
 	var data interface{}
 	if include == "metadata" {
 		lastPage := int(math.Ceil(float64(count) / float64(limit)))
-		meta := gin.H{
-			"page":      page,
-			"per_page":  limit,
-			"last_page": lastPage,
-			"total":     count,
-		}
+		meta := gin.H{"page": page, "per_page": limit, "last_page": lastPage, "total": count}
 		data = gin.H{"metadata": meta, "data": obj}
 	} else {
 		data = obj
@@ -88,8 +83,8 @@ func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limi
 	link := first + relFirst + prev + relPrev + next + relNext + last + relLast
 	// Write all custom headers.
 	c.Writer.Header().Set("Link", link)
-	c.Writer.Header().Set("Pagination-Last-Page", strconv.Itoa(lastPage))
 	c.Writer.Header().Set("Pagination-Current-Page", strconv.Itoa(page))
+	c.Writer.Header().Set("Pagination-Last-Page", strconv.Itoa(lastPage))
 	c.Writer.Header().Set("Pagination-Per-Page", strconv.Itoa(limit))
 	c.Writer.Header().Set("Total-Records", strconv.Itoa(total))
 }

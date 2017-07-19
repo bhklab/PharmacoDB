@@ -9,7 +9,7 @@ const (
 	TestMode    string = "test"    // for testing
 )
 
-var apiMode = DebugMode
+var apiMode = ReleaseMode
 
 // SetMode sets server environment mode.
 func SetMode(mode string) {

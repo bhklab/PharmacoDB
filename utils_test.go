@@ -7,7 +7,7 @@ import (
 )
 
 func TestSetMode(t *testing.T) {
-	assert.Equal(t, DebugMode, Mode())
+	assert.Equal(t, ReleaseMode, Mode())
 
 	SetMode(ReleaseMode)
 	assert.Equal(t, ReleaseMode, Mode())
