@@ -38,6 +38,30 @@ func RenderJSON(c *gin.Context, indent bool, obj interface{}) {
 	}
 }
 
+// RenderJSONwithMeta outputs response as either indented or non-indented
+// along with metadata about the reponse.
+// Metadata includes current page, last page, per_page count and total count of result records.
+func RenderJSONwithMeta(c *gin.Context, indent bool, page int, limit int, count int, include string, obj interface{}) {
+	var data interface{}
+	if include == "metadata" {
+		lastPage := int(math.Ceil(float64(count) / float64(limit)))
+		meta := gin.H{
+			"page":      page,
+			"per_page":  limit,
+			"last_page": lastPage,
+			"total":     count,
+		}
+		data = gin.H{"metadata": meta, "data": obj}
+	} else {
+		data = obj
+	}
+	if indent {
+		c.IndentedJSON(http.StatusOK, data)
+	} else {
+		c.JSON(http.StatusOK, data)
+	}
+}
+
 // writeHeaderLinks writes pagination links in response header.
 // Links available under 'Link' header, including (first, prev, next, last).
 func writeHeaderLinks(c *gin.Context, endpoint string, page int, total int, limit int) {
@@ -82,6 +106,7 @@ func CellsHandler(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include") // shortcut for c.Request.URL.Query().Get("include")
 	if listAll {
 		cells, err := NonPaginatedCells()
 		if err != nil {
@@ -104,7 +129,7 @@ func CellsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/cell_lines", page, count, limit)
-	RenderJSON(c, indent, cells)
+	RenderJSONwithMeta(c, indent, page, limit, count, include, cells)
 }
 
 // TissuesHandler is a handler for '/tissues' endpoint.
@@ -115,6 +140,7 @@ func TissuesHandler(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
 	if listAll {
 		tissues, err := NonPaginatedTissues()
 		if err != nil {
@@ -137,7 +163,7 @@ func TissuesHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/tissues", page, count, limit)
-	RenderJSON(c, indent, tissues)
+	RenderJSONwithMeta(c, indent, page, limit, count, include, tissues)
 }
 
 // DrugsHandler is a handler for '/drugs' endpoint.
@@ -148,6 +174,7 @@ func DrugsHandler(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
 	if listAll {
 		drugs, err := NonPaginatedDrugs()
 		if err != nil {
@@ -170,7 +197,7 @@ func DrugsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/drugs", page, count, limit)
-	RenderJSON(c, indent, drugs)
+	RenderJSONwithMeta(c, indent, page, limit, count, include, drugs)
 }
 
 // DatasetsHandler is a handler for '/datasets' endpoint.
@@ -181,6 +208,7 @@ func DatasetsHandler(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
 	if listAll {
 		datasets, err := NonPaginatedDatasets()
 		if err != nil {
@@ -203,7 +231,7 @@ func DatasetsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/datasets", page, count, limit)
-	RenderJSON(c, indent, datasets)
+	RenderJSONwithMeta(c, indent, page, limit, count, include, datasets)
 }
 
 // ExperimentsHandler is a handler for '/experiments' endpoint.
@@ -213,6 +241,7 @@ func ExperimentsHandler(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
 	// Set max limit per_page to 1000
 	if limit > 1000 {
 		limit = 1000
@@ -229,5 +258,5 @@ func ExperimentsHandler(c *gin.Context) {
 	}
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/experiments", page, count, limit)
-	RenderJSON(c, indent, experiments)
+	RenderJSONwithMeta(c, indent, page, limit, count, include, experiments)
 }
