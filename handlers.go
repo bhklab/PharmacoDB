@@ -242,6 +242,28 @@ func DrugsHandler(c *gin.Context) {
 	RenderJSONwithMeta(c, indent, page, limit, count, include, drugs)
 }
 
+// DrugHandler is a handler for '/drugs/:id' endpoint.
+// Returns a single drug.
+func DrugHandler(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	typ := c.DefaultQuery("type", "id")
+	id := c.Param("id")
+	drug, err := FindDrug(id, typ)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogPublicError(c, ErrorTypePublic, http.StatusNotFound, "Drug Not Found")
+		} else {
+			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+	err = drug.Annotate()
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+	}
+	RenderJSON(c, indent, drug)
+}
+
 // DatasetsHandler is a handler for '/datasets' endpoint.
 // Lists all datasets in database (paginated and non-paginated).
 func DatasetsHandler(c *gin.Context) {
