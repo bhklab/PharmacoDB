@@ -148,6 +148,7 @@ func CellHandler(c *gin.Context) {
 	err = cell.Annotate()
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 	RenderJSON(c, indent, cell)
 }
@@ -204,6 +205,7 @@ func TissueHandler(c *gin.Context) {
 	err = tissue.Annotate()
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 	RenderJSON(c, indent, tissue)
 }
@@ -260,6 +262,7 @@ func DrugHandler(c *gin.Context) {
 	err = drug.Annotate()
 	if err != nil {
 		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 	RenderJSON(c, indent, drug)
 }
@@ -341,4 +344,26 @@ func ExperimentsHandler(c *gin.Context) {
 	// Write pagination links in response header.
 	writeHeaderLinks(c, "/experiments", page, count, limit)
 	RenderJSONwithMeta(c, indent, page, limit, count, include, experiments)
+}
+
+// ExperimentHandler is a handler for '/experiments/id/:id' endpoint.
+// Returns a single experiment.
+func ExperimentHandler(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	id := c.Param("id")
+	experiment, err := FindExperiment(id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogPublicError(c, ErrorTypePublic, http.StatusNotFound, "Experiment Not Found")
+		} else {
+			LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+	err = experiment.DoseResponse()
+	if err != nil {
+		LogPublicError(c, ErrorTypePublic, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	RenderJSON(c, indent, experiment)
 }

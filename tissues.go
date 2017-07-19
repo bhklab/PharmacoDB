@@ -63,7 +63,7 @@ func NonPaginatedTissues() (Tissues, error) {
 	return tissues, nil
 }
 
-// FindTissue returns a tissue, queried using id or name.
+// FindTissue returns a tissue, queried using ID or name.
 func FindTissue(id string, typ string) (Tissue, error) {
 	var (
 		tissue Tissue

@@ -63,7 +63,7 @@ func NonPaginatedDatasets() (Datasets, error) {
 	return datasets, nil
 }
 
-// FindDataset returns a dataset, queried using id or name.
+// FindDataset returns a dataset, queried using ID or name.
 func FindDataset(id string, typ string) (Dataset, error) {
 	var (
 		dataset Dataset

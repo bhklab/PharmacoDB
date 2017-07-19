@@ -63,7 +63,7 @@ func NonPaginatedDrugs() (Drugs, error) {
 	return drugs, nil
 }
 
-// FindDrug returns a drug, queried using id or name.
+// FindDrug returns a drug, queried using ID or name.
 func FindDrug(id string, typ string) (Drug, error) {
 	var (
 		drug  Drug

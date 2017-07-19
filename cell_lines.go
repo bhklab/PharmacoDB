@@ -63,7 +63,7 @@ func NonPaginatedCells() (Cells, error) {
 	return cells, nil
 }
 
-// FindCell returns a cell line, queried using id, name or accession.
+// FindCell returns a cell line, queried using ID, name or accession.
 func FindCell(id string, typ string) (Cell, error) {
 	var (
 		cell  Cell
