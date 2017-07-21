@@ -88,9 +88,9 @@ func WriteHeader(c *gin.Context, endpoint string, page int, limit int, total int
 	c.Writer.Header().Set("Total-Records", strconv.Itoa(total))
 }
 
-// IndexCells is a handler for '/cell_lines' endpoint.
+// IndexCell is a handler for '/cell_lines' endpoint.
 // Lists all cell lines in database (paginated or non-paginated).
-func IndexCells(c *gin.Context) {
+func IndexCell(c *gin.Context) {
 	var cells Cells
 	// Optional parameters
 	// Page and limit are used for paginated response (default).
@@ -149,4 +149,63 @@ func ShowCell(c *gin.Context) {
 		return
 	}
 	RenderJSON(c, indent, cell)
+}
+
+// IndexTissue is a handler for '/tissues' endpoint.
+// Lists all tissues in database (paginated or non-paginated).
+func IndexTissue(c *gin.Context) {
+	var tissues Tissues
+	// Optional parameters
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
+	if listAll {
+		err := tissues.List()
+		if err != nil {
+			LogInternalServerError(c)
+			return
+		}
+		c.Writer.Header().Set("Total-Records", strconv.Itoa(len(tissues)))
+		RenderJSON(c, indent, tissues)
+		return
+	}
+	err := tissues.ListPaginated(page, limit)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	total, err := Count("tissues")
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	WriteHeader(c, "/tissues", page, limit, total)
+	RenderJSONwithMeta(c, indent, page, limit, total, include, tissues)
+}
+
+// ShowTissue is a handler for '/tissues/:id' endpoint.
+// Returns a single tissue.
+func ShowTissue(c *gin.Context) {
+	var tissue Tissue
+	// Optional parameters
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	typ := c.DefaultQuery("type", "id")
+	id := c.Param("id")
+	err := tissue.Find(id, typ)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	err = tissue.Annotate()
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, tissue)
 }
