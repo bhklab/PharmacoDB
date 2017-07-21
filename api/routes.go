@@ -24,15 +24,5 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-	Route{GET, "/cell_lines", SomeFunc},
-	// Route{GET, "/cell_lines/:id", CellHandler},
-	// Route{GET, "/tissues", TissuesHandler},
-	// Route{GET, "/tissues/:id", TissueHandler},
-	// Route{GET, "/drugs", DrugsHandler},
-	// Route{GET, "/drugs/:id", DrugHandler},
-	// Route{GET, "/datasets", DatasetsHandler},
-	// Route{GET, "/datasets/:id", DatasetHandler},
-	// Route{GET, "/experiments", ExperimentsHandler},
-	// Route{GET, "/experiments/id/:id", ExperimentHandler},
-	// Route{GET, "/stats", ExperimentsHandler},
+	Route{GET, "/cell_lines", CellsHandler},
 }
