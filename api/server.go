@@ -9,7 +9,7 @@ type Context struct {
 	Version string
 }
 
-// Init a new server, using gin router.
+// Init new server, using gin router.
 func Init(c *Context) {
 	SetMode(c.Mode)
 	SetPort(c.Port)
