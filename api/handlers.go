@@ -209,3 +209,62 @@ func ShowTissue(c *gin.Context) {
 	}
 	RenderJSON(c, indent, tissue)
 }
+
+// IndexDrug is a handler for '/drugs' endpoint.
+// Lists all drugs in database (paginated or non-paginated).
+func IndexDrug(c *gin.Context) {
+	var drugs Drugs
+	// Optional parameters
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
+	if listAll {
+		err := drugs.List()
+		if err != nil {
+			LogInternalServerError(c)
+			return
+		}
+		c.Writer.Header().Set("Total-Records", strconv.Itoa(len(drugs)))
+		RenderJSON(c, indent, drugs)
+		return
+	}
+	err := drugs.ListPaginated(page, limit)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	total, err := Count("drugs")
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	WriteHeader(c, "/drugs", page, limit, total)
+	RenderJSONwithMeta(c, indent, page, limit, total, include, drugs)
+}
+
+// ShowDrug is a handler for '/drugs/:id' endpoint.
+// Returns a single drug.
+func ShowDrug(c *gin.Context) {
+	var drug Drug
+	// Optional parameters
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	typ := c.DefaultQuery("type", "id")
+	id := c.Param("id")
+	err := drug.Find(id, typ)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	err = drug.Annotate()
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, drug)
+}

@@ -29,4 +29,7 @@ var routes = Routes{
 
 	Route{GET, "/tissues", IndexTissue},
 	Route{GET, "/tissues/:id", ShowTissue},
+
+	Route{GET, "/drugs", IndexDrug},
+	Route{GET, "/drugs/:id", ShowDrug},
 }
