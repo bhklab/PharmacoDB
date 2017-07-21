@@ -15,6 +15,8 @@ func Init(c *Context) {
 	SetPort(c.Port)
 	SetVersion(c.Version)
 
+	SetDB()
+
 	router := gin.Default()
 
 	v := router.Group(Version())

@@ -1,16 +1,16 @@
-package db
+package api
 
 import (
 	"database/sql"
 	"os"
 
-	"github.com/bhklab/pharmacodb/api"
+	raven "github.com/getsentry/raven-go"
 	_ "github.com/go-sql-driver/mysql" // go mysql driver
 )
 
-// AuthInfo contains username, password and database name information.
+// DBAuthInfo contains username, password and database name information.
 // Used when making database connection.
-type AuthInfo struct {
+type DBAuthInfo struct {
 	User string // local mysql user
 	Pass string // local mysql password
 	Name string // database name
@@ -18,11 +18,11 @@ type AuthInfo struct {
 
 // DB is a global datastore for database
 // connection credential information.
-var DB AuthInfo
+var DB DBAuthInfo
 
-// Set updates DB with local connection information
+// SetDB updates DB with local connection information
 // using enviroment variables.
-func Set() {
+func SetDB() {
 	if DB.User = os.Getenv("DB_USER_V1"); DB.User == "" {
 		panic("OS enviroment variable 'DB_USER_V1' is missing")
 	}
@@ -34,19 +34,19 @@ func Set() {
 	}
 }
 
-// Cred returns dataSourceName string.
-func Cred() string {
+// cred returns dataSourceName credentials string.
+func cred() string {
 	return DB.User + ":" + DB.Pass + "@tcp(127.0.0.1:3306)/" + DB.Name
 }
 
-// Init prepares database abstraction for later use.
-func Init() (*sql.DB, error) {
-	db, err := sql.Open("mysql", Cred())
+// InitDB prepares database abstraction for later use.
+func InitDB() (*sql.DB, error) {
+	db, err := sql.Open("mysql", cred())
 	if err != nil {
-		api.LogPrivateError(err)
+		raven.CaptureError(err, nil)
 	}
 	if err = db.Ping(); err != nil {
-		api.LogPrivateError(err)
+		raven.CaptureError(err, nil)
 	}
 	return db, err
 }
