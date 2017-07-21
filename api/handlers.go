@@ -268,3 +268,57 @@ func ShowDrug(c *gin.Context) {
 	}
 	RenderJSON(c, indent, drug)
 }
+
+// IndexDataset is a handler for '/datasets' endpoint.
+// Lists all datasets in database (paginated or non-paginated).
+func IndexDataset(c *gin.Context) {
+	var datasets Datasets
+	// Optional parameters
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
+	if listAll {
+		err := datasets.List()
+		if err != nil {
+			LogInternalServerError(c)
+			return
+		}
+		c.Writer.Header().Set("Total-Records", strconv.Itoa(len(datasets)))
+		RenderJSON(c, indent, datasets)
+		return
+	}
+	err := datasets.ListPaginated(page, limit)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	total, err := Count("datasets")
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	WriteHeader(c, "/datasets", page, limit, total)
+	RenderJSONwithMeta(c, indent, page, limit, total, include, datasets)
+}
+
+// ShowDataset is a handler for '/datasets/:id' endpoint.
+// Returns a single dataset.
+func ShowDataset(c *gin.Context) {
+	var dataset Dataset
+	// Optional parameters
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	typ := c.DefaultQuery("type", "id")
+	id := c.Param("id")
+	err := dataset.Find(id, typ)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	RenderJSON(c, indent, dataset)
+}
