@@ -23,16 +23,16 @@ func LogPublicError(c *gin.Context, code int, message string) {
 }
 
 // LogInternalServerError writes error message with status code http.StatusInternalServerError
-func LogInternalServerError(c *gin.Context, message string) {
-	LogPublicError(c, http.StatusInternalServerError, message)
+func LogInternalServerError(c *gin.Context) {
+	LogPublicError(c, http.StatusInternalServerError, "Internal Server Error")
 }
 
 // LogNotFoundError writes error message with status code http.StatusNotFound
-func LogNotFoundError(c *gin.Context, message string) {
-	LogPublicError(c, http.StatusNotFound, message)
+func LogNotFoundError(c *gin.Context) {
+	LogPublicError(c, http.StatusNotFound, "Not Found")
 }
 
 // LogBadRequestError writes error message with status code http.StatusBadRequest
-func LogBadRequestError(c *gin.Context, message string) {
-	LogPublicError(c, http.StatusBadRequest, message)
+func LogBadRequestError(c *gin.Context) {
+	LogPublicError(c, http.StatusBadRequest, "Bad Request")
 }
