@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// List updates a list of tissues without pagination.
+// List updates receiver with a list of all tissues without pagination.
 func (tissues *Tissues) List() error {
 	var tissue Tissue
 	db, err := InitDB()
@@ -30,7 +30,7 @@ func (tissues *Tissues) List() error {
 	return nil
 }
 
-// ListPaginated returns a list of paginated tissues.
+// ListPaginated updates receiver with a list of tissues using pagination.
 func (tissues *Tissues) ListPaginated(page int, limit int) error {
 	var tissue Tissue
 	db, err := InitDB()
@@ -56,7 +56,7 @@ func (tissues *Tissues) ListPaginated(page int, limit int) error {
 	return nil
 }
 
-// Find finds and updates tissue with a record for a Tissue.
+// Find updates receiver with a record for a single tissue.
 func (tissue *Tissue) Find(id string, typ string) error {
 	var query string
 	db, err := InitDB()
@@ -80,7 +80,7 @@ func (tissue *Tissue) Find(id string, typ string) error {
 	return nil
 }
 
-// Annotate adds annotations to a tissue.
+// Annotate adds annotations to tissue.
 func (tissue *Tissue) Annotate() error {
 	var (
 		annotation     Annotation

@@ -130,7 +130,6 @@ func IndexCell(c *gin.Context) {
 // Returns a single cell line.
 func ShowCell(c *gin.Context) {
 	var cell Cell
-	// Optional parameters
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 	typ := c.DefaultQuery("type", "id")
 	id := c.Param("id")
@@ -155,7 +154,6 @@ func ShowCell(c *gin.Context) {
 // Lists all tissues in database (paginated or non-paginated).
 func IndexTissue(c *gin.Context) {
 	var tissues Tissues
-	// Optional parameters
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
@@ -189,7 +187,6 @@ func IndexTissue(c *gin.Context) {
 // Returns a single tissue.
 func ShowTissue(c *gin.Context) {
 	var tissue Tissue
-	// Optional parameters
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 	typ := c.DefaultQuery("type", "id")
 	id := c.Param("id")
@@ -214,7 +211,6 @@ func ShowTissue(c *gin.Context) {
 // Lists all drugs in database (paginated or non-paginated).
 func IndexDrug(c *gin.Context) {
 	var drugs Drugs
-	// Optional parameters
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
@@ -248,7 +244,6 @@ func IndexDrug(c *gin.Context) {
 // Returns a single drug.
 func ShowDrug(c *gin.Context) {
 	var drug Drug
-	// Optional parameters
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 	typ := c.DefaultQuery("type", "id")
 	id := c.Param("id")
@@ -273,7 +268,6 @@ func ShowDrug(c *gin.Context) {
 // Lists all datasets in database (paginated or non-paginated).
 func IndexDataset(c *gin.Context) {
 	var datasets Datasets
-	// Optional parameters
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
 	listAll, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
@@ -307,7 +301,6 @@ func IndexDataset(c *gin.Context) {
 // Returns a single dataset.
 func ShowDataset(c *gin.Context) {
 	var dataset Dataset
-	// Optional parameters
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 	typ := c.DefaultQuery("type", "id")
 	id := c.Param("id")
@@ -321,4 +314,53 @@ func ShowDataset(c *gin.Context) {
 		return
 	}
 	RenderJSON(c, indent, dataset)
+}
+
+// IndexExperiment is a handler for '/experiments' endpoint.
+// Lists all experiments in database, with pagination only.
+func IndexExperiment(c *gin.Context) {
+	var experiments Experiments
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
+	// Set max limit per_page to 1000
+	if limit > 1000 {
+		limit = 1000
+	}
+	err := experiments.ListPaginated(page, limit)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	total, err := Count("experiments")
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	WriteHeader(c, "/experiments", page, limit, total)
+	RenderJSONwithMeta(c, indent, page, limit, total, include, experiments)
+}
+
+// ShowExperiment is a handler for '/experiments/:id' endpoint.
+// Returns a single experiment with associated dose/response data.
+func ShowExperiment(c *gin.Context) {
+	var experiment Experiment
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	id := c.Param("id")
+	err := experiment.Find(id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	err = experiment.DoseResponse()
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, experiment)
 }

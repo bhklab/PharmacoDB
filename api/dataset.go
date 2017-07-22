@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// List updates a list of datasets without pagination.
+// List updates receiver with a list of all datasets without pagination.
 func (datasets *Datasets) List() error {
 	var dataset Dataset
 	db, err := InitDB()
@@ -30,7 +30,7 @@ func (datasets *Datasets) List() error {
 	return nil
 }
 
-// ListPaginated returns a list of paginated datasets.
+// ListPaginated updates receiver with a list of datasets using pagination.
 func (datasets *Datasets) ListPaginated(page int, limit int) error {
 	var dataset Dataset
 	db, err := InitDB()
@@ -56,7 +56,7 @@ func (datasets *Datasets) ListPaginated(page int, limit int) error {
 	return nil
 }
 
-// Find finds and updates dataset with a record for a Dataset.
+// Find updates receiver with a record for a single dataset.
 func (dataset *Dataset) Find(id string, typ string) error {
 	var query string
 	db, err := InitDB()

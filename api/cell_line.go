@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// List updates cells with a list of all cell lines without pagination.
+// List updates receiver with a list of all cell lines without pagination.
 func (cells *Cells) List() error {
 	var cell Cell
 	db, err := InitDB()
@@ -30,7 +30,7 @@ func (cells *Cells) List() error {
 	return nil
 }
 
-// ListPaginated returns a list of paginated cell lines.
+// ListPaginated updates receiver with a list of cell lines using pagination.
 func (cells *Cells) ListPaginated(page int, limit int) error {
 	var cell Cell
 	db, err := InitDB()
@@ -56,7 +56,7 @@ func (cells *Cells) ListPaginated(page int, limit int) error {
 	return nil
 }
 
-// Find finds and updates cell with a record for a cell line.
+// Find updates receiver with a record for a single cell line.
 func (cell *Cell) Find(id string, typ string) error {
 	var query string
 	db, err := InitDB()
@@ -84,7 +84,7 @@ func (cell *Cell) Find(id string, typ string) error {
 	return nil
 }
 
-// Annotate adds annotations to a cell line.
+// Annotate adds annotations to cell.
 func (cell *Cell) Annotate() error {
 	var (
 		annotation     Annotation

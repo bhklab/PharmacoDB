@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// List updates a list of drugs without pagination.
+// List updates receiver with a list of all drugs without pagination.
 func (drugs *Drugs) List() error {
 	var drug Drug
 	db, err := InitDB()
@@ -30,7 +30,7 @@ func (drugs *Drugs) List() error {
 	return nil
 }
 
-// ListPaginated returns a list of paginated drugs.
+// ListPaginated updates receiver with a list of drugs using pagination.
 func (drugs *Drugs) ListPaginated(page int, limit int) error {
 	var drug Drug
 	db, err := InitDB()
@@ -56,7 +56,7 @@ func (drugs *Drugs) ListPaginated(page int, limit int) error {
 	return nil
 }
 
-// Find finds and updates drug with a record for a Drug.
+// Find updates receiver with a record for a single Drug.
 func (drug *Drug) Find(id string, typ string) error {
 	var query string
 	db, err := InitDB()
@@ -80,7 +80,7 @@ func (drug *Drug) Find(id string, typ string) error {
 	return nil
 }
 
-// Annotate adds annotations to a drug.
+// Annotate adds annotations to drug.
 func (drug *Drug) Annotate() error {
 	var (
 		annotation     Annotation
