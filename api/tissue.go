@@ -3,7 +3,19 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 )
+
+// TD models experiment data for
+// a tissue and a drug.
+type TD struct {
+	Drug     Drug     `json:"drug"`
+	Datasets []string `json:"datasets"`
+	Count    int      `json:"experiment_count"`
+}
+
+// TDS is a collection of TD.
+type TDS []TD
 
 // List updates receiver with a list of all tissues without pagination.
 func (tissues *Tissues) List() error {
@@ -160,4 +172,44 @@ func (tissue *Tissue) Cells(page int, limit int) (Cells, int, error) {
 		return cells, count, err
 	}
 	return cells, count, nil
+}
+
+// Drugs returns a paginated list of all distinct drugs which have been tested with tissue, along with
+// experiments count and an array of datasets that tested each cell/drug combination.
+func (tissue *Tissue) Drugs(page int, limit int) (TDS, int, error) {
+	var (
+		tissueDrug  TD
+		tissueDrugs TDS
+		datasets    string
+		count       int
+	)
+	db, err := InitDB()
+	defer db.Close()
+	if err != nil {
+		return tissueDrugs, count, err
+	}
+	s := (page - 1) * limit
+	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS d.drug_id, d.drug_name, GROUP_CONCAT(DISTINCT da.dataset_name) AS datasets, COUNT(*) AS experiment_count FROM experiments e JOIN drugs d ON d.drug_id = e.drug_id JOIN datasets da ON da.dataset_id = e.dataset_id WHERE e.tissue_id = ? GROUP BY e.drug_id ORDER BY experiment_count DESC LIMIT %d,%d;", s, limit)
+	rows, err := db.Query(query, tissue.ID)
+	defer rows.Close()
+	if err != nil {
+		LogPrivateError(err)
+		return tissueDrugs, count, err
+	}
+	for rows.Next() {
+		err = rows.Scan(&tissueDrug.Drug.ID, &tissueDrug.Drug.Name, &datasets, &tissueDrug.Count)
+		if err != nil {
+			LogPrivateError(err)
+			return tissueDrugs, count, err
+		}
+		tissueDrug.Datasets = strings.Split(datasets, ",")
+		tissueDrugs = append(tissueDrugs, tissueDrug)
+	}
+	row := db.QueryRow("SELECT FOUND_ROWS();")
+	err = row.Scan(&count)
+	if err != nil {
+		LogPrivateError(err)
+		return tissueDrugs, count, err
+	}
+	return tissueDrugs, count, nil
 }

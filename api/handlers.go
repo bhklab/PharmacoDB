@@ -254,7 +254,7 @@ func TissueCells(c *gin.Context) {
 		}
 		return
 	}
-	tissuecells, total, err := tissue.Cells(page, limit)
+	tissueCells, total, err := tissue.Cells(page, limit)
 	if err != nil {
 		LogInternalServerError(c)
 		return
@@ -263,7 +263,37 @@ func TissueCells(c *gin.Context) {
 		LogNotFoundError(c)
 		return
 	}
-	RenderJSONwithMeta(c, indent, page, limit, total, include, tissuecells)
+	RenderJSONwithMeta(c, indent, page, limit, total, include, tissueCells)
+}
+
+// TissueDrugs is a handler for '/tissues/:id/drugs' endpoint.
+// Lists all distinct drugs where a tissue of interest has been tested,
+// along with datasets and experiment count.
+func TissueDrugs(c *gin.Context) {
+	var tissue Tissue
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
+	err := tissue.Find(c.Param("id"), c.DefaultQuery("type", "id"))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	tissueDrugs, total, err := tissue.Drugs(page, limit)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	if total == 0 {
+		LogNotFoundError(c)
+		return
+	}
+	RenderJSONwithMeta(c, indent, page, limit, total, include, tissueDrugs)
 }
 
 // IndexDrug is a handler for '/drugs' endpoint.

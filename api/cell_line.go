@@ -145,15 +145,15 @@ func (cell *Cell) Annotate() error {
 // experiments count and an array of datasets that tested each cell/drug combination.
 func (cell *Cell) Drugs(page int, limit int) (CDS, int, error) {
 	var (
-		celldrug  CD
-		celldrugs CDS
+		cellDrug  CD
+		cellDrugs CDS
 		datasets  string
 		count     int
 	)
 	db, err := InitDB()
 	defer db.Close()
 	if err != nil {
-		return celldrugs, count, err
+		return cellDrugs, count, err
 	}
 	s := (page - 1) * limit
 	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS d.drug_id, d.drug_name, GROUP_CONCAT(DISTINCT da.dataset_name) AS datasets, COUNT(*) AS experiment_count FROM experiments e JOIN drugs d ON d.drug_id = e.drug_id JOIN datasets da ON da.dataset_id = e.dataset_id WHERE e.cell_id = ? GROUP BY e.drug_id ORDER BY experiment_count DESC LIMIT %d,%d;", s, limit)
@@ -161,22 +161,22 @@ func (cell *Cell) Drugs(page int, limit int) (CDS, int, error) {
 	defer rows.Close()
 	if err != nil {
 		LogPrivateError(err)
-		return celldrugs, count, err
+		return cellDrugs, count, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&celldrug.Drug.ID, &celldrug.Drug.Name, &datasets, &celldrug.Count)
+		err = rows.Scan(&cellDrug.Drug.ID, &cellDrug.Drug.Name, &datasets, &cellDrug.Count)
 		if err != nil {
 			LogPrivateError(err)
-			return celldrugs, count, err
+			return cellDrugs, count, err
 		}
-		celldrug.Datasets = strings.Split(datasets, ",")
-		celldrugs = append(celldrugs, celldrug)
+		cellDrug.Datasets = strings.Split(datasets, ",")
+		cellDrugs = append(cellDrugs, cellDrug)
 	}
 	row := db.QueryRow("SELECT FOUND_ROWS();")
 	err = row.Scan(&count)
 	if err != nil {
 		LogPrivateError(err)
-		return celldrugs, count, err
+		return cellDrugs, count, err
 	}
-	return celldrugs, count, nil
+	return cellDrugs, count, nil
 }
