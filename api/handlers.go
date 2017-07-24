@@ -342,7 +342,7 @@ func IndexExperiment(c *gin.Context) {
 	RenderJSONwithMeta(c, indent, page, limit, total, include, experiments)
 }
 
-// ShowExperiment is a handler for '/experiments/:id' endpoint.
+// ShowExperiment is a handler for '/experiments/i/:id' endpoint.
 // Returns a single experiment with associated dose/response data.
 func ShowExperiment(c *gin.Context) {
 	var experiment Experiment
@@ -363,4 +363,24 @@ func ShowExperiment(c *gin.Context) {
 		return
 	}
 	RenderJSON(c, indent, experiment)
+}
+
+// CellDrugExperiments is a handler for '/experiments/x/:cell_id/:drug_id' endpoint.
+// Lists all experiments (including dose/response data) for a cell line and drug combination.
+func CellDrugExperiments(c *gin.Context) {
+	var experiments Experiments
+	cellID := c.Param("cell_id")
+	drugID := c.Param("drug_id")
+	typ := c.DefaultQuery("type", "id")
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	err := experiments.CellDrugCombination(cellID, drugID, typ)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	RenderJSON(c, indent, experiments)
 }

@@ -74,3 +74,45 @@ func (experiment *Experiment) DoseResponse() error {
 	}
 	return nil
 }
+
+// CellDrugCombination updates receiver with a list of all experiments where a cell line and a drug have been tested.
+func (experiments *Experiments) CellDrugCombination(cellID string, drugID string, typ string) error {
+	var (
+		cell Cell
+		drug Drug
+	)
+	db, err := InitDB()
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+	err = cell.Find(cellID, typ)
+	if err != nil {
+		return err
+	}
+	err = drug.Find(drugID, typ)
+	if err != nil {
+		return err
+	}
+	query := "SELECT e.experiment_id, t.tissue_id, t.tissue_name, da.dataset_id, da.dataset_name FROM experiments e JOIN tissues t ON t.tissue_id = e.tissue_id JOIN datasets da ON da.dataset_id = e.dataset_id WHERE e.cell_id = ? AND e.drug_id = ?;"
+	rows, _ := db.Query(query, cell.ID, drug.ID)
+	defer rows.Close()
+	for rows.Next() {
+		var experiment Experiment
+		err = rows.Scan(&experiment.ID, &experiment.Tissue.ID, &experiment.Tissue.Name, &experiment.Dataset.ID, &experiment.Dataset.Name)
+		if err != nil {
+			LogPrivateError(err)
+			return err
+		}
+		experiment.Cell.ID = cell.ID
+		experiment.Cell.Name = cell.Name
+		experiment.Drug = drug
+		err = experiment.DoseResponse()
+		if err != nil {
+			LogPrivateError(err)
+			return err
+		}
+		*experiments = append(*experiments, experiment)
+	}
+	return nil
+}

@@ -37,5 +37,7 @@ var routes = Routes{
 	Route{GET, "/datasets/:id", ShowDataset},
 
 	Route{GET, "/experiments", IndexExperiment},
-	Route{GET, "/experiments/id/:id", ShowExperiment},
+	Route{GET, "/experiments/i/:id", ShowExperiment},
+	Route{GET, "/experiments/x/:cell_id/:drug_id", CellDrugExperiments},
+	Route{GET, "/experiments/y/:cell_id/:dataset_id", CellDrugExperiments},
 }
