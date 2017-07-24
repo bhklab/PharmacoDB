@@ -353,6 +353,36 @@ func ShowDrug(c *gin.Context) {
 	RenderJSON(c, indent, drug)
 }
 
+// DrugCells is a handler for '/drugs/:id/cell_lines' endpoint.
+// Lists all distinct cell lines where a drug of interest has been tested,
+// along with datasets and experiment count.
+func DrugCells(c *gin.Context) {
+	var drug Drug
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
+	err := drug.Find(c.Param("id"), c.DefaultQuery("type", "id"))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	drugCells, total, err := drug.Cells(page, limit)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	if total == 0 {
+		LogNotFoundError(c)
+		return
+	}
+	RenderJSONwithMeta(c, indent, page, limit, total, include, drugCells)
+}
+
 // IndexDataset is a handler for '/datasets' endpoint.
 // Lists all datasets in database (paginated or non-paginated).
 func IndexDataset(c *gin.Context) {
