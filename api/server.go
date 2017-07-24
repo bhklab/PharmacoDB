@@ -24,5 +24,8 @@ func Init(c *Context) {
 		v.Handle(route.Method, route.Endpoint, route.Handler)
 	}
 
+	// Respond with status code 400 (Bad Request) if no routers match the request url.
+	router.NoRoute(func(c *gin.Context) { LogBadRequestError(c) })
+
 	router.Run(":" + Port())
 }
