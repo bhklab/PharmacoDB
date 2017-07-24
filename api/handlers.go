@@ -384,3 +384,23 @@ func CellDrugExperiments(c *gin.Context) {
 	}
 	RenderJSON(c, indent, experiments)
 }
+
+// CellDatasetExperiments is a handler for '/experiments/y/:cell_id/:dataset_id' endpoint.
+// Lists all experiments (including dose/response data) for a cell line and dataset combination.
+func CellDatasetExperiments(c *gin.Context) {
+	var experiments Experiments
+	cellID := c.Param("cell_id")
+	datasetID := c.Param("dataset_id")
+	typ := c.DefaultQuery("type", "id")
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	err := experiments.CellDatasetCombination(cellID, datasetID, typ)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	RenderJSON(c, indent, experiments)
+}
