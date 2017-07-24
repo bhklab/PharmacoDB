@@ -3,7 +3,19 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 )
+
+// CD models experiment data for
+// a cell line and a drug.
+type CD struct {
+	Drug     Drug     `json:"drug"`
+	Datasets []string `json:"datasets"`
+	Count    int      `json:"experiment_count"`
+}
+
+// CDS is a collection of CD.
+type CDS []CD
 
 // List updates receiver with a list of all cell lines without pagination.
 func (cells *Cells) List() error {
@@ -127,4 +139,44 @@ func (cell *Cell) Annotate() error {
 	}
 	cell.Annotations = annotations
 	return nil
+}
+
+// Drugs returns a paginated list of all distinct drugs which have been tested with cell, along with
+// experiments count and an array of datasets that tested each cell/drug combination.
+func (cell *Cell) Drugs(page int, limit int) (CDS, int, error) {
+	var (
+		celldrug  CD
+		celldrugs CDS
+		datasets  string
+		count     int
+	)
+	db, err := InitDB()
+	defer db.Close()
+	if err != nil {
+		return celldrugs, count, err
+	}
+	s := (page - 1) * limit
+	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS d.drug_id, d.drug_name, GROUP_CONCAT(DISTINCT da.dataset_name) AS datasets, COUNT(*) AS experiment_count FROM experiments e JOIN drugs d ON d.drug_id = e.drug_id JOIN datasets da ON da.dataset_id = e.dataset_id WHERE e.cell_id = ? GROUP BY e.drug_id ORDER BY experiment_count DESC LIMIT %d,%d;", s, limit)
+	rows, err := db.Query(query, cell.ID)
+	defer rows.Close()
+	if err != nil {
+		LogPrivateError(err)
+		return celldrugs, count, err
+	}
+	for rows.Next() {
+		err = rows.Scan(&celldrug.Drug.ID, &celldrug.Drug.Name, &datasets, &celldrug.Count)
+		if err != nil {
+			LogPrivateError(err)
+			return celldrugs, count, err
+		}
+		celldrug.Datasets = strings.Split(datasets, ",")
+		celldrugs = append(celldrugs, celldrug)
+	}
+	row := db.QueryRow("SELECT FOUND_ROWS();")
+	err = row.Scan(&count)
+	if err != nil {
+		LogPrivateError(err)
+		return celldrugs, count, err
+	}
+	return celldrugs, count, nil
 }
