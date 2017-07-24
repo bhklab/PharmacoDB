@@ -19,6 +19,8 @@ func Init(c *Context) {
 
 	router := gin.Default()
 
+	router.StaticFile("/favicon.ico", "./static/images/favicon.png")
+
 	v := router.Group(Version())
 	for _, route := range routes {
 		v.Handle(route.Method, route.Endpoint, route.Handler)
