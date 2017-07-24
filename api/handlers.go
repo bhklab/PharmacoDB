@@ -601,9 +601,16 @@ func ShowExperiment(c *gin.Context) {
 	RenderJSON(c, indent, experiment)
 }
 
-// CellDrugExperiments is a handler for '/intersections/a/:cell_id/:drug_id' endpoint.
+// IndexIntersection lists all available intersections in API.
+func IndexIntersection(c *gin.Context) {
+	var intersections Intersections
+	intersections.List()
+	RenderJSON(c, true, intersections)
+}
+
+// CellDrugIntersections is a handler for '/intersections/a/:cell_id/:drug_id' endpoint.
 // Lists all experiments (including dose/response data) for a cell line and drug combination.
-func CellDrugExperiments(c *gin.Context) {
+func CellDrugIntersections(c *gin.Context) {
 	var experiments Experiments
 	cellID := c.Param("cell_id")
 	drugID := c.Param("drug_id")
@@ -621,9 +628,9 @@ func CellDrugExperiments(c *gin.Context) {
 	RenderJSON(c, indent, experiments)
 }
 
-// CellDatasetExperiments is a handler for '/intersections/b/:cell_id/:dataset_id' endpoint.
+// CellDatasetIntersections is a handler for '/intersections/b/:cell_id/:dataset_id' endpoint.
 // Lists all experiments (including dose/response data) for a cell line and dataset combination.
-func CellDatasetExperiments(c *gin.Context) {
+func CellDatasetIntersections(c *gin.Context) {
 	var experiments Experiments
 	cellID := c.Param("cell_id")
 	datasetID := c.Param("dataset_id")
