@@ -578,7 +578,7 @@ func IndexExperiment(c *gin.Context) {
 	RenderJSONwithMeta(c, indent, page, limit, total, include, experiments)
 }
 
-// ShowExperiment is a handler for '/experiments/i/:id' endpoint.
+// ShowExperiment is a handler for '/experiments/:id' endpoint.
 // Returns a single experiment with associated dose/response data.
 func ShowExperiment(c *gin.Context) {
 	var experiment Experiment
@@ -601,7 +601,7 @@ func ShowExperiment(c *gin.Context) {
 	RenderJSON(c, indent, experiment)
 }
 
-// CellDrugExperiments is a handler for '/experiments/x/:cell_id/:drug_id' endpoint.
+// CellDrugExperiments is a handler for '/intersections/a/:cell_id/:drug_id' endpoint.
 // Lists all experiments (including dose/response data) for a cell line and drug combination.
 func CellDrugExperiments(c *gin.Context) {
 	var experiments Experiments
@@ -621,7 +621,7 @@ func CellDrugExperiments(c *gin.Context) {
 	RenderJSON(c, indent, experiments)
 }
 
-// CellDatasetExperiments is a handler for '/experiments/y/:cell_id/:dataset_id' endpoint.
+// CellDatasetExperiments is a handler for '/intersections/b/:cell_id/:dataset_id' endpoint.
 // Lists all experiments (including dose/response data) for a cell line and dataset combination.
 func CellDatasetExperiments(c *gin.Context) {
 	var experiments Experiments
