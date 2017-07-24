@@ -1,8 +1,15 @@
 #!/bin/bash
 
-package="github.com/bhklab/PharmacoDB/api/initialize/main.go"
+package="../api/initialize/api.go"
 
-platforms=("linux/amd64" "linux/arm" "linux/386" "windows/amd64" "windows/386" "darwin/amd64" "netbsd/amd64" "openbsd/amd64" "solaris/amd64" "android/arm")
+platforms=("linux/amd64"
+           "linux/arm"
+           "linux/386"
+           "windows/amd64"
+           "windows/386"
+           "darwin/amd64"
+           "netbsd/amd64"
+           "openbsd/amd64")
 
 for platform in "${platforms[@]}"
 do
