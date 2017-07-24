@@ -465,6 +465,93 @@ func ShowDataset(c *gin.Context) {
 	RenderJSON(c, indent, dataset)
 }
 
+// DatasetCells is a handler for '/datasets/:id/cell_lines' endpoint.
+// Lists all distinct cell lines which have been tested in a dataset of interest.
+func DatasetCells(c *gin.Context) {
+	var dataset Dataset
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
+	err := dataset.Find(c.Param("id"), c.DefaultQuery("type", "id"))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	datasetCells, total, err := dataset.Cells(page, limit)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	if total == 0 {
+		LogNotFoundError(c)
+		return
+	}
+	RenderJSONwithMeta(c, indent, page, limit, total, include, datasetCells)
+}
+
+// DatasetTissues is a handler for '/datasets/:id/tissues' endpoint.
+// Lists all distinct tissues that have been tested with a dataset of interest.
+func DatasetTissues(c *gin.Context) {
+	var dataset Dataset
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
+	err := dataset.Find(c.Param("id"), c.DefaultQuery("type", "id"))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	datasetTissues, total, err := dataset.Tissues(page, limit)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	if total == 0 {
+		LogNotFoundError(c)
+		return
+	}
+	RenderJSONwithMeta(c, indent, page, limit, total, include, datasetTissues)
+}
+
+// DatasetDrugs is a handler for '/datasets/:id/drugs' endpoint.
+// Lists all distinct drugs which have been tested in a dataset of interest.
+func DatasetDrugs(c *gin.Context) {
+	var dataset Dataset
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("per_page", "30"))
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	include := c.Query("include")
+	err := dataset.Find(c.Param("id"), c.DefaultQuery("type", "id"))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			LogNotFoundError(c)
+		} else {
+			LogInternalServerError(c)
+		}
+		return
+	}
+	datasetDrugs, total, err := dataset.Drugs(page, limit)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	if total == 0 {
+		LogNotFoundError(c)
+		return
+	}
+	RenderJSONwithMeta(c, indent, page, limit, total, include, datasetDrugs)
+}
+
 // IndexExperiment is a handler for '/experiments' endpoint.
 // Lists all experiments in database, with pagination only.
 func IndexExperiment(c *gin.Context) {
