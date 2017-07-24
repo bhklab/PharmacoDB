@@ -124,3 +124,40 @@ func (tissue *Tissue) Annotate() error {
 	tissue.Annotations = annotations
 	return nil
 }
+
+// Cells returns a paginated list of all cell lines of tissue type.
+func (tissue *Tissue) Cells(page int, limit int) (Cells, int, error) {
+	var (
+		cell  Cell
+		cells Cells
+		count int
+	)
+	db, err := InitDB()
+	defer db.Close()
+	if err != nil {
+		return cells, count, err
+	}
+	s := (page - 1) * limit
+	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS cell_id, cell_name FROM cells WHERE tissue_id = ? LIMIT %d,%d;", s, limit)
+	rows, err := db.Query(query, tissue.ID)
+	defer rows.Close()
+	if err != nil {
+		LogPrivateError(err)
+		return cells, count, err
+	}
+	for rows.Next() {
+		err = rows.Scan(&cell.ID, &cell.Name)
+		if err != nil {
+			LogPrivateError(err)
+			return cells, count, err
+		}
+		cells = append(cells, cell)
+	}
+	row := db.QueryRow("SELECT FOUND_ROWS();")
+	err = row.Scan(&count)
+	if err != nil {
+		LogPrivateError(err)
+		return cells, count, err
+	}
+	return cells, count, nil
+}
