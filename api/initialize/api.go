@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/bhklab/pharmacodb/api"
+	"github.com/bhklab/PharmacoDB/api"
 )
 
 func main() {
