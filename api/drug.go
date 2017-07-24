@@ -17,6 +17,17 @@ type DC struct {
 // DCS is a collection of DCT.
 type DCS []DC
 
+// DT models experiment data for
+// a drug and a tissue.
+type DT struct {
+	Tissue   Tissue   `json:"tissue"`
+	Datasets []string `json:"datasets"`
+	Count    int      `json:"experiment_count"`
+}
+
+// DTS is a collection of DT.
+type DTS []DT
+
 // List updates receiver with a list of all drugs without pagination.
 func (drugs *Drugs) List() error {
 	var drug Drug
@@ -175,4 +186,44 @@ func (drug *Drug) Cells(page int, limit int) (DCS, int, error) {
 		return drugCells, count, err
 	}
 	return drugCells, count, nil
+}
+
+// Tissues returns a paginated list of all distinct tissues which have been tested with drug, along with
+// experiments count and an array of datasets that tested each cell/drug combination.
+func (drug *Drug) Tissues(page int, limit int) (DTS, int, error) {
+	var (
+		drugTissue  DT
+		drugTissues DTS
+		datasets    string
+		count       int
+	)
+	db, err := InitDB()
+	defer db.Close()
+	if err != nil {
+		return drugTissues, count, err
+	}
+	s := (page - 1) * limit
+	query := fmt.Sprintf("SELECT SQL_CALC_FOUND_ROWS t.tissue_id, t.tissue_name, GROUP_CONCAT(DISTINCT da.dataset_name) AS datasets, COUNT(*) AS experiment_count FROM experiments e JOIN tissues t ON t.tissue_id = e.tissue_id JOIN datasets da ON da.dataset_id = e.dataset_id WHERE e.drug_id = ? GROUP BY e.tissue_id ORDER BY experiment_count DESC LIMIT %d,%d;", s, limit)
+	rows, err := db.Query(query, drug.ID)
+	defer rows.Close()
+	if err != nil {
+		LogPrivateError(err)
+		return drugTissues, count, err
+	}
+	for rows.Next() {
+		err = rows.Scan(&drugTissue.Tissue.ID, &drugTissue.Tissue.Name, &datasets, &drugTissue.Count)
+		if err != nil {
+			LogPrivateError(err)
+			return drugTissues, count, err
+		}
+		drugTissue.Datasets = strings.Split(datasets, ",")
+		drugTissues = append(drugTissues, drugTissue)
+	}
+	row := db.QueryRow("SELECT FOUND_ROWS();")
+	err = row.Scan(&count)
+	if err != nil {
+		LogPrivateError(err)
+		return drugTissues, count, err
+	}
+	return drugTissues, count, nil
 }
