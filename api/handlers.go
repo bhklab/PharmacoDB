@@ -601,14 +601,15 @@ func ShowExperiment(c *gin.Context) {
 	RenderJSON(c, indent, experiment)
 }
 
-// IndexIntersection lists all available intersections in API.
+// IndexIntersection is a handler for '/intersections' endpoint.
+// Lists all available intersections in API.
 func IndexIntersection(c *gin.Context) {
 	var intersections Intersections
 	intersections.List()
 	RenderJSON(c, true, intersections)
 }
 
-// CellDrugIntersection is a handler for '/intersections/a/:cell_id/:drug_id' endpoint.
+// CellDrugIntersection is a handler for '/intersections/1/:cell_id/:drug_id' endpoint.
 // Lists all experiments (including dose/response data) for a cell line and drug combination.
 func CellDrugIntersection(c *gin.Context) {
 	var experiments Experiments
@@ -628,7 +629,7 @@ func CellDrugIntersection(c *gin.Context) {
 	RenderJSON(c, indent, experiments)
 }
 
-// CellDatasetIntersection is a handler for '/intersections/b/:cell_id/:dataset_id' endpoint.
+// CellDatasetIntersection is a handler for '/intersections/2/:cell_id/:dataset_id' endpoint.
 // Lists all experiments (including dose/response data) for a cell line and dataset combination.
 func CellDatasetIntersection(c *gin.Context) {
 	var experiments Experiments

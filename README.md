@@ -62,46 +62,11 @@ Resource type: **`intersections`**
 - [**/intersections/1/{cell_id}/{drug_id}**](./doc/api)
 - [**/intersections/2/{cell_id}/{dataset_id}**](./doc/api)
 
-Here is a sample request/response using `curl`:
+Most endpoints contain options for further formatting query or output, including options such as: `indent`, `type`, `include`, `page`, `per_page`, `all` and more. Visit each endpoint link above to see a list of all the options that are available to that endpoint.
 
-```
-$ curl https://api.pharmacodb.com/v1/cell_lines/mcf7?type=name
+#### Running the API Locally
 
-{
-    "id": 895,
-    "name": "MCF7",
-    "tissue": {
-        "id": 8,
-        "name": "breast"
-    },
-    "annotations": [
-        {
-            "name": "MCF7",
-            "datasets": [
-                "CCLE",
-                "GDSC1000",
-                "GRAY",
-                "FIMM",
-                "CTRPv2"
-            ]
-        },
-        {
-            "name": "MCF-7",
-            "datasets": [
-                "gCSI"
-            ]
-        },
-        {
-            "name": "mcf7",
-            "datasets": [
-                "UHNBreast"
-            ]
-        }
-    ]
-}
-```
-
-Most common endpoint options include: `indent`, `type`, `include`, `page`, `per_page`, and `all`. Follow each endpoint link to see a list of all the options that are available to that endpoint.
+To setup and run the API locally, simply download and run one of the api builds already available in the directory [dist/api](dist/api). There are builds for various platforms, so pick the executable that corresponds to the OS you wish to run it on. 
 
 ## Web Application
 
