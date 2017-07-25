@@ -21,9 +21,4 @@ install:
   - go version
   - go env
 
-build_script:
-  - go build -o buildOutput\pharmacodb-api -i .
-
-artifacts:
-  - path: buildOutput/pharmacodb-api
-    name: binary
+build: off
