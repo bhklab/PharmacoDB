@@ -1,6 +1,7 @@
 **PharmacoDB** database and web-application. [http://pharmacodb.pmgenomics.ca/](http://pharmacodb.pmgenomics.ca/)
 
 [![Build Status](https://travis-ci.org/bhklab/PharmacoDB.svg?branch=master)](https://travis-ci.org/bhklab/PharmacoDB)
+[![Build status](https://ci.appveyor.com/api/projects/status/9bkwyiu0vkm66y1t?svg=true)](https://ci.appveyor.com/project/assefamaru/pharmacodb)
 [![GoDoc](https://godoc.org/github.com/bhklab/PharmacoDB/api?status.svg)](https://godoc.org/github.com/bhklab/PharmacoDB/api)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bhklab/PharmacoDB)](https://goreportcard.com/report/github.com/bhklab/PharmacoDB)
 
