@@ -9,6 +9,15 @@
 
 Application currently has two main components: [`api`](./api) and [`web-application`](./front-end).
 
+## Table of Contents
+
+- [**API**](#api)
+  - [Endpoints](#endpoints)
+  - [Running the API Locally](#running-the-api-locally)
+- [**Web Application**](#web-application)
+- [**Contributing**](#contributing)
+- [**License**](#license)
+
 ## API
 
 The PharmacoDB API contains curated data from a wide set of studies, including: [`CCLE`](http://software.broadinstitute.org/software/cprg/?q=node/11),
