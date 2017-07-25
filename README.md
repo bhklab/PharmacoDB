@@ -64,9 +64,9 @@ Resource type: **`intersections`**
 
 Most endpoints contain options for further formatting query or output, including options such as: `indent`, `type`, `include`, `page`, `per_page`, `all` and more. Visit each endpoint link above to see a list of all the options that are available to that endpoint.
 
-#### Running the API Locally
+### Running the API Locally
 
-To setup and run the API locally, simply download and run one of the api builds already available in the directory [dist/api](dist/api). There are builds for various platforms, so pick the executable that corresponds to the OS you wish to run it on. 
+To setup and run the API locally, simply download and run one of the api builds already available in the directory [dist/api](dist/api). There are builds for various platforms, so pick the executable that corresponds to the OS you wish to run it on.
 
 ## Web Application
 
