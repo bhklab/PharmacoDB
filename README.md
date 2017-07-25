@@ -25,42 +25,42 @@ Returned data is in `json` format.
 
 Resource type: **`cell lines`**
 
-- [**/cell_lines**](./doc/api)
-- [**/cell_lines/{id}**](./doc/api)
-- [**/cell_lines/{id}/drugs**](./doc/api)
+- [**/cell_lines**](./doc/api/template.md)
+- [**/cell_lines/{id}**](./doc/api/template.md)
+- [**/cell_lines/{id}/drugs**](./doc/api/template.md)
 
 Resource type: **`tissues`**
 
-- [**/tissues**](./doc/api)
-- [**/tissues/{id}**](./doc/api)
-- [**/tissues/{id}/cell_lines**](./doc/api)
-- [**/tissues/{id}/drugs**](./doc/api)
+- [**/tissues**](./doc/api/template.md)
+- [**/tissues/{id}**](./doc/api/template.md)
+- [**/tissues/{id}/cell_lines**](./doc/api/template.md)
+- [**/tissues/{id}/drugs**](./doc/api/template.md)
 
 Resource type: **`drugs`**
 
-- [**/drugs**](./doc/api)
-- [**/drugs/{id}**](./doc/api)
-- [**/drugs/{id}/cell_lines**](./doc/api)
-- [**/drugs/{id}/tissues**](./doc/api)
+- [**/drugs**](./doc/api/template.md)
+- [**/drugs/{id}**](./doc/api/template.md)
+- [**/drugs/{id}/cell_lines**](./doc/api/template.md)
+- [**/drugs/{id}/tissues**](./doc/api/template.md)
 
 Resource type: **`datasets`**
 
-- [**/datasets**](./doc/api)
-- [**/datasets/{id}**](./doc/api)
-- [**/datasets/{id}/cell_lines**](./doc/api)
-- [**/datasets/{id}/tissues**](./doc/api)
-- [**/datasets/{id}/drugs**](./doc/api)
+- [**/datasets**](./doc/api/template.md)
+- [**/datasets/{id}**](./doc/api/template.md)
+- [**/datasets/{id}/cell_lines**](./doc/api/template.md)
+- [**/datasets/{id}/tissues**](./doc/api/template.md)
+- [**/datasets/{id}/drugs**](./doc/api/template.md)
 
 Resource type: **`experiments`**
 
-- [**/experiments**](./doc/api)
-- [**/experiments/{id}**](./doc/api)
+- [**/experiments**](./doc/api/template.md)
+- [**/experiments/{id}**](./doc/api/template.md)
 
 Resource type: **`intersections`**
 
-- [**/intersections**](./doc/api)
-- [**/intersections/1/{cell_id}/{drug_id}**](./doc/api)
-- [**/intersections/2/{cell_id}/{dataset_id}**](./doc/api)
+- [**/intersections**](./doc/api/template.md)
+- [**/intersections/1/{cell_id}/{drug_id}**](./doc/api/template.md)
+- [**/intersections/2/{cell_id}/{dataset_id}**](./doc/api/template.md)
 
 Most endpoints contain options for further formatting query or output, including options such as: `indent`, `type`, `include`, `page`, `per_page`, `all` and more. Visit each endpoint link above to see a list of all the options that are available to that endpoint.
 

@@ -1,0 +1,30 @@
+version: 1.0.0.{build}
+
+platform: x64
+
+branches:
+  only:
+    - master
+
+clone_folder: c:\gopath\src\github.com\bhklab\PharmacoDB\api\initialize
+
+environment:
+  GOPATH: c:\gopath
+
+install:
+  - echo %PATH%
+  - echo %GOPATH%
+  - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
+  - go get github.com/gin-gonic/gin
+  - go get github.com/getsentry/raven-go
+  - go get github.com/go-sql-driver/mysql
+  - go get github.com/bhklab/PharmacoDB/api
+  - go version
+  - go env
+
+build_script:
+  - go build -o buildOutput\pharmacodb-api -i .
+
+artifacts:
+  - path: buildOutput/pharmacodb-api
+    name: binary
