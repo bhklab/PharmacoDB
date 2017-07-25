@@ -21,16 +21,16 @@ type DBAuthInfo struct {
 var DB DBAuthInfo
 
 // SetDB updates DB with local connection information
-// using enviroment variables.
+// using environment variables.
 func SetDB() {
 	if DB.User = os.Getenv("DB_USER_V1"); DB.User == "" {
-		panic("OS enviroment variable 'DB_USER_V1' is missing")
+		panic("OS environment variable 'DB_USER_V1' is missing")
 	}
 	if DB.Pass = os.Getenv("DB_PASS_V1"); DB.Pass == "" {
-		panic("OS enviroment variable 'DB_PASS_V1' is missing")
+		panic("OS environment variable 'DB_PASS_V1' is missing")
 	}
 	if DB.Name = os.Getenv("DB_NAME_V1"); DB.Name == "" {
-		panic("OS enviroment variable 'DB_NAME_V1' is missing")
+		panic("OS environment variable 'DB_NAME_V1' is missing")
 	}
 }
 

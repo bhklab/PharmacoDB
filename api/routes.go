@@ -47,8 +47,7 @@ var routes = Routes{
 	Route{GET, "/experiments", IndexExperiment},
 	Route{GET, "/experiments/:id", ShowExperiment},
 
-	Route{GET, "/intersections/", IndexIntersection},
-	Route{GET, "/intersections/1/:cell_id/:drug_id", CellDrugIntersections},
-	Route{GET, "/intersections/2/:cell_id/:dataset_id", CellDatasetIntersections},
-	// TODO: Add routes for all possible query combinations in experiments
+	Route{GET, "/intersections", IndexIntersection},
+	Route{GET, "/intersections/1/:cell_id/:drug_id", CellDrugIntersection},
+	Route{GET, "/intersections/2/:cell_id/:dataset_id", CellDatasetIntersection},
 }

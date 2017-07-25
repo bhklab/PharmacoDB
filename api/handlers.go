@@ -39,7 +39,7 @@ func RenderJSON(c *gin.Context, indent bool, obj interface{}) {
 	}
 }
 
-// RenderJSONwithMeta outputs response as either indented or non-indented along with metadata about the reponse.
+// RenderJSONwithMeta outputs response as either indented or non-indented along with metadata about the response.
 // Metadata includes current page, last page, per_page count and total count of result records.
 func RenderJSONwithMeta(c *gin.Context, indent bool, page int, limit int, total int, include string, obj interface{}) {
 	var data interface{}
@@ -608,9 +608,9 @@ func IndexIntersection(c *gin.Context) {
 	RenderJSON(c, true, intersections)
 }
 
-// CellDrugIntersections is a handler for '/intersections/a/:cell_id/:drug_id' endpoint.
+// CellDrugIntersection is a handler for '/intersections/a/:cell_id/:drug_id' endpoint.
 // Lists all experiments (including dose/response data) for a cell line and drug combination.
-func CellDrugIntersections(c *gin.Context) {
+func CellDrugIntersection(c *gin.Context) {
 	var experiments Experiments
 	cellID := c.Param("cell_id")
 	drugID := c.Param("drug_id")
@@ -628,9 +628,9 @@ func CellDrugIntersections(c *gin.Context) {
 	RenderJSON(c, indent, experiments)
 }
 
-// CellDatasetIntersections is a handler for '/intersections/b/:cell_id/:dataset_id' endpoint.
+// CellDatasetIntersection is a handler for '/intersections/b/:cell_id/:dataset_id' endpoint.
 // Lists all experiments (including dose/response data) for a cell line and dataset combination.
-func CellDatasetIntersections(c *gin.Context) {
+func CellDatasetIntersection(c *gin.Context) {
 	var experiments Experiments
 	cellID := c.Param("cell_id")
 	datasetID := c.Param("dataset_id")
