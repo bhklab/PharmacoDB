@@ -50,4 +50,7 @@ var routes = Routes{
 	Route{GET, "/intersections", IndexIntersection},
 	Route{GET, "/intersections/1/:cell_id/:drug_id", CellDrugIntersection},
 	Route{GET, "/intersections/2/:cell_id/:dataset_id", CellDatasetIntersection},
+
+	Route{GET, "/stats/tissue_cells", TissueCellStats},
+	Route{GET, "/stats/dataset_drugs", DatasetDrugStats},
 }

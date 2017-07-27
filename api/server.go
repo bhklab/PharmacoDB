@@ -21,7 +21,7 @@ func Init(c *Context) {
 
 	router.StaticFile("/favicon.ico", "./static/images/favicon.png")
 
-	v := router.Group(Version())
+	v := router.Group(Version() + "/")
 	for _, route := range routes {
 		v.Handle(route.Method, route.Endpoint, route.Handler)
 	}

@@ -12,8 +12,8 @@ Application currently has two main components: [`api`](./api) and [`web-applicat
 ## Table of Contents
 
 - [**API**](#api)
-  - [Endpoints](#endpoints)
-  - [Running the API Locally](#running-the-api-locally)
+  - [**Endpoints**](#endpoints)
+  - [**Running the API Locally**](#running-the-api-locally)
 - [**Web Application**](#web-application)
 - [**Contributing**](#contributing)
 - [**License**](#license)

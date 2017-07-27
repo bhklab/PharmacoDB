@@ -648,3 +648,27 @@ func CellDatasetIntersection(c *gin.Context) {
 	}
 	RenderJSON(c, indent, experiments)
 }
+
+// TissueCellStats is a handler for '/stats/cell_tissues' endpoint.
+// Lists all tissues, along with the number of cell lines in each tissue.
+func TissueCellStats(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	data, err := CountCellsPerTissue()
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, data)
+}
+
+// DatasetDrugStats is a handler for '/stats/dataset_drugs' endpoint.
+// Lists all datasets, along with the number of drugs tested in each dataset.
+func DatasetDrugStats(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	data, err := CountDrugsPerDataset()
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, data)
+}
