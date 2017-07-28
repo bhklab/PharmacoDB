@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Creating latest builds for all defined platforms ..."
+
 package="../api/initialize/api.go"
 
 platforms=("linux/amd64"
@@ -27,3 +29,5 @@ do
         exit 1
     fi
 done
+
+echo "Finished successfully!"
