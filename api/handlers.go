@@ -649,7 +649,7 @@ func CellDatasetIntersection(c *gin.Context) {
 	RenderJSON(c, indent, experiments)
 }
 
-// TissueCellStats is a handler for '/stats/cell_tissues' endpoint.
+// TissueCellStats is a handler for '/stats/tissues/cell_lines' endpoint.
 // Lists all tissues, along with the number of cell lines in each tissue.
 func TissueCellStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
@@ -661,7 +661,7 @@ func TissueCellStats(c *gin.Context) {
 	RenderJSON(c, indent, data)
 }
 
-// DatasetCellStats is a handler for '/stats/dataset_cell_lines' endpoint.
+// DatasetCellStats is a handler for '/stats/datasets/cell_lines' endpoint.
 // Lists all datasets, along with the number of cell lines tested in each dataset.
 func DatasetCellStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
@@ -673,7 +673,20 @@ func DatasetCellStats(c *gin.Context) {
 	RenderJSON(c, indent, data)
 }
 
-// DatasetTissueStats is a handler for '/stats/dataset_tissues' endpoint.
+// DatasetCellDrugsStats is a handler for '/stats/datasets/cell_lines/:id/drugs' endpoint.
+// Lists all datasets, along with the number of drugs tested with a cell line per dataset.
+func DatasetCellDrugsStats(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	id := c.Param("id")
+	data, err := CountCellDrugsPerDataset(id)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, data)
+}
+
+// DatasetTissueStats is a handler for '/stats/datasets/tissues' endpoint.
 // Lists all datasets, along with the number of tissues tested in each dataset.
 func DatasetTissueStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
@@ -685,7 +698,7 @@ func DatasetTissueStats(c *gin.Context) {
 	RenderJSON(c, indent, data)
 }
 
-// DatasetDrugStats is a handler for '/stats/dataset_drugs' endpoint.
+// DatasetDrugStats is a handler for '/stats/datasets/drugs' endpoint.
 // Lists all datasets, along with the number of drugs tested in each dataset.
 func DatasetDrugStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
@@ -697,7 +710,7 @@ func DatasetDrugStats(c *gin.Context) {
 	RenderJSON(c, indent, data)
 }
 
-// DatasetExperimentStats is a handler for '/stats/dataset_experiments' endpoint.
+// DatasetExperimentStats is a handler for '/stats/datasets/experiments' endpoint.
 // Lists all datasets, along with the number of experiments tested in each dataset.
 func DatasetExperimentStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
