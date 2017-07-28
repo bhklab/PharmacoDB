@@ -72,6 +72,19 @@ Resource type: **`intersections`**
 - [**/intersections/1/{cell_id}/{drug_id}**](./doc/api/template.md)
 - [**/intersections/2/{cell_id}/{dataset_id}**](./doc/api/template.md)
 
+Resource type: **`stats`**
+
+- [**/stats/tissues/cell_lines**](./doc/api/template.md)
+- [**/stats/datasets/cell_lines**](./doc/api/template.md)
+- [**/stats/datasets/cell_lines/{id}/drugs**](./doc/api/template.md)
+- [**/stats/datasets/tissues**](./doc/api/template.md)
+- [**/stats/datasets/tissues/{id}/cell_lines**](./doc/api/template.md)
+- [**/stats/datasets/tissues/{id}/drugs**](./doc/api/template.md)
+- [**/stats/datasets/drugs**](./doc/api/template.md)
+- [**/stats/datasets/drugs/{id}/cell_lines**](./doc/api/template.md)
+- [**/stats/datasets/drugs/{id}/tissues**](./doc/api/template.md)
+- [**/stats/datasets/experiments**](./doc/api/template.md)
+
 Most endpoints contain options for further formatting query or output, including options such as: `indent`, `type`, `include`, `page`, `per_page`, `all` and more. Visit each endpoint link above to see a list of all the options that are available to that endpoint.
 
 ### Running the API Locally
