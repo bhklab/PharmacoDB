@@ -1,6 +1,6 @@
 package api
 
-import "strconv"
+import "fmt"
 
 // TissueCellCount models the number of cell lines per tissue.
 type TissueCellCount struct {
@@ -11,14 +11,14 @@ type TissueCellCount struct {
 // TissueCellCounts is a collection of TissueCellsCount.
 type TissueCellCounts []TissueCellCount
 
-// DatasetDrugCount models the number of drugs tested per dataset.
-type DatasetDrugCount struct {
+// DatasetCount models the number of drugs tested per dataset.
+type DatasetCount struct {
 	Dataset Dataset `json:"dataset"`
 	Count   int     `json:"drugs_count"`
 }
 
-// DatasetDrugCounts is a collection of DatasetDrugCount.
-type DatasetDrugCounts []DatasetDrugCount
+// DatasetCounts is a collection of DatasetDrugCount.
+type DatasetCounts []DatasetCount
 
 // CountCellsPerTissue returns a list of all tissues, along with the number of
 // cell lines of each tissue type.
@@ -50,48 +50,32 @@ func CountCellsPerTissue() (TissueCellCounts, error) {
 	return tissueCellCounts, nil
 }
 
-// CountDrugsPerDataset returns a list of all datasets, along with the number of
-// drugs tested in each dataset.
-func CountDrugsPerDataset() (DatasetDrugCounts, error) {
-	type DDD struct {
-		ID    int
-		Count int
-	}
+// CountItemsPerDataset returns a list of all datasets, along with the number of
+// required item tested in each dataset.
+func CountItemsPerDataset(s string) (DatasetCounts, error) {
 	var (
-		datasetDrugCount  DatasetDrugCount
-		datasetDrugCounts DatasetDrugCounts
-		DD                DDD
-		DDs               []DDD
+		count  DatasetCount
+		counts DatasetCounts
 	)
 	db, err := InitDB()
 	defer db.Close()
 	if err != nil {
-		return datasetDrugCounts, err
+		return counts, err
 	}
-	query := "SELECT dataset_id, COUNT(DISTINCT drug_id) AS drugs_count FROM experiments GROUP BY dataset_id;"
+	query := fmt.Sprintf("SELECT dataset_id, dataset_name, %s FROM source_statistics;", s)
 	rows, err := db.Query(query)
 	defer rows.Close()
 	if err != nil {
 		LogPrivateError(err)
-		return datasetDrugCounts, err
+		return counts, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&DD.ID, &DD.Count)
+		err = rows.Scan(&count.Dataset.ID, &count.Dataset.Name, &count.Count)
 		if err != nil {
 			LogPrivateError(err)
-			return datasetDrugCounts, err
+			return counts, err
 		}
-		DDs = append(DDs, DD)
+		counts = append(counts, count)
 	}
-	for _, a := range DDs {
-		var dataset Dataset
-		err = dataset.Find(strconv.Itoa(a.ID), "id")
-		if err != nil {
-			return datasetDrugCounts, err
-		}
-		datasetDrugCount.Dataset = dataset
-		datasetDrugCount.Count = a.Count
-		datasetDrugCounts = append(datasetDrugCounts, datasetDrugCount)
-	}
-	return datasetDrugCounts, nil
+	return counts, nil
 }
