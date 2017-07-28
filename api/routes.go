@@ -55,7 +55,10 @@ var routes = Routes{
 	Route{GET, "/stats/datasets/cell_lines", DatasetCellStats},
 	Route{GET, "/stats/datasets/cell_lines/:id/drugs", DatasetCellDrugsStats},
 	Route{GET, "/stats/datasets/tissues", DatasetTissueStats},
-	Route{GET, "/stats/datasets/tissues/:id/drugs", DatasetTissueStats},
-	Route{GET, "/stats/dataset_drugs", DatasetDrugStats},
-	Route{GET, "/stats/dataset_experiments", DatasetExperimentStats},
+	Route{GET, "/stats/datasets/tissues/:id/cell_lines", DatasetTissueCellsStats},
+	Route{GET, "/stats/datasets/tissues/:id/drugs", DatasetTissueDrugsStats},
+	Route{GET, "/stats/datasets/drugs", DatasetDrugStats},
+	Route{GET, "/stats/datasets/drugs/:id/cell_lines", DatasetDrugCellsStats},
+	Route{GET, "/stats/datasets/drugs/:id/tissues", DatasetDrugTissuesStats},
+	Route{GET, "/stats/datasets/experiments", DatasetExperimentStats},
 }

@@ -665,7 +665,8 @@ func TissueCellStats(c *gin.Context) {
 // Lists all datasets, along with the number of cell lines tested in each dataset.
 func DatasetCellStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-	data, err := CountItemsPerDataset("cell_lines")
+	query := "SELECT dataset_id, dataset_name, cell_lines FROM source_statistics;"
+	data, err := CountItemsPerDataset(query)
 	if err != nil {
 		LogInternalServerError(c)
 		return
@@ -678,7 +679,8 @@ func DatasetCellStats(c *gin.Context) {
 func DatasetCellDrugsStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
 	id := c.Param("id")
-	data, err := CountCellDrugsPerDataset(id)
+	query := fmt.Sprintf("SELECT d.dataset_id, d.dataset_name, (SELECT COUNT(DISTINCT e.drug_id) FROM experiments e WHERE e.cell_id = %s AND e.dataset_id = d.dataset_id) AS count FROM datasets d;", id)
+	data, err := CountItemsPerDataset(query)
 	if err != nil {
 		LogInternalServerError(c)
 		return
@@ -690,7 +692,36 @@ func DatasetCellDrugsStats(c *gin.Context) {
 // Lists all datasets, along with the number of tissues tested in each dataset.
 func DatasetTissueStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-	data, err := CountItemsPerDataset("tissues")
+	query := "SELECT dataset_id, dataset_name, tissues FROM source_statistics;"
+	data, err := CountItemsPerDataset(query)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, data)
+}
+
+// DatasetTissueCellsStats is a handler for '/stats/datasets/tissues/:id/cell_lines' endpoint.
+// Lists all datasets, along with the number of cell_lines in a tissue per dataset.
+func DatasetTissueCellsStats(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	id := c.Param("id")
+	query := fmt.Sprintf("SELECT d.dataset_id, d.dataset_name, (SELECT COUNT(DISTINCT e.cell_id) FROM experiments e WHERE e.tissue_id = %s AND e.dataset_id = d.dataset_id) AS count FROM datasets d;", id)
+	data, err := CountItemsPerDataset(query)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, data)
+}
+
+// DatasetTissueDrugsStats is a handler for '/stats/datasets/tissues/:id/drugs' endpoint.
+// Lists all datasets, along with the number of drugs tested with a tissue per dataset.
+func DatasetTissueDrugsStats(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	id := c.Param("id")
+	query := fmt.Sprintf("SELECT d.dataset_id, d.dataset_name, (SELECT COUNT(DISTINCT e.drug_id) FROM experiments e WHERE e.tissue_id = %s AND e.dataset_id = d.dataset_id) AS count FROM datasets d;", id)
+	data, err := CountItemsPerDataset(query)
 	if err != nil {
 		LogInternalServerError(c)
 		return
@@ -702,7 +733,36 @@ func DatasetTissueStats(c *gin.Context) {
 // Lists all datasets, along with the number of drugs tested in each dataset.
 func DatasetDrugStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-	data, err := CountItemsPerDataset("drugs")
+	query := "SELECT dataset_id, dataset_name, drugs FROM source_statistics;"
+	data, err := CountItemsPerDataset(query)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, data)
+}
+
+// DatasetDrugCellsStats is a handler for '/stats/datasets/drugs/:id/cell_lines' endpoint.
+// Lists all datasets, along with the number of cell_lines tested with drug per dataset.
+func DatasetDrugCellsStats(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	id := c.Param("id")
+	query := fmt.Sprintf("SELECT d.dataset_id, d.dataset_name, (SELECT COUNT(DISTINCT e.cell_id) FROM experiments e WHERE e.drug_id = %s AND e.dataset_id = d.dataset_id) AS count FROM datasets d;", id)
+	data, err := CountItemsPerDataset(query)
+	if err != nil {
+		LogInternalServerError(c)
+		return
+	}
+	RenderJSON(c, indent, data)
+}
+
+// DatasetDrugTissuesStats is a handler for '/stats/datasets/drugs/:id/tissues' endpoint.
+// Lists all datasets, along with the number of tissues tested with drug per dataset.
+func DatasetDrugTissuesStats(c *gin.Context) {
+	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
+	id := c.Param("id")
+	query := fmt.Sprintf("SELECT d.dataset_id, d.dataset_name, (SELECT COUNT(DISTINCT e.tissue_id) FROM experiments e WHERE e.drug_id = %s AND e.dataset_id = d.dataset_id) AS count FROM datasets d;", id)
+	data, err := CountItemsPerDataset(query)
 	if err != nil {
 		LogInternalServerError(c)
 		return
@@ -714,7 +774,8 @@ func DatasetDrugStats(c *gin.Context) {
 // Lists all datasets, along with the number of experiments tested in each dataset.
 func DatasetExperimentStats(c *gin.Context) {
 	indent, _ := strconv.ParseBool(c.DefaultQuery("indent", "true"))
-	data, err := CountItemsPerDataset("experiments")
+	query := "SELECT dataset_id, dataset_name, experiments FROM source_statistics;"
+	data, err := CountItemsPerDataset(query)
 	if err != nil {
 		LogInternalServerError(c)
 		return
