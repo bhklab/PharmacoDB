@@ -1,4 +1,4 @@
-**PharmacoDB** database and web-application. [http://pharmacodb.pmgenomics.ca/](http://pharmacodb.pmgenomics.ca/)
+# PharmacoDB 
 
 [![Build Status](https://travis-ci.org/bhklab/PharmacoDB.svg?branch=master)](https://travis-ci.org/bhklab/PharmacoDB)
 [![Build status](https://ci.appveyor.com/api/projects/status/9bkwyiu0vkm66y1t?svg=true)](https://ci.appveyor.com/project/assefamaru/pharmacodb)
