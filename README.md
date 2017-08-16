@@ -103,4 +103,4 @@ If you would like to offer some suggestions, or report any problems regarding th
 
 ## License
 
-This project is under the MIT License - see [LICENSE](LICENSE) for details.
+This project is under the GPL-3.0 License - see [LICENSE](LICENSE) for details.
