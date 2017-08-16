@@ -25,19 +25,19 @@ Application currently has two main components: [`api`](./api) and [`web-applicat
 
 ## Example Queries
 
-Cell lines? Try typing **MCF7**
+#### Cell lines? Try typing 'MCF7'
 
 ![MCF7](/front-end/ruby-on-rails/app/assets/images/about/cell-line-search.png)
 
-Tissues? Try typing **Breast**
+#### Tissues? Try typing 'Breast'
 
 ![Breast](/front-end/ruby-on-rails/app/assets/images/about/tissue-search.png)
 
-Drugs? Try typing **Paclitaxel**
+#### Drugs? Try typing 'Paclitaxel'
 
 ![Paclitaxel](/front-end/ruby-on-rails/app/assets/images/about/drugs-search.png)
 
-Drug dose-response curves? Try typing **MCF7 Paclitaxel**
+#### Drug dose-response curves? Try typing 'MCF7 Paclitaxel'
 
 ![MCF7 Paclitaxel](/front-end/ruby-on-rails/app/assets/images/about/drug-dose-response-curve-search.png)
 
