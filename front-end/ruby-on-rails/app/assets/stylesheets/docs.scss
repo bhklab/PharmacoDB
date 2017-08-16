@@ -1,0 +1,98 @@
+#docs-content-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: block;
+    position: relative;
+    #docs-content-wrapper {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 50px 15px;
+        min-height: calc(100vh - 150px);
+        position: relative;
+        #dcw-left-wrapper {
+            position: absolute;
+            width: 300px;
+            ul {
+                margin: 0;
+                padding: 0 0 0 5px;
+                li {
+                    margin: 0;
+                    padding: 0;
+                    list-style-type: none;
+                    a {
+                        display: block;
+                        padding: 5px 0 5px 25px;
+                        margin: 0;
+                        border-left: 2px solid #E2E3E3;
+                        text-decoration: none;
+                        color: #717171;
+                        font-size: .95em;
+                        cursor: pointer;
+                    }
+                }
+                .dcw-item-active a {
+                    border-left: 2px solid gold;
+                    color: gold;
+                }
+            }
+        }
+        #dcw-right-wrapper {
+            max-width: 600px;
+            margin: 0 0 0 350px;
+            position: relative;
+            display: block;
+            h3 {
+                font-size: 2em;
+                font-weight: 900;
+                color: #333;
+                font-family: 'Raleway', sans-serif;
+            }
+            p {
+                color: #5A5A5A;
+                margin: 30px 0;
+                font-family: 'Raleway', sans-serif;
+            }
+        }
+        @media screen and (max-width: 800px) {
+            #dcw-right-wrapper {
+                max-width: 100% !important;
+                margin-top: 300px;
+                margin-left: 0 !important;
+                display: rgb(185, 185, 185);
+            }
+        }
+    }
+}
+
+.overlay-image{
+  background: #eaeaed;
+  position: center;
+  border: 1px solid #9799a7;
+  padding: 4px;
+  width: 100%;
+}
+
+#overlay-caption{
+    display: block;
+    text-align: left;
+    color: lightgrey;
+}
+
+
+.docs-image{
+
+  background: #eaeaed;
+  position: center;
+  border: 1px solid #9799a7;
+  margin: 8px 0 0 20px;
+  padding: 4px;
+  width: 100%;
+
+}
+figcaption{
+    display: block;
+    text-align: center;
+    color: lightgrey;
+}

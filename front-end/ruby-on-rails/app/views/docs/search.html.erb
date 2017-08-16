@@ -1,0 +1,58 @@
+<% provide(:title, "Docs") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to docs_path do %>Docs<% end %><i>/</i></li>
+         <li class="pcb-list-active">Search</li>
+      </ol>
+   </div>
+</div>
+
+<section id="docs-content-container">
+    <div id="docs-content-wrapper">
+        <div id="dcw-left-wrapper">
+            <ul>
+							  <li><%= link_to docs_videos_path do %>Overview<% end %></li><br>
+                <li class="dcw-item-active"><%= link_to docs_search_path do %>Search<% end %></li><br>
+                <li><%= link_to docs_cell_lines_path do %>Cell lines<% end %></li>
+                <li><%= link_to docs_tissues_path do %>Tissues<% end %></li>
+                <li><%= link_to docs_drugs_path do %>Drugs<% end %></li>
+                <li><%= link_to docs_datasets_path do %>Datasets<% end %></li>
+                <li><%= link_to docs_datasets_intersection_path do %>Datasets Intersection<% end %></li>
+                <li><%= link_to docs_cell_line_vs_drug_path do %>Cell line vs. Drug<% end %></li>
+                <!-- <li><%= link_to docs_api_path do %>API<% end %></li> -->
+            </ul>
+        </div>
+        <div id="dcw-right-wrapper">
+            <h3>Search</h3>
+            <p> The main way to interact with PharmacoDB is through its search interface. The search bar, found on the home page of the website, allows the user to query all the data contained in the database, and functions as the main navigation tool around the web app.</p>
+            <!-- insert image -->
+            <p>PharmacoDB's search bar takes several distinct types of queries. The simplest is to query for a <i>single</i> specific entity in the database. One can use the search to query for a specific <a href=/docs/cell_lines>cell</a> (e.g. MCF-7), <a href=/docs/drugs>drug</a> (e.g. 17-AAG), <a href=/docs/tissues>tissue</a> (e.g. breast) or <a href=/docs/datasets>dataset</a> (e.g. CTRPv2). This query would then take you to the corresponding page for that instance. </p>
+            <figure>
+              <%= image_tag("docs/cell/CellSearch.png", alt:"Search for a cell.", class:'docs-image') %>
+              <figcaption> Example search for a cell. </figcaption>
+            </figure>
+            <p> The search bar also allows the user to specify a data type (e.g. cell, drug, dataset), where it would take the user to a page listing all instances of that data type in the database. </p>
+            <p> Queries consisting of the names of multiple datasets, <i>with a space between dataset names</i>, are also allowed. This query will link the user to a page describing the <a href=/docs/datasets-intersection>intersection</a> between the datasets, with tables listing the common cells, drugs and tissue types. </p>
+            <figure>
+            <%= image_tag("docs/dataset_int/search.png", alt:"Look up the intersection between studies.", class:'docs-image') %>
+            <figcaption> Look up the intersection between studies. </figcaption>
+            </figure>
+            <p>
+            Finally, entering the name of a cell line followed by a drug, or vice versa, <i>also delimited by a space</i>, will direct to a page <a href=/docs/cell_line-vs-drug>plotting</a> all the available drug dose response curves for that combination across all datasets in PharmacoDB. </p>
+            <figure>
+              <%= image_tag("docs/cell_drug/search.png", alt:"Search for a drug tested on a cell line.", class:'docs-image') %>
+              <figcaption> Search for a drug tested on a cell line. </figcaption>
+            </figure>
+            <p><i>Further queries, including comparisons of more data types, and more visualizations of the data provided are in active development, so be sure to check back with the documentation!</i></p>
+            <!-- <p>Below the search bar, the page also includes links to pie charts detailing the types of cell lines, datasets, tissues, and drugs in PharmacoDB, as well as information about the site itself.</p> -->
+        </div>
+    </div>
+</section>
+
+<%= render 'components/footer' %>

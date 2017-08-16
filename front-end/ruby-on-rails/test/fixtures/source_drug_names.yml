@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  drug_id: 1
+  source_id: 1
+  drug_name: MyText
+
+two:
+  drug_id: 1
+  source_id: 1
+  drug_name: MyText

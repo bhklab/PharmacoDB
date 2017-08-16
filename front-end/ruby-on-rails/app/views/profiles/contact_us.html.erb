@@ -1,0 +1,76 @@
+<% provide(:title, "Contact Us") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to contact_us_path do %>Contact Us<% end %><i>/</i></li>
+      </ol>
+   </div>
+</div>
+<div class="contact-us-container">
+	 <h2> Contact Us </h2>
+    <div class="row">
+        <div class="col-xl">
+            <div class="well well-sm">
+							<%= form_tag(root_path, method: "get") do %>
+	                <div class="row">
+	                    <div class="col-md-6">
+	                        <div class="form-group">
+	                            <label for="name">Name</label>
+	                            <div class="input-group">
+	                                <span class="input-group-addon">
+	                                  <i class="fa fa-user-circle" aria-hidden="true"></i>
+	                                </span>
+	                                <input type="text" name="name" class="form-control" id="name" placeholder="Name (optional)" />
+	                            </div>
+	                        </div>
+	                        <div class="form-group">
+	                            <label for="email">Email Address</label>
+	                            <div class="input-group">
+	                                <span class="input-group-addon">
+	                                  <i class="fa fa-envelope" aria-hidden="true"></i>
+	                                </span>
+	                                <input type="email" name="email" class="form-control" id="email" placeholder="Email (optional)" />
+	                            </div>
+	                        </div>
+	                        <div class="form-group">
+	                            <label for="subject">Subject</label>
+	                            <select id="subject" name="subject" class="form-control" required="required">
+	                                <option value="other" selected>Choose One:</option>
+	                                <option value="cell-lines" <%= "selected" if @subject == "cell_lines" %>  >Cell Lines</option>
+	                                <option value="tissues" <%= "selected" if @subject == "tissues" %> >Tissues</option>
+	                                <option value="drugs" <%= "selected" if @subject == "drugs" %>  >Drugs</option>
+	                                <option value="datasets" <%= "selected" if @subject == "datasets" %>  >Datasets</option>
+	                                <option value="experiments" <%= "selected" if @subject == "experiments" %>  >Experiments</option>
+																	<option value="targets" <%= "selected" if @subject == "targets" %>  >Drug Targets</option>
+
+	                            </select>
+	                        </div>
+	                    </div>
+	                    <div class="col-md-6">
+	                        <div class="form-group">
+														<label for="title">Title</label>
+														<input name="title" id="title" class="form-control" required="required" placeholder="Title" value=<%= @title.empty?  ? "" : @title %>></input>
+	                        </div>
+	                        <div class="form-group">
+	                            <label for="name">Message</label>
+	                            <textarea name="message" id="message" class="form-control" rows="10" cols="25" required="required"
+	                                placeholder="Message"></textarea>
+	                        </div>
+	                    </div>
+	                </div>
+									<div class="row">
+										<div class="col-md-12">
+												<button type="submit" class="btn btn-primary pull-right" id="btnContactUs">Send Message</button>
+										</div>
+									</div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>
+<%= render 'components/footer' %>

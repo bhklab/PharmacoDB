@@ -1,0 +1,114 @@
+<div id="overlay" onclick="off()" style="display:none;">
+</div>
+<section id="home-about-container" onclick="" style="display:none;">
+		<h2>Welcome to PharmacoDB!</h2>
+		<p>This web-application enables efficient mining of a compendium of large pharmacogenomic studies where panels of immortalized cancer cell lines have been screened against hundreds of approved and experimental drug compounds. PharmacoDB contains curated datasets with standard annotations for cell lines, their tissue source, and drug compounds, as well as hundreds of thousands of drug dose-response curves.</p>
+		<h2>Examples of queries</h2>
+		<ul>
+			<p>Cell lines? Try typing <a id="hide-cl-overlay" href="javaScript:void(0);" onclick="show('cl-info')">MCF7</a> </p>
+			<div id="cl-info" style="display:none;" class="about-search">
+				<figure>
+					<%= image_tag("about/cell-line-search.png", alt:"Search for a cell.", class:'overlay-image') %>
+					<figcaption id="overlay-caption"> Example search for a cell line. </figcaption>
+				</figure>
+			</div>
+			<p>Tissues? Try typing <a id="hide-t-overlay" href="javaScript:void(0);" onclick="show('t-info')">Breast</a> </p>
+			<div id="t-info" style="display:none;" class="about-search">
+				<figure>
+					<%= image_tag("about/tissue-search.png", alt:"Search for a tissue.", class:'overlay-image') %>
+					<figcaption id="overlay-caption"> Example search for a tissue.</figcaption>
+				</figure>
+			</div>
+			<p>Drugs? Try typing <a id="hide-drugs-overlay" href="javaScript:void(0);" onclick="show('drugs-info')">Paclitaxel</a> </p>
+			<div id="drugs-info" style="display:none;" class="about-search">
+				<figure>
+					<%= image_tag("about/drugs-search.png", alt:"Search for a drug.", class:'overlay-image') %>
+					<figcaption id="overlay-caption"> Example search for a drug. </figcaption>
+				</figure>
+			</div>
+		  <p>Drug dose-response curves? Try typing <a id="hide-ddrc-overlay" href="javaScript:void(0);" onclick="show('ddrc-info')">MCF7 Paclitaxel</a> </p>
+			<div id="ddrc-info" style="display:none;" class="about-search">
+				<figure>
+					<%= image_tag("about/drug-dose-response-curve-search.png", alt:"Search for a drug dose response curve.", class:'overlay-image') %>
+					<figcaption id="overlay-caption"> Example search for a drug dose-response curve. </figcaption>
+				</figure>
+			</div>
+		</ul>
+		<p>And this is just the beginning as we continuously implement new types of search to facilitate the exploration of large-scale pharmacogenomic datasets. For more information, please consult our <a><%= link_to docs_path do %>documentation page<% end %></a> and <a><%= link_to docs_videos_path do %>watch this video<% end %></a>.</p>
+		<p>Enjoy PharmacoDB and do not hesitate to give us feedback on <a href="https://github.com/bhklab/PharmacoDb-web">GitHub</a>.</p>
+		<p><a href="https://www.pmgenomics.ca/bhklab/">The BHKLAB</a></p>
+		<a id="about-read-more-btn" onclick="off()">Continue</a>
+		<!-- <%= link_to root_path, id: "about-read-more-btn" do %>Continue<% end %> -->
+	</section>
+<script type="text/javascript">
+function show(elem_id){
+	var elem = document.getElementById(elem_id)
+	var display = elem.style.display
+	elem.style.display = display == 'none' ? 'block' : 'none';
+}
+function on() {
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("home-about-container").style.display = "block"
+
+}
+function off() {
+    document.getElementById("overlay").style.display = "none";
+    document.getElementById("home-about-container").style.display = "none"
+}
+Cookies.set('visited', Number(Cookies.get('visited')) + 1)
+
+// window.onload = off
+if (Cookies.get('visited') == 1){on()}
+</script>
+
+
+<!-- hero section -->
+<section id="hero-container">
+	<div id="hero-overlay"></div>
+	<div id="hero-wrapper">
+		<div id="hero-hdr-base">
+			<%= render 'components/header' %>
+		</div>
+		<%= render 'components/sidebar' %>
+		<div id="hero-text-wrapper">
+			<h1>PharmacoDB</h1>
+			<h3>Mine multiple pharmacogenomic datasets</h3>
+			<%= render 'components/search_form' %>
+		</div>
+		<div id="hero-stats-wrapper">
+			<div id="stats-container">
+				<a href="/datasets" title="" class="stats-wrapper">
+					<p class="stat-num" id="stat4"></p>
+					<script type="text/javascript">var stat4 = new CountUp("stat4", 0, <%= @datasets_count %>, 0, 2.5, options); stat4.start();</script>
+					<p class="stat-text">datasets</p>
+				</a>
+				<a href="/tissues" title="" class="stats-wrapper">
+					<p class="stat-num" id="stat2"></p>
+					<script type="text/javascript">var stat2 = new CountUp("stat2", 0, <%= @tissues_count %>, 0, 2.5, options); stat2.start();</script>
+					<p class="stat-text">tissues</p>
+				</a>
+				<a href="/cell_lines" title="" class="stats-wrapper">
+					<p class="stat-num" id="stat1"></p>
+					<script type="text/javascript">var stat1 = new CountUp("stat1", 0, <%= @cell_lines_count %>, 0, 2.5, options); stat1.start();</script>
+					<p class="stat-text">cell lines</p>
+				</a>
+				<a href="/targets" title="" class="stats-wrapper">
+					<p class="stat-num" id="stat6"></p>
+					<script type="text/javascript">var stat6 = new CountUp("stat6", 0, <%= @targets_count %>, 0, 2.5, options); stat6.start();</script>
+					<p class="stat-text">targets</p>
+				</a>
+				<a href="/drugs" title="" class="stats-wrapper">
+					<p class="stat-num" id="stat3"></p>
+					<script type="text/javascript">var stat3 = new CountUp("stat3", 0, <%= @drugs_count %>, 0, 2.5, options); stat3.start();</script>
+					<p class="stat-text">drugs</p>
+				</a>
+				<a href="/experiments" title="" class="stats-wrapper">
+					<p class="stat-num" id="stat5"></p>
+					<script type="text/javascript">var stat5 = new CountUp("stat5", 0, <%= @experiments_count %>, 0, 2.5, options); stat5.start();</script>
+					<p class="stat-text">experiments</p>
+				</a>
+			</div>
+		</div>
+	</div>
+</section>
+<%= render 'components/footer' %>

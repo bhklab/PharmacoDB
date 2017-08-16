@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  experiment_id: 1
+  dose: 1.5
+  response: 1.5
+
+two:
+  experiment_id: 1
+  dose: 1.5
+  response: 1.5

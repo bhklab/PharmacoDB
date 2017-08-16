@@ -1,0 +1,42 @@
+<% provide(:title, "Docs") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to docs_path do %>Docs<% end %><i>/</i></li>
+         <li class="pcb-list-active">API</li>
+      </ol>
+   </div>
+</div>
+
+<section id="docs-content-container">
+    <div id="docs-content-wrapper">
+        <div id="dcw-left-wrapper">
+            <ul>
+							  <li><%= link_to docs_videos_path do %>Overview<% end %></li><br>
+                <li><%= link_to docs_search_path do %>Search<% end %></li><br>
+                <li><%= link_to docs_cell_lines_path do %>Cell lines<% end %></li>
+                <li><%= link_to docs_tissues_path do %>Tissues<% end %></li>
+                <li><%= link_to docs_drugs_path do %>Drugs<% end %></li>
+                <li><%= link_to docs_datasets_path do %>Datasets<% end %></li>
+                <li><%= link_to docs_datasets_intersection_path do %>Datasets Intersection<% end %></li>
+                <li><%= link_to docs_cell_line_vs_drug_path do %>Cell line vs. Drug<% end %></li>
+                <!-- <li class="dcw-item-active"><%= link_to docs_api_path do %>API<% end %></li> -->
+            </ul>
+        </div>
+        <div id="dcw-right-wrapper">
+            <h3>API</h3>
+
+            <p>
+				PharmacoDB data can easily be integrated with any application through its restful API. More info on the API can be found at:<br>
+				<code><a target="_blank" href="https://github.com/bhklab/PharmacoDB-api">https://github.com/bhklab/PharmacoDB-api</a></code>
+			</p>
+        </div>
+    </div>
+</section>
+
+<%= render 'components/footer' %>

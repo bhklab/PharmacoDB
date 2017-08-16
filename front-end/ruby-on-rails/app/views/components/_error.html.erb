@@ -1,0 +1,20 @@
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<!-- error section -->
+<section id="pmdb-error-container">
+	<div class="pmdb-hdr-base"></div>
+	<div id="pmdb-error-wrapper">
+		<h2>sorry!</h2>
+		<h4><%= @error_message[0] %> - <span class="pmdb-error-bold"><%= @error_message[1] %></span> - <%= @error_message[2] %></h4>
+		<h4>Datasets searched: <span class="pmdb-error-bold"><%= @error_datasets %></span></h4>
+		<h3>Suggestions:</h3>
+		<ul>
+			<% @suggestions.each do |s| %>
+				<li><%= s.html_safe %></li>
+			<% end %>
+		</ul>
+		<%= link_to search_path, id: "error-search-again" do %><i class="fa fa-chevron-left" aria-hidden="true"></i> Try Another Search<% end %>
+	</div>
+</section>

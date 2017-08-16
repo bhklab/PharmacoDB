@@ -1,0 +1,60 @@
+<% provide(:title, "Docs") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to docs_path do %>Docs<% end %><i>/</i></li>
+         <li class="pcb-list-active">Datasets</li>
+      </ol>
+   </div>
+</div>
+
+<section id="docs-content-container">
+    <div id="docs-content-wrapper">
+        <div id="dcw-left-wrapper">
+            <ul>
+							  <li><%= link_to docs_videos_path do %>Overview<% end %></li><br>
+                <li><%= link_to docs_search_path do %>Search<% end %></li><br>
+                <li><%= link_to docs_cell_lines_path do %>Cell lines<% end %></li>
+                <li><%= link_to docs_tissues_path do %>Tissues<% end %></li>
+                <li><%= link_to docs_drugs_path do %>Drugs<% end %></li>
+                <li class="dcw-item-active"><%= link_to docs_datasets_path do %>Datasets<% end %></li>
+                <li><%= link_to docs_datasets_intersection_path do %>Datasets Intersection<% end %></li>
+                <li><%= link_to docs_cell_line_vs_drug_path do %>Cell line vs. Drug<% end %></li>
+                <!-- <li><%= link_to docs_api_path do %>API<% end %></li> -->
+            </ul>
+        </div>
+        <div id="dcw-right-wrapper">
+            <h3>Datasets</h3>
+
+      <p>Each study included in PharmacoDB has a dataset page associated with it. These pages can be accessed either by clicking on the datasets links at the bottom of the homepage, or by searching for a study through the search bar.</p>
+      <figure>
+        <%= image_tag("docs/dataset/DatasetSearch.png", alt:"Search for a dataset.", class:'docs-image') %>
+      <figcaption> Example search for a dataset. </figcaption>
+      </figure>
+      <p>Each dataset page starts with a card which displays information about the study which collected the pharmacological data, links to resources which provide access to the original data, the publications associated with the dataset, and a list of all the available pharmacological and molecular data, with annotations about the assays used to collect them.</p>
+      <figure>
+      <%= image_tag("docs/dataset/Description.png", alt:"Description of a dataset.", class:'docs-image') %>
+      <figcaption> Description card of a Dataset</figcaption>
+      </figure>
+			<p>The page also includes plots comparing the number of drugs, tissues, cell lines and experiments in the chosen dataset to others in PharmacoDB. The dataset being displayed is selected in Red. </p>
+      <figure>
+        <%= image_tag("docs/dataset/DrugsAcrossData.png", alt:"Figure of the number of drugs across datasets.", class:'docs-image') %>
+      <figcaption> Figure of the number of drugs across datasets. </figcaption>
+      </figure>
+      <p>Finally, the page concludes with tables of all the cells and drugs that were tested in this dataset. These tables are sorted alphabetically, each entry in the table links to the cell or drug page for that entry. They are also searchable using the search bar at the top of the table.</p>
+      <figure>
+        <%= image_tag("docs/dataset/CellsTable.png", alt:"Table of cell lines tested in dataset.", class:'docs-image') %>
+      <figcaption> Table of cell lines tested in dataset. </figcaption>
+      </figure>
+
+
+        </div>
+    </div>
+</section>
+
+<%= render 'components/footer' %>

@@ -1,0 +1,215 @@
+<% provide(:title, "Drugs") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to drugs_path do %>Compounds<% end %><i>/</i></li>
+         <li class="pcb-list-active"><%= @drug_name %></li>
+      </ol>
+   </div>
+</div>
+<% if @exit_code == 0 %>
+<!-- drugs page wrapper -->
+<section id="pmdb-prof-container">
+   <div id="pmdb-prof-wrapper" class="pmdb-prof-wrapper-padded">
+      <div id="count_stat"></div>
+			<script type="text/javascript">
+				$("#barPlotcount_stat").remove()
+				$("#buttoncount_stat").remove()
+				$(document).ready(makeVertBarPlot(<%= raw @count_names %>,<%= @count_ids %>, "count_stat", "Number of Compounds Tested in Each Dataset"))
+			</script>
+
+      <table class="table table-bordered">
+         <caption>List of all compounds in Pharmacodb - currently <%= @drugs_count %> in total.</caption>
+         <thead>
+            <tr>
+               <th colspan="2">Compound Name</th>
+            </tr>
+         </thead>
+         <tbody>
+            <% @drugs.each_slice(2) do |drug_slice| %>
+            <tr>
+                <% drug_slice.each do |d| %>
+                  <td><a href="/drugs/<%= d['drug_id'] %>" title=""><%= d['drug_name'] %></a></td>
+                <% end %>
+            </tr>
+            <% end %>
+         </tbody>
+      </table>
+      <div class="flickr_pagination">
+         <%= will_paginate @drugs %>
+      </div>
+   </div>
+</section>
+<% elsif @exit_code == 1 %>
+<!-- cell_line page wrapper -->
+<section id="pmdb-prof-container">
+	 <%= render 'components/contact_sidebar', :subject => "drugs", :title => @drug_name %>
+   <div id="pmdb-prof-wrapper">
+      <div id="pmdb-prof-leftcol">
+         <!-- profile card -->
+         <div class="ppl-card">
+            <a id="pmdb-obj-name" href="/drugs/<%= @drug_id %>" title=""><h1><%= @drug_name %></h1></a>
+ <!--            <h3 class="ppl-card-title">Description</h3>
+            <p>N/A</p> -->
+            <h3 class="ppl-card-title">Synonyms</h3>
+            <% if @synonyms == "N/A" %>
+            <p><%= @synonyms %></p>
+            <% else %>
+            <table>
+               <thead>
+                  <tr>
+                     <th>Sources</th>
+                     <th>Names Used</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <% @synonyms.each do |s| %>
+                  <tr>
+                     <td><%= s[0].html_safe %></td>
+                     <td><%= s[1] %></td>
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
+            <% end %>
+            <% unless @drug_ids.pluck(1).map{|x| x.nil?}.all? %>
+            <h3 class="ppl-card-title">External IDs</h3>
+            <table>
+               <thead>
+                  <tr>
+                     <th>Database</th>
+                     <th>Identifier</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <% @drug_ids.each do |s| %>
+                  <% unless s[1].nil? %>
+                  <tr>
+                     <td><%= s[0].html_safe %></td>
+                     <td>
+                        <% if s[0].html_safe.include? "Pubchem" %>
+                           <a href= <%= "https://pubchem.ncbi.nlm.nih.gov/compound/" + s[1] %> > <%= s[1] %> </a>
+                        <% else %>
+                           <%= s[1] %>
+                        <% end %>
+                     </td>
+                  </tr>
+                  <% end %>
+                  <% end %>
+               </tbody>
+            </table>
+            <% end #unless ends %>
+         </div>
+         <!-- cell_lines stat card -->
+         <div class="ppl-card ppl-card-2">
+            <h2 class="page-card-title">Cell lines tested with <%= @drug_name %></h2>
+            <h5 class="page-card-subtitle">
+            <% unless @search_cell_lines %>
+               <strong><%= @num_cell_lines %></strong> cell lines have been tested with this compound, using data from <strong><%= @numdatasets %></strong> dataset(s).
+            <% else %>
+               <%= @caption_cell_lines %>
+            <% end %>
+            </h5>
+            <%= render 'components/cell_line_search_form', locals: { rest_uri: "/drugs/".concat(@drug_id) } %>
+            <table id="ppl-card2-table">
+               <thead>
+                  <tr>
+                     <th>Cell line</th>
+                     <th class="ppl-table-center">Tissue Type</th>
+                     <th class="ppl-table-center">Datasets</th>
+                     <th class="ppl-table-center"># Experiments</th>
+
+                  </tr>
+               </thead>
+               <tbody>
+                  <% @cell_lines.each do |c| %>
+                  <tr>
+                     <td><a href="/cell_lines/<%= c[3] %>"><%= c[0] %></a></td>
+                     <td class="ppl-table-center"> <%= c[4] %> </td>
+                     <td class="ppl-table-center"><%= c[1].html_safe %></td>
+                     <td class="ppl-table-center">
+                     <a href= <%= "/search?q=" + c[0].to_s + "+" + @drug_name %> ><%= c[2] %> </a>
+                     </td>
+
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
+            <div class="flickr_pagination">
+               <%= will_paginate @cell_lines, :param_name => 'cpage', inner_window: 1, outer_window: 1 %>
+            </div>
+            <a href="/drugs/<%= @drug_id %>?download=cell_table"> Download CSV </a>
+         </div>
+         <!-- tissues stat card -->
+         <div class="ppl-card ppl-card-2">
+            <h2 class="page-card-title">Tissues tested with <%= @drug_name %></h2>
+            <h5 class="page-card-subtitle"><strong><%= @num_tissues %></strong> tissues have been tested with this compound, using data from <strong><%= @numdatasets %></strong> dataset(s).</h5>
+            <%= render 'components/tissue_search_form', locals: { rest_uri: "/drugs/".concat(@drug_id) } %>
+            <table id="ppl-card2-table">
+               <thead>
+                  <tr>
+                     <th>Tissue</th>
+                     <th class="ppl-table-center">Datasets</th>
+                     <th class="ppl-table-center"># Experiments</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <% @tissues.each do |t| %>
+                  <tr>
+                     <td><a href="/tissues/<%= t[3] %>"><%= t[0] %></a></td>
+                     <td class="ppl-table-center"><%= t[1].html_safe %></td>
+                     <td class="ppl-table-center"><%= t[2] %></td>
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
+            <div class="flickr_pagination">
+               <%= will_paginate @tissues, :param_name => 'tpage', inner_window: 1, outer_window: 1  %>
+            </div>
+            <a href="/drugs/<%= @drug_id %>?download=tissue_table"> Download CSV </a>
+         </div>
+      </div>
+      <div id="pmdb-prof-rightcol">
+      <% unless @ccounts.empty? || @ccounts.to_set == [0].to_set  %>
+         <div class="ppl-card ppl-chart-card">
+            <div id="pmdb-cdrug-plot"></div>
+						<script type="text/javascript">
+							$("#barPlotpmdb-cdrug-plot").remove()
+							$("#buttonpmdb-cdrug-plot").remove()
+							$(document).ready(makeBarPlot(<%= raw @snames %>,<%= @ccounts %>, <%= raw '"' + @drug_name + '"' %>, "pmdb-cdrug-plot", "(per dataset)", "", "cell lines", ""))
+						</script>
+         </div>
+      <% end %>
+      <% unless @tcounts.empty? || @tcounts.to_set == [0].to_set  %>
+         <div class="ppl-card ppl-chart-card">
+            <div id="pmdb-tdrug-plot"></div>
+						<script type="text/javascript">
+							$("#barPlotpmdb-tdrug-plot").remove()
+							$("#buttonpmdb-tdrug-plot").remove()
+							$(document).ready(makeBarPlot(<%= raw @snames %>,<%= @tcounts %>, <%= raw '"' + @drug_name + '"' %>, "pmdb-tdrug-plot", "(per dataset)", "", "tissues", ""))
+						</script>
+            </div>
+						<% end %>
+						<% unless @tcounts.empty? || @tcounts.to_set == [0].to_set %>
+						<div class="ppl-card ppl-chart-card">
+							<div id="pmdb-cwaterfall-plot"></div>
+							<script type="text/javascript">
+								$("#waterfallpmdb-cwaterfall-plot").remove()
+								$("#buttonpmdb-cwaterfall-plot").remove()
+								$(document).ready(makeWaterfall(<%= raw '"' + @drug_name + '"'%>, <%= raw @cell_lines_waterfall %>, <%=raw @cell_AAC%>, <%=raw @cell_IC50%>, "pmdb-cwaterfall-plot"))
+							</script>
+						</div>
+						<% end %>
+         </div>
+
+   </div>
+</section>
+<% end %>
+
+<%= render 'components/footer' %>
