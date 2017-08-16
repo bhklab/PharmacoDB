@@ -1,0 +1,54 @@
+<header id="header" class="">
+	<div id="header-wrapper">
+		<%= link_to root_path, id: "header-logo" do %><i class="icon-boxbilling"></i> PharmacoDB<% end %>
+		<ul id="hdr-ul-left">
+			<li><%= link_to about_path do %>About<% end %></li>
+			<li><%= link_to docs_path do %>Documentation<% end %></li>
+			<li><%= link_to "Cite Us!", "/cite_us" %></li>
+			<li><%= link_to "Github", "https://github.com/bhklab/PharmacoDb-web", :target => "_blank" %></li>
+			<li>
+					<%= link_to "Download", "/download" %>
+			</li>
+		</ul>
+		<ul id="hdr-ul-right">
+			<!--
+			<li id="hdr-search"><%= link_to search_path, class: "hdr-right-a" do %><i class="fa fa-search" aria-hidden="true"></i> Search<% end %></li>
+			-->
+
+			<!--
+			<li id ="hdr-explore">
+				<form method="get" action="/explore" class="button_to">
+					<a class="hdr-right-a">
+						<label class="switch">
+							<input id="explore-pharmacodb" type="checkbox" onclick="showExplore()" value="off">
+							<span class="slider round" ></span>
+						</label>
+					</a>
+			  </form>
+			</li>
+			-->
+
+			<li id="hdr-search"><%= link_to explore_path do %> Explore! <% end %></li>
+
+			<li id="hdr-toggle">
+				<a>
+					<i id="first-icon-bar" class="icon-bar"></i>
+					<i id="second-icon-bar" class="icon-bar"></i>
+					<i id="third-icon-bar" class="icon-bar"></i>
+				</a>
+			</li>
+			<script type="text/javascript">
+
+			$("#hdr-toggle").click(function(e) {
+				e.preventDefault();
+				$("#sidebar").toggleClass("toggled");
+				$("#first-icon-bar").toggleClass("toggled");
+				$("#second-icon-bar").toggleClass("toggled");
+				$("#third-icon-bar").toggleClass("toggled");
+			});
+
+			</script>
+			<script src="http://d3js.org/d3.v3.min.js"> </script>
+		</ul>
+	</div>
+</header><!-- /header -->

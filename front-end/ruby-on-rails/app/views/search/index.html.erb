@@ -1,0 +1,190 @@
+<% provide(:title, "Search") %>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"> </script>
+<%= javascript_include_tag("drugDoseResponseCurve.js")%>
+<% if @exit_code == 0 %>
+	<!-- search section -->
+	<section id="search-container">
+		<div id="search-overlay"></div>
+		<div id="search-wrapper">
+			<div id="hero-hdr-base">
+				<%= render 'components/header' %>
+			</div>
+			<%= render 'components/sidebar' %>
+			<p id="search-for-p">Search for</p>
+			<%= render 'components/search_form' %>
+		</div>
+	</section>
+<% elsif @exit_code == 1 %>
+	<%= render 'components/error' %>
+<% elsif @exit_code == 2 %>
+	<div id="hdr-default-base">
+		<%= render 'components/header' %>
+	</div>
+	<%= render 'components/sidebar' %>
+
+<section id="pmdb-celldrug-container">
+	<%= render 'components/contact_sidebar', :subject => "drugs", :title => "Drug_dose_response_curve" %>
+<section id="pmdb-prof-container">
+        <div id="pmdb-prof-wrapper">
+            <div id="pmdb-prof-centrecol">
+            <div class="ppl-card">
+	   <div id="pmdb-celldrug-wrapper">
+        <div id="pmdb_cell_drug">
+        </div>
+    </div>
+    </div>
+    <% unless @dataset_names.empty? %>
+
+                <div class="ppl-card">
+
+                    <h1> Summary Statistics </h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dataset</th>
+                                <th class="ppl-table-center">AAC (%)</th>
+                                <th class="ppl-table-center">IC50 (µM)</th>
+                                <th class="ppl-table-center">EC50 (µM)</th>
+                                <th class="ppl-table-center">Einf (%)</th>
+                                <th class="ppl-table-center">DSS<sub>1</sub> (arb.)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <% for ii in 0...@profiles.length %>
+                            <% e = @profiles[ii] %>
+                            <tr>
+                            <!-- FIXME:: We want links here but the names need to be sanitaized? -->
+                                <!-- <td> <a href=<%= raw "/search?q=" + @dataset_names[ii].to_s %>> <%= @dataset_names[ii] %> </a> </td> -->
+                                <td> <%= @dataset_names[ii] %> </td>
+                                <td class="ppl-table-center" id=<%= @dataset_click_ids[ii] + "AAC"%>>
+                                    <%=  !e["AAC"].nil? ? "%0.0f" % (e["AAC"]*100) : "N/A"  %>
+                                </td>
+                                <td class="ppl-table-center" id=<%= @dataset_click_ids[ii] + "IC50"%>>
+                                    <%=  !e["IC50"].nil? ? "%1.1g" % (10**e["IC50"]) : "N/A"  %>
+                                </td>
+                                <td class="ppl-table-center" id=<%= @dataset_click_ids[ii] + "EC50"%>>
+                                    <%=  !e["EC50"].nil? ? "%1.1g" % (10**e["EC50"]) : "N/A"  %>
+                                </td>
+                                <td class="ppl-table-center" id=<%= @dataset_click_ids[ii] + "Einf"%>>
+                                    <%=  !e["Einf"].nil? ? "%0.0f" % (e["Einf"]*100) : "N/A"  %>
+                                </td>
+                                <td class="ppl-table-center" id=<%= @dataset_click_ids[ii] + "DSS1"%>>
+                                    <%=  !e["DSS1"].nil? ? "%1.1g" % (e["DSS1"]) : "N/A"  %>
+                                </td>
+                            </tr>
+                        <% end %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+	   </div>
+	</section>
+    <% end %>
+</section>
+<%= render 'components/footer' %>
+
+<script type="text/javascript">
+	$("svg").remove()
+	$("#buttonpmdb_cell_drug").remove()
+	makeGraph(<%= @data.html_safe%>, <%= raw @highlighted_datasets  %>);
+</script>
+ <!--mine-->
+<!--
+<% elsif @exit_code == 999 %>
+	<div id="hdr-default-base">
+		<%= render 'components/header' %>
+	</div>
+	<%= render 'components/sidebar' %>
+
+	<section id="pmdb-celldrug-container">
+	   <div id="pmdb-celldrug-wrapper">
+	      <div id="pmdb_cell_drug"></div>
+	   </div>
+	</section>
+
+	<script type="text/javascript">
+		$("#pmdb_cell_drug").html(<%= raw '"' +  @text.html_safe + '"'%>)
+	</script>
+ -->
+<% elsif @exit_code == 3 %>
+
+	<div id="hdr-default-base">
+		<%= render 'components/header' %>
+	</div>
+	<%= render 'components/sidebar' %>
+
+	<section id="pmdb-prof-container">
+	   <!-- <div id="pmdb-venn-wrapper">
+	      <%= image_tag 'venn.png' %>
+	   </div> -->
+	   <div id="pmdb-prof-wrapper" class="pmdb-overlap-wrapper">
+			 <div id="venn_container"></div>
+			 <div id="table_container"></div>
+			 <script type="text/javascript">
+				 //venn time
+				 //console.log(<%= raw @exps%>, <%=raw @search_quers%>, <%= @cell_lines_count %>)
+				 $("#vennvenn_container").remove();
+				 makeVenn(<%= raw @cell_line_exps%>, <%= raw @tissue_exps%>, <%= raw @drug_exps%>, <%=raw @search_quers%>, <%= raw @middle %>, "venn_container")
+			 </script>
+	      <!-- <div id="pmdb-prof-leftcol">
+
+	         <div class="ppl-card ppl-card-3">
+	            <h2 class="page-card-title">Common Cell lines</h2>
+	            <h5 class="page-card-subtitle"><strong><%= @cell_lines_count %></strong> cell line(s) have been tested across the datasets: <%= @names %></h5>
+	            <table>
+	               <tbody>
+	                  <% @cell_lines.each do |c| %>
+	                  <tr>
+	                     <td><a href="/cell_lines/<%= c[0] %>"><%= c[1] %></a></td>
+	                  </tr>
+	                  <% end %>
+	               </tbody>
+	            </table>
+	            <div class="flickr_pagination">
+	               <%= will_paginate @cell_lines %>
+	            </div>
+	         </div>
+
+	         <div class="ppl-card ppl-card-3">
+	            <h2 class="page-card-title">Common Tissues</h2>
+	            <h5 class="page-card-subtitle"><strong><%= @tissues_count %></strong> Tissue(s) have been tested across the datasets: <%= @names %></h5>
+	            <table>
+	               <tbody>
+	                  <% @tissues.each do |t| %>
+	                  <tr>
+	                     <td><a href="/tissues/<%= t[0] %>"><%= t[1] %></a></td>
+	                  </tr>
+	                  <% end %>
+	               </tbody>
+	            </table>
+	            <div class="flickr_pagination">
+	               <%= will_paginate @tissues %>
+	            </div>
+	         </div>
+	      </div>
+	      <div id="pmdb-prof-rightcol">
+
+	         <div class="ppl-card ppl-card-3">
+	            <h2 class="page-card-title">Common Drugs</h2>
+	            <h5 class="page-card-subtitle"><strong><%= @drugs_count %></strong> Drugs(s) have been tested across the datasets: <%= @names %></h5>
+	            <table>
+	               <tbody>
+	                  <% @drugs.each do |d| %>
+	                  <tr>
+	                     <td><a href="/drugs/<%= d[0] %>"><%= d[1] %></a></td>
+	                  </tr>
+	                  <% end %>
+	               </tbody>
+	            </table>
+	            <div class="flickr_pagination">
+	               <%= will_paginate @drugs %>
+	            </div>
+	         </div>
+	      </div>
+	   </div> -->
+	</section>
+
+	<%= render 'components/footer' %>
+
+<% end %>

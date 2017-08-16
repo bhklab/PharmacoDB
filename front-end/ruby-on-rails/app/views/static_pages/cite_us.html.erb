@@ -1,0 +1,27 @@
+<% provide(:title, "Cite Us") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+
+<!-- <div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to about_path do %>About<% end %><i>/</i></li>
+      </ol>
+   </div>
+</div> -->
+<!-- about section -->
+<section id="about-container">
+	<h2>Cite Us:</h2>
+	<p> We ask users who find our database of value to their research to cite us, using the following publications:</p>
+	<table>
+	<tr>
+	<p id="about_links"><a href="https://academic.oup.com/bioinformatics/article/32/8/1244/1744214/PharmacoGx-an-R-package-for-analysis-of-large">  Smirnov, P. et al. PharmacoGx: An R package for analysis of large pharmacogenomic datasets. Bioinformatics 32, 1244–1246 (2016).</a><i></i></p>
+	</tr>
+	<!-- <tr><p id="about_links"><%= link_to search_path do %>Search<% end %><i></i></p></td></tr></table> -->
+	</table>
+</section>
+
+<%= render 'components/footer' %>

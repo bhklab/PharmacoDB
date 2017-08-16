@@ -1,0 +1,26 @@
+<div id="sidebar">
+	<h2>Site</h2>
+	<ul>
+		<li><%= link_to root_path do %>Home<% end %></li>
+		<li><%= link_to about_path do %>About<% end %></li>
+		<li><%= link_to docs_path do %>Documentation<% end %></li>
+		<!-- <li><%= link_to "PharmacoGx", "https://bioconductor.org/packages/release/bioc/html/PharmacoGx.html", :target => "_blank" %></li> -->
+		<li><%= link_to pharmacogx_path do %> PharmacoGx <%end%> </li>
+
+		<li><%= link_to "Cite Us!", "/cite_us" %></li>
+	</ul>
+	<h2>Tools</h2>
+	<ul>
+		<li><%= link_to search_path do %>Search<% end %></li>
+		<li><%= link_to "GitHub", "https://github.com/bhklab/PharmacoDB-web", :target => "_blank" %></li>
+	</ul>
+	<h2>Datatypes</h2>
+	<ul>
+		<li><%= link_to datasets_path do %>datasets<% end %></li>
+		<li><%= link_to cell_lines_path do %>cell lines<% end %></li>
+		<li><%= link_to tissues_path do %>tissues<% end %></li>
+		<li><%= link_to drugs_path do %>drugs<% end %></li>
+		<li><%= link_to targets_path do %>targets<%end%></li>
+		<li><%= link_to experiments_path do %>experiments<% end %></li>
+	</ul>
+</div>

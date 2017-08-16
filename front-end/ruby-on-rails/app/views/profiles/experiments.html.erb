@@ -1,0 +1,43 @@
+<% provide(:title, "Experiments") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to experiments_path do %>Experiments<% end %><i>/</i></li>
+      </ol>
+   </div>
+</div>
+
+<section id="pmdb-prof-container">
+	 <%= render 'components/contact_sidebar', :subject => "experiments", :title => @experiments_name %>
+   <div id="pmdb-prof-wrapper">
+      <div id="pmdb-prof-leftcol">
+        <div class="ppl-card ppl-chart-card">
+					<div id="pmdb-cell-lines-plot"></div>
+					<script type="text/javascript">
+						$("#barPlotpmdb-cell-lines-plot").remove()
+						$("#buttonpmdb-cell-lines-plot").remove()
+						$(document).ready(makeBarPlot(<%= raw @dataset_names %>,<%= @exp_per_cell_line %>, "", "pmdb-cell-lines-plot", "", "Average experiments per cell line in each data set", "experiments per cell line", ""))
+					</script>
+        </div>
+      </div>
+      <div id="pmdb-prof-rightcol">
+        <div class="ppl-card ppl-chart-card">
+					<div id="pmdb-drugs-plot"></div>
+					<script type="text/javascript">
+						$("#barPlotpmdb-drugs-plot").remove()
+						$("#buttonpmdb-drugs-plot").remove()
+						$(document).ready(makeBarPlot(<%= raw @dataset_names %>,<%= @exp_per_drug %>, "", "pmdb-drugs-plot", "", "Average experiments per compound in each data set", "experiments per compound", ""))
+					</script>
+        </div>
+      </div>
+      <%= render 'components/experiments_search_form', locals: { rest_uri: "/experiments/" } %>
+   </div>
+</section>
+
+<%= render 'components/footer' %>

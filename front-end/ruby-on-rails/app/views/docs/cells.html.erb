@@ -1,0 +1,58 @@
+<% provide(:title, "Docs") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<div class="pmdb-crumb-base">
+ <div class="pcb-wrapper">
+  <ol class="pcb-list">
+   <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+   <li><%= link_to docs_path do %>Docs<% end %><i>/</i></li>
+   <li class="pcb-list-active">Cell lines</li>
+ </ol>
+</div>
+</div>
+
+<section id="docs-content-container">
+  <div id="docs-content-wrapper">
+    <div id="dcw-left-wrapper">
+      <ul>
+				<li><%= link_to docs_videos_path do %>Overview<% end %></li><br>
+        <li><%= link_to docs_search_path do %>Search<% end %></li><br>
+        <li class="dcw-item-active"><%= link_to docs_cell_lines_path do %>Cell lines<% end %></li>
+        <li><%= link_to docs_tissues_path do %>Tissues<% end %></li>
+        <li><%= link_to docs_drugs_path do %>Drugs<% end %></li>
+        <li><%= link_to docs_datasets_path do %>Datasets<% end %></li>
+        <li><%= link_to docs_datasets_intersection_path do %>Datasets Intersection<% end %></li>
+        <li><%= link_to docs_cell_line_vs_drug_path do %>Cell line vs. Drug<% end %></li>
+        <!-- <li><%= link_to docs_api_path do %>API<% end %></li> -->
+      </ul>
+    </div>
+    <div id="dcw-right-wrapper">
+      <h3>Cell lines</h3>
+
+      <p>Each cell line included in PharmacoDB has a cell line page associated with it. These pages can be accessed either by clicking on the "Cell lines" link at the bottom of the homepage, or by searching for a cell line through the search bar.</p>
+      <figure>
+        <%= image_tag("docs/cell/CellSearch.png", alt:"Search for a cell.", class:'docs-image') %>
+        <figcaption> Example search for a cell. </figcaption>
+      </figure>
+      <p>Each cell line page starts with a card which displays information about the tissue type of the cell line, its synonyms in each dataset that used it, its Cellosaurus name, and the diseases it was used to model. </p>
+      <figure>
+        <%= image_tag("docs/cell/Description.png", alt:"Description of a cell.", class:'docs-image') %>
+        <figcaption> Description card for a cell. </figcaption>
+      </figure>
+      <p> The page also has a table of all the drugs tested on the cell line in each dataset, with the list of datasets where this combination was tested and the total number of experiments across all studies. Clicking on a drug name or dataset name will take you to the corresponding page.</p>
+       <figure>
+        <%= image_tag("docs/cell/DrugsTable.png", alt:"Table of all drugs tested on a cell.", class:'docs-image') %>
+        <figcaption> Table of all drugs tested on a cell. </figcaption>
+      </figure>
+      <p> Finally, the page has a plot comparing the total number of drugs tested on the cell line in each PharmacoDB dataset.</p>
+      <figure>
+        <%= image_tag("docs/cell/drugsPlot.png", alt:"Plot of number of drugs tested on a cell for each dataset.", class:'docs-image') %>
+        <figcaption> Plot of number of drugs tested on a cell for each dataset. </figcaption>
+      </figure>
+  </div>
+</div>
+</section>
+
+<%= render 'components/footer' %>

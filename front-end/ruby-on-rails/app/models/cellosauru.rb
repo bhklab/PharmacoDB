@@ -1,0 +1,2 @@
+class Cellosauru < ApplicationRecord
+end

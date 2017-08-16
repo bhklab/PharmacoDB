@@ -1,0 +1,212 @@
+<% provide(:title, "Tissues") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> -->
+
+
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to tissues_path do %>Tissues<% end %><i>/</i></li>
+         <li class="pcb-list-active"><%= @tissue_name %></li>
+      </ol>
+   </div>
+</div>
+<% if @exit_code == 0 %>
+<!-- tissues page wrapper -->
+<section id="pmdb-prof-container">
+   <div id="pmdb-prof-wrapper" class="pmdb-prof-wrapper-padded">
+      <div id="count_stat"></div>
+			<script type="text/javascript">
+					$("#pie").remove();
+					$("#buttoncount_stat").remove();
+					$("#otherTissues").remove();
+					makePie(<%= raw @count_names %>,<%= @count_ids %>, <%= raw @other_names.map(&:to_s)%>, <%= raw @other_nums %>);
+			</script>
+			<%= render 'components/tissue_search_form', locals: { rest_uri: "/tissues" } %>
+      <table class="table table-bordered" id="pmdb-list-all-table" style="table-layout: fixed">
+         <caption>List of all tissues in Pharmacodb - currently <%= @tissues_count %> in total.</caption>
+         <thead>
+            <tr>
+               <th colspan="2">Tissue Name</th>
+            </tr>
+         </thead>
+         <tbody>
+            <% @tissues.each_slice(2) do |tissue_slice| %>
+              <tr>
+                <% tissue_slice.each do |t| %>
+                  <td>
+										<a id = "<%= escape_javascript(t['tissue_name']) %>" href="/tissues/<%= t['tissue_id'] %>"  title="">
+										<script type="text/javascript">
+											var tissue_name = "<%= t['tissue_name'] %>".replaceAll("_", " ")
+											var tissue_id = "<%= t['tissue_name'] %>".replace(/(?=[()])/g, '\\')
+
+											console.log(tissue_name, tissue_id)
+											$("#" + tissue_id).text(tissue_name);
+										</script>
+
+									</a>
+								</td>
+
+                <% end %>
+              </tr>
+            <% end %>
+         </tbody>
+      </table>
+      <div class="flickr_pagination">
+         <%= will_paginate @tissues %>
+      </div>
+   </div>
+</section>
+<% elsif @exit_code == 1 %>
+<!-- cell_line page wrapper -->
+<section id="pmdb-prof-container">
+	 <%= render 'components/contact_sidebar', :subject => "tissues", :title => @tissue_name %>
+   <div id="pmdb-prof-wrapper">
+      <div id="pmdb-prof-leftcol">
+         <!-- profile card -->
+         <div class="ppl-card">
+            <a id="pmdb-obj-name" href="/tissues/<%= @tissue_id %>">
+							<h1>
+								<script type="text/javascript">
+									var tissue_name = <%= raw '"' + @tissue_name + '"' %>.replaceAll("_", " ")
+									$("h1").text(tissue_name);
+								</script>
+						</h1></a>
+<!--             <h3 class="ppl-card-title">Description</h3>
+            <p>N/A</p> -->
+            <!-- <h3 class="ppl-card-title">Synonyms</h3> -->
+						<h3 class="ppl-card-title">Annotations</h3>
+            <% if @synonyms == "N/A" %>
+            <p><%= @synonyms %></p>
+            <% else %>
+            <table>
+               <thead>
+                  <tr>
+                     <th>Sources</th>
+                     <th>Names Used</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <% @synonyms.each do |s| %>
+                  <tr>
+                     <td><%= s[0].html_safe %></td>
+                     <td><%= s[1] %></td>
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
+            <% end %>
+         </div>
+         <!-- list of cell lines card -->
+         <div class="ppl-card ppl-card-3">
+            <h2 class="page-card-title"></h2>
+							<script type="text/javascript">
+								var tissue_name = <%= raw '"' + @tissue_name + '"' %>.replaceAll("_", " ")
+								$(".ppl-card-3").find(".page-card-title").text("Cell lines of " + tissue_name + " tissue type");
+							</script>
+
+            <h5 class="page-card-subtitle">
+            <% if not @search_cell_lines %>
+               <strong><%= @cell_lines_count %></strong> cell line(s) of this tissue type are currently recorded in database.
+            <% else %>
+               <%= @caption_cell_lines %>
+            <% end %>
+            </h5>
+            <%= render 'components/cell_line_search_form', locals: { rest_uri: "/tissues/".concat(@tissue_id) } %>
+            <table>
+               <tbody>
+                  <% @cell_lines.each_slice(2) do |cell_lines_slice| %>
+                  <tr>
+                     <% cell_lines_slice.each do |c| %>
+                        <td><a href="/cell_lines/<%= c['cell_id'] %>"><%= c['cell_name'] %></a></td>
+                     <% end %>
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
+            <div class="flickr_pagination">
+               <%= will_paginate @cell_lines, :param_name => 'cpage', inner_window: 1, outer_window: 1 %>
+            </div>
+            <a href="/tissues/<%= @tissue_id %>?download=cell_table"> Download CSV </a>
+         </div>
+         <!-- drugs stat card -->
+         <div class="ppl-card ppl-card-2">
+            <h2 class="page-card-title"></h2>
+							<script type="text/javascript">
+							var tissue_name = <%= raw '"' + @tissue_name + '"' %>.replaceAll("_", " ")
+							$(".ppl-card-2").find(".page-card-title").text("Compounds tested with " + tissue_name);
+						</script>
+            <h5 class="page-card-subtitle">
+            <% if not @search_drugs %>
+               <% unless @numdrugs == 0 %>
+                  <strong><%= @numdrugs %></strong> compounds have been tested with this tissue, using data from <strong><%= @numdatasets %></strong> dataset(s).
+               <% else %>
+                  <strong>No compounds have been tested with this tissue across all dataset(s).</strong>
+                  <% doNotShow = true %>
+               <% end %>
+            <% else %>
+               <%= @caption_drug %>
+            <% end %>
+            </h5>
+            <% unless doNotShow %>
+               <%= render 'components/drug_search_form', locals: { rest_uri: "/tissues/".concat(@tissue_id) } %>
+               <table id="ppl-card2-table">
+                  <thead>
+                     <tr>
+                        <th>Compounds</th>
+                        <th class="ppl-table-center">Datasets</th>
+                        <th class="ppl-table-center"># Experiments</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <% @drugs.each do |d| %>
+                     <tr>
+                        <td><a href="/drugs/<%= d[3] %>"><%= d[0] %></a></td>
+                        <td class="ppl-table-center"><%= d[1].html_safe %></td>
+                        <td class="ppl-table-center"><%= d[2] %></td>
+                     </tr>
+                     <% end %>
+                  </tbody>
+               </table>
+               <div class="flickr_pagination">
+                  <%= will_paginate @drugs, :param_name => 'dpage', inner_window: 1, outer_window: 1 %>
+               </div>
+               <a href="/tissues/<%= @tissue_id %>?download=drug_table"> Download CSV </a>
+
+            <% end %>
+         </div>
+      </div>
+      <div id="pmdb-prof-rightcol">
+      <% unless @ccounts.empty? || @ccounts.to_set == [0].to_set %>
+         <div class="ppl-card ppl-chart-card">
+            <div id="pmdb-ctissue-plot"></div>
+
+						<script type="text/javascript">
+							$("#barPlotpmdb-ctissue-plot").remove()
+							$("#buttonpmdb-ctissue-plot").remove()
+							$(document).ready(makeBarPlot(<%= raw @snames %>,<%= @ccounts %>, <%= raw '"' + @tissue_name + '"'%>, "pmdb-ctissue-plot", "per dataset", "", "compounds", ""))
+						</script>
+         </div>
+      <% end %>
+      <% unless @scounts.empty? || @scounts.to_set == [0].to_set  %>
+         <div class="ppl-card ppl-chart-card">
+            <div id="pmdb-dtissue-plot"></div>
+
+						<script type="text/javascript">
+							$("#barPlotpmdb-dtissue-plot").remove()
+							$("#buttonpmdb-dtissue-plot").remove()
+							$(document).ready(makeBarPlot(<%= raw @snames %>,<%= @scounts %>, <%= raw '"' + @tissue_name + '"'%>, "pmdb-dtissue-plot", "cell lines", "", "compounds", ""))
+						</script>
+         </div>
+      </div>
+      <% end %>
+   </div>
+</section>
+<% end %>
+
+<%= render 'components/footer' %>

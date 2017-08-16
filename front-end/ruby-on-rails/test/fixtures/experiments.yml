@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  experiment_id: 1
+  cell_id: 1
+  drug_id: 1
+  dataset_id: 1
+
+two:
+  experiment_id: 1
+  cell_id: 1
+  drug_id: 1
+  dataset_id: 1
