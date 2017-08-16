@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/bhklab/PharmacoDB.svg?branch=master)](https://travis-ci.org/bhklab/PharmacoDB)
 [![Build status](https://ci.appveyor.com/api/projects/status/9bkwyiu0vkm66y1t?svg=true)](https://ci.appveyor.com/project/assefamaru/pharmacodb)
 [![GoDoc](https://godoc.org/github.com/bhklab/PharmacoDB/api?status.svg)](https://godoc.org/github.com/bhklab/PharmacoDB/api)
-[![Go Report Card](https://goreportcard.com/badge/github.com/bhklab/PharmacoDB)](https://goreportcard.com/report/github.com/bhklab/PharmacoDB)
 
 ## Table of Contents
 - [**About**](#about)
@@ -62,61 +61,61 @@ Source code documentation ref for the API can be found at: [https://godoc.org/gi
 
 Resource type: **`cell lines`**
 
-- [**/cell_lines**](./doc/api/template.md)
-- [**/cell_lines/{id}**](./doc/api/template.md)
-- [**/cell_lines/{id}/drugs**](./doc/api/template.md)
+- [**/cell_lines**](./doc/template.md)
+- [**/cell_lines/{id}**](./doc/template.md)
+- [**/cell_lines/{id}/drugs**](./doc/template.md)
 
 Resource type: **`tissues`**
 
-- [**/tissues**](./doc/api/template.md)
-- [**/tissues/{id}**](./doc/api/template.md)
-- [**/tissues/{id}/cell_lines**](./doc/api/template.md)
-- [**/tissues/{id}/drugs**](./doc/api/template.md)
+- [**/tissues**](./doc/template.md)
+- [**/tissues/{id}**](./doc/template.md)
+- [**/tissues/{id}/cell_lines**](./doc/template.md)
+- [**/tissues/{id}/drugs**](./doc/template.md)
 
 Resource type: **`drugs`**
 
-- [**/drugs**](./doc/api/template.md)
-- [**/drugs/{id}**](./doc/api/template.md)
-- [**/drugs/{id}/cell_lines**](./doc/api/template.md)
-- [**/drugs/{id}/tissues**](./doc/api/template.md)
+- [**/drugs**](./doc/template.md)
+- [**/drugs/{id}**](./doc/template.md)
+- [**/drugs/{id}/cell_lines**](./doc/template.md)
+- [**/drugs/{id}/tissues**](./doc/template.md)
 
 Resource type: **`datasets`**
 
-- [**/datasets**](./doc/api/template.md)
-- [**/datasets/{id}**](./doc/api/template.md)
-- [**/datasets/{id}/cell_lines**](./doc/api/template.md)
-- [**/datasets/{id}/tissues**](./doc/api/template.md)
-- [**/datasets/{id}/drugs**](./doc/api/template.md)
+- [**/datasets**](./doc/template.md)
+- [**/datasets/{id}**](./doc/template.md)
+- [**/datasets/{id}/cell_lines**](./doc/template.md)
+- [**/datasets/{id}/tissues**](./doc/template.md)
+- [**/datasets/{id}/drugs**](./doc/template.md)
 
 Resource type: **`experiments`**
 
-- [**/experiments**](./doc/api/template.md)
-- [**/experiments/{id}**](./doc/api/template.md)
+- [**/experiments**](./doc/template.md)
+- [**/experiments/{id}**](./doc/template.md)
 
 Resource type: **`intersections`**
 
-- [**/intersections**](./doc/api/template.md)
-- [**/intersections/1/{cell_id}/{drug_id}**](./doc/api/template.md)
-- [**/intersections/2/{cell_id}/{dataset_id}**](./doc/api/template.md)
+- [**/intersections**](./doc/template.md)
+- [**/intersections/1/{cell_id}/{drug_id}**](./doc/template.md)
+- [**/intersections/2/{cell_id}/{dataset_id}**](./doc/template.md)
 
 Resource type: **`stats`**
 
-- [**/stats/tissues/cell_lines**](./doc/api/template.md)
-- [**/stats/datasets/cell_lines**](./doc/api/template.md)
-- [**/stats/datasets/cell_lines/{id}/drugs**](./doc/api/template.md)
-- [**/stats/datasets/tissues**](./doc/api/template.md)
-- [**/stats/datasets/tissues/{id}/cell_lines**](./doc/api/template.md)
-- [**/stats/datasets/tissues/{id}/drugs**](./doc/api/template.md)
-- [**/stats/datasets/drugs**](./doc/api/template.md)
-- [**/stats/datasets/drugs/{id}/cell_lines**](./doc/api/template.md)
-- [**/stats/datasets/drugs/{id}/tissues**](./doc/api/template.md)
-- [**/stats/datasets/experiments**](./doc/api/template.md)
+- [**/stats/tissues/cell_lines**](./doc/template.md)
+- [**/stats/datasets/cell_lines**](./doc/template.md)
+- [**/stats/datasets/cell_lines/{id}/drugs**](./doc/template.md)
+- [**/stats/datasets/tissues**](./doc/template.md)
+- [**/stats/datasets/tissues/{id}/cell_lines**](./doc/template.md)
+- [**/stats/datasets/tissues/{id}/drugs**](./doc/template.md)
+- [**/stats/datasets/drugs**](./doc/template.md)
+- [**/stats/datasets/drugs/{id}/cell_lines**](./doc/template.md)
+- [**/stats/datasets/drugs/{id}/tissues**](./doc/template.md)
+- [**/stats/datasets/experiments**](./doc/template.md)
 
 Most endpoints contain options for further formatting query or output, including options such as: `indent`, `type`, `include`, `page`, `per_page`, `all` and more. Visit each endpoint link above to see a list of all the options that are available to that endpoint.
 
 ### Running the API Locally
 
-To setup and run the API locally, simply download and run one of the api builds already available in the directory [dist/api](dist/api). There are builds for various platforms, so pick the executable that corresponds to the OS you wish to run it on.
+To setup and run the API locally, simply download and run one of the api builds already available in the directory [dist](dist). There are builds for various platforms, so pick the executable that corresponds to the OS you wish to run it on.
 
 ## Web Application
 
