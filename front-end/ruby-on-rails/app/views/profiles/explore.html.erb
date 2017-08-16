@@ -1,0 +1,113 @@
+<!-- hero section -->
+<div id="explore-container">
+	<div id="explore-overlay"></div>
+	<div id="explore-wrapper">
+		<div id="hero-hdr-base">
+			<%= render 'components/header' %>
+		</div>
+		<%= render 'components/sidebar' %>
+		<div id="explore-stats-wrapper">
+			<h2> Explore PharmacoDB! </h2>
+			<% if !@is_cell_lines %>
+				<h3> Step 1: select tissues / targets </h3>
+			<% end %>
+			<div id="confirm-selection-wrapper">
+				<a name="show-all-btn" href="/explore" class="confirm-selection-btn">
+					<span>SHOW ALL</span>
+				</a>
+				<a name="confirm-btn" class="confirm-selection-btn disabled">
+					<span>NEXT</span>
+				</a>
+			</div>
+			<div id="explore-stats-container">
+				<a title="" class="stats-wrapper">
+					<p class="stat-text">tissues</p>
+          <p class="stat-num" id="stat1"></p>
+          <script type="text/javascript">var stat1 = new CountUp("stat1", 0, <%= @tissues_count %>, 0, 2.5, options); stat1.start();</script>
+          <div id="explore-table-scroll">
+            <table class="table" id="explore-table-selectable">
+               <tbody>
+                  <% @tissues.each do |t| %>
+                  <tr id="tissue-row" tissue-id=<%= t['tissue_id'] %> tissue-active=<%= @is_tissues ? 'true' : 'false' %> >
+                    <td>
+						<%= link_to t['tissue_name'], explore_path(:tid => t['tissue_id']), :class => 'inactiveLink', :method => :post %>
+					</td>
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
+          </div>
+				</a>
+				<a title="" class="stats-wrapper">
+					<p class="stat-text">cell lines</p>
+          <p class="stat-num" id="stat2"></p>
+          <script type="text/javascript">var stat2 = new CountUp("stat2", 0, <%= @cell_lines_count %>, 0, 2.5, options); stat2.start();</script>
+          <div id="explore-table-scroll">
+		   <table class="table" id=<%= @is_cell_lines ? 'explore-table-selectable' : 'explore-table-default' %> >
+           <tbody>
+              <% @cell_lines.each do |c| %>
+                  <tr id="cell-line-row" cell-line-id=<%= c['cell_id'] %> cell-line-active=<%= @is_cell_lines ? 'true' : 'false' %> >
+                    <td>
+					  <% if @is_cell_lines %>
+						<!-- <%= link_to c['cell_name'], explore_path(:cid => c['cell_id']), :class => 'inactiveLink', :method => :post %> -->
+						<a href="/cell_lines/<%= c['cell_id'] %>"><%= c['cell_name'] %></a>
+					  <% else %>
+					 	<a> <%= c['cell_name'] %> </a>
+					  <% end %>
+					</td>
+                  </tr>
+                  <% end %>
+           </tbody>
+           </table>
+          </div>
+		  </a>
+		  <a title="" class="stats-wrapper">
+          <p class="stat-text">drugs</p>
+          <p class="stat-num" id="stat4"></p>
+          <script type="text/javascript">var stat4 = new CountUp("stat4", 0, <%= @drugs_count %>, 0, 2.5, options); stat4.start();</script>
+          <div id="explore-table-scroll">
+		   <table class="table" id=<%= @is_drugs ? 'explore-table-selectable' : 'explore-table-default' %> >
+           <tbody>
+              <% @drugs.each do |dr| %>
+              <tr id="drug-row" drug-id=<%= dr['drug_id'] %> drug-active=<%= @is_drugs ? 'true' : 'false' %> >
+                <td>
+					<% if @is_drugs %>
+						<a href="/drugs/<%= dr['drug_id'] %>"><%= dr['drug_name'] %></a>
+					<% else %>
+						<a> <%= dr['drug_name'] %> </a>
+					<% end %>
+				</td>
+              </tr>
+              <% end %>
+           </tbody>
+            </table>
+          </div>
+          </a>
+		  <a title="" class="stats-wrapper">
+		  <p class="stat-text">targets</p>
+          <p class="stat-num" id="stat3"></p>
+          <script type="text/javascript">var stat3 = new CountUp("stat3", 0, <%= @drug_targets_count %>, 0, 2.5, options); stat3.start();</script>
+          <div id="explore-table-scroll">
+		   <table class="table" id=<%= @is_drug_targets ? 'explore-table-selectable' : 'explore-table-default' %> >
+               <tbody>
+                  <% @drug_targets.each do |dt| %>
+                  <tr id="target-row" target-id=<%= dt['target_id'] %> target-active=<%= @is_drug_targets ? 'true' : 'false' %> >
+                    <td>
+						<% if @is_drug_targets %>
+							<%= link_to dt['target_name'], explore_path(:dt => dt['target_id']), :class => 'inactiveLink', :method => :post %>
+						<% else %>
+							<a> <%= dt['target_name'] %> </a>
+						<% end %>
+					</td>
+
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
+          </div>
+		  </a>
+		</div>
+		<div id="explore-buffer"></div>
+		<%= render 'components/footer' %>
+	</div>
+</div>

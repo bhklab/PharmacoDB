@@ -1,0 +1,63 @@
+<% provide(:title, "Docs") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to docs_path do %>Docs<% end %><i>/</i></li>
+         <li class="pcb-list-active">Drugs</li>
+      </ol>
+   </div>
+</div>
+
+<section id="docs-content-container">
+    <div id="docs-content-wrapper">
+        <div id="dcw-left-wrapper">
+            <ul>
+							  <li><%= link_to docs_videos_path do %>Overview<% end %></li><br>
+                <li><%= link_to docs_search_path do %>Search<% end %></li><br>
+                <li><%= link_to docs_cell_lines_path do %>Cell lines<% end %></li>
+                <li><%= link_to docs_tissues_path do %>Tissues<% end %></li>
+                <li class="dcw-item-active"><%= link_to docs_drugs_path do %>Drugs<% end %></li>
+                <li><%= link_to docs_datasets_path do %>Datasets<% end %></li>
+                <li><%= link_to docs_datasets_intersection_path do %>Datasets Intersection<% end %></li>
+                <li><%= link_to docs_cell_line_vs_drug_path do %>Cell line vs. Drug<% end %></li>
+                <!-- <li><%= link_to docs_api_path do %>API<% end %></li> -->
+            </ul>
+        </div>
+        <div id="dcw-right-wrapper">
+            <h3>Drugs</h3>
+
+            <p>Each drug included in PharmacoDB has a webpage associated with it. These pages can be accessed by searching for a drug type through the search bar.</p>
+            <figure>
+          <%= image_tag("docs/drug/search.png", alt:"Search for a drug.", class:'docs-image') %>
+          <figcaption> Example search for a drug. </figcaption>
+        </figure>
+			<p>Each drug page starts with a card which displays information about the datasets which performed experiments with that drug as well as the name each gave to it.</p>
+       <figure>
+        <%= image_tag("docs/drug/description.png", alt:"Description of a drug.", class:'docs-image') %>
+        <figcaption> Description card for a drug. </figcaption>
+      </figure>
+			<p> The page also includes a table of cells on which that drug has been tested, with the studies in which the cell - drug combination can be found and the total number of experiments across all datasets.</p>
+      <figure>
+      <%= image_tag("docs/drug/cellTable.png", alt:"Table of cell lines tested with drug.", class:'docs-image') %>
+      <figcaption> Table of cell lines tested with drug.</figcaption>
+      </figure>
+      <p> The page also includes a table of tissue on which that drug has been tested, with the studies in which the drug - tissue combination can be found and the total number of experiments across all cell lines of the tissue type in all datasets.</p>
+      <figure>
+        <%= image_tag("docs/drug/tissueTable.png", alt:"Table of tissue types tested with drug.", class:'docs-image') %>
+        <figcaption> Table of tissue types tested with drug. </figcaption>
+      </figure>
+      <p>Finally, the page concludes with plots comparing the number of cells and tissues tested on with that drug in each PharmacoDB dataset.</p>
+      <figure>
+      <%= image_tag("docs/drug/cellPlot.png", alt:"Graph of cell lines tested with drug across datasets.", class:'docs-image') %>
+      <figcaption> Graph of cell lines tested with drug across datasets. </figcaption>
+      </figure>
+        </div>
+    </div>
+</section>
+
+<%= render 'components/footer' %>

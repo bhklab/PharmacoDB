@@ -1,0 +1,33 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  identifier: MyText
+  accession_id: MyText
+  synonyms: MyText
+  creferences: MyText
+  ireferences: MyText
+  webpages: MyText
+  comments: MyText
+  strdata: MyText
+  diseases: MyText
+  sorigin: MyText
+  hierarchy: MyText
+  ofsi: MyText
+  sgofcell: MyText
+  category: MyText
+
+two:
+  identifier: MyText
+  accession_id: MyText
+  synonyms: MyText
+  creferences: MyText
+  ireferences: MyText
+  webpages: MyText
+  comments: MyText
+  strdata: MyText
+  diseases: MyText
+  sorigin: MyText
+  hierarchy: MyText
+  ofsi: MyText
+  sgofcell: MyText
+  category: MyText

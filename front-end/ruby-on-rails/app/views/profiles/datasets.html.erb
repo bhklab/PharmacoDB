@@ -1,0 +1,147 @@
+<% provide(:title, "Datasets") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to datasets_path do %>Datasets<% end %><i>/</i></li>
+         <li class="pcb-list-active"><%= @dataset_name %></li>
+      </ol>
+   </div>
+</div>
+<% if @exit_code == 0 %>
+<!-- datasets page wrapper -->
+<section id="pmdb-prof-container">
+   <div id="pmdb-prof-wrapper" class="pmdb-prof-wrapper-padded">
+      <table class="table table-bordered">
+         <caption>List of all datasets in Pharmacodb - currently <%= @datasets_count %> in total.</caption>
+         <thead>
+            <tr>
+              <th colspan="2">Dataset Name</th>
+           </tr>
+        </thead>
+        <tbody>
+         <% @datasets.each_slice(2) do |dataset_slice| %>
+         <tr>
+          <% dataset_slice.each do |s| %>
+          <td><a href="/datasets/<%= s['dataset_id'] %>" title=""><%= s['dataset_name'] %></a></td>
+          <% end %>
+       </tr>
+       <% end %>
+    </tbody>
+ </table>
+ <div class="flickr_pagination">
+   <%= will_paginate @datasets %>
+</div>
+</div>
+</section>
+<% elsif @exit_code == 1 %>
+<!-- cell_line page wrapper -->
+<section id="pmdb-prof-container">
+ <%= render 'components/contact_sidebar', :subject => "datasets", :title => @dataset_name %>
+ <div id="pmdb-prof-wrapper">
+   <div id="pmdb-prof-leftcol">
+      <!-- profile card -->
+      <div class="ppl-card ppl-card-prof">
+         <a id="pmdb-obj-name" href="/datasets/<%= @dataset_id %>" title=""><h1><%= @dataset_name %></h1></a>
+         <%= render @path %>
+
+         <h3 class="ppl-card-title">PharmacoGx</h3>
+         <p> <a href=<%= "/pharmacogx?pgx=" + @dataset_id.to_s %> >PharmacoSet object for:  <%= @dataset_name %> </a> </p>
+         </div>
+         <!-- list of cell lines card -->
+         <div class="ppl-card ppl-card-3">
+            <h2 class="page-card-title">All cell lines tested in <%= @dataset_name %></h2>
+            <h5 class="page-card-subtitle">
+               <% if not @search_cell_lines %>
+               <strong><%= @cell_lines_count %></strong> cell lines have been tested in this dataset.
+               <% else %>
+               <%= @caption_cell_lines %>
+               <% end %>
+            </h5>
+            <%= render 'components/cell_line_search_form', locals: { rest_uri: "/datasets/".concat(@dataset_id) } %>
+            <table>
+               <tbody>
+                  <% @cell_lines.each_slice(2) do |cell_lines_slice| %>
+                  <tr>
+                     <% cell_lines_slice.each do |c| %>
+                     <td><a href="/cell_lines/<%= c[0] %>"><%= c[1] %></a></td>
+                     <% end %>
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
+            <div class="flickr_pagination">
+               <%= will_paginate @cell_lines, :param_name => 'cpage', inner_window: 1, outer_window: 1 %>
+            </div>
+         </div>
+         <!-- list of drugs card -->
+         <div class="ppl-card ppl-card-3">
+            <h2 class="page-card-title">All compounds tested in <%= @dataset_name %></h2>
+            <h5 class="page-card-subtitle">
+               <% if not @search_drugs %>
+               <strong><%= @drugs_count %></strong> compounds have been tested in this dataset.
+               <% else %>
+               <%= @caption_drug %>
+               <% end %>
+            </h5>
+            <%= render 'components/drug_search_form', locals: { rest_uri: "/datasets/".concat(@dataset_id) } %>
+            <table>
+               <tbody>
+                  <% @drugs.each_slice(2) do |drugs_slice| %>
+                  <tr>
+                     <% drugs_slice.each do |d| %>
+                     <td><a href="/drugs/<%= d[0] %>"><%= d[1] %></a></td>
+                     <% end %>
+                  </tr>
+                  <% end %>
+               </tbody>
+            </table>
+            <div class="flickr_pagination">
+               <%= will_paginate @drugs, :param_name => 'dpage', inner_window: 1, outer_window: 1 %>
+            </div>
+         </div>
+      </div>
+      <div id="pmdb-prof-rightcol">
+         <div class="ppl-card ppl-chart-card">
+            <div id="pmdb-scell-plot"></div>
+            <script type="text/javascript">
+              $("#barPlotpmdb-scell-plot").remove()
+							$("#buttonpmdb-scell-plot").remove()
+              $(document).ready(makeBarPlot(<%= raw @snames %>,<%= @ccounts %>, "", "pmdb-scell-plot", "", "Number of cell lines tested across datasets", "cell lines", <%= raw '"' + @dataset_name + '"'%>))
+           </script>
+        </div>
+        <div class="ppl-card ppl-chart-card">
+         <div id="pmdb-stissues-plot"></div>
+         <script type="text/javascript">
+           $("#barPlotpmdb-stissues-plot").remove()
+					 $("#buttonpmdb-stissues-plot").remove()
+           $(document).ready(makeBarPlot(<%= raw @snames %>,<%= @tcounts %>, "", "pmdb-stissues-plot", "", "Number of tissues tested across datasets", "tissues", <%= raw '"' + @dataset_name + '"'%>))
+        </script>
+     </div>
+     <div class="ppl-card ppl-chart-card">
+      <div id="pmdb-sdrugs-plot"></div>
+      <script type="text/javascript">
+        $("#barPlotpmdb-sdrugs-plot").remove()
+				$("#buttonpmdb-sdrugs-plot").remove()
+        $(document).ready(makeBarPlot(<%= raw @snames %>,<%= @dcounts %>, "", "pmdb-sdrugs-plot", "", "Number of compounds tested across datasets", "compounds", <%= raw '"' + @dataset_name + '"'%>))
+     </script>
+  </div>
+  <div class="ppl-card ppl-chart-card">
+   <div id="pmdb-expss-plot"></div>
+   <script type="text/javascript">
+     $("#barPlotpmdb-expss-plot").remove()
+		 $("#buttonpmdb-expss-plot").remove()
+     $(document).ready(makeBarPlot(<%= raw @snames %>,<%= @ecounts %>, "", "pmdb-expss-plot", "", "Number of experiments held across datasets", "experiments", <%= raw '"' + @dataset_name + '"'%>))
+  </script>
+</div>
+</div>
+</div>
+</section>
+<% end %>
+
+<%= render 'components/footer' %>

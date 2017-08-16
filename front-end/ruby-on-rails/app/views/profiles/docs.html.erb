@@ -1,0 +1,25 @@
+<% provide(:title, "Docs") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<div class="pmdb-crumb-base">
+   <div class="pcb-wrapper">
+      <ol class="pcb-list">
+         <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+         <li><%= link_to docs_path do %>Docs<% end %><i>/</i></li>
+      </ol>
+   </div>
+</div>
+<section id="docs-container">
+	<h2>Documentation</h2>
+	<div class="toc-wrapper">
+		<%- @toc.each do |item, distance| %>
+				<%= ('&nbsp;' * distance  * 5).html_safe %>
+				<%= item %>
+				<br/>
+		<%- end %>
+	</div>
+</section>
+
+<%= render 'components/footer' %>

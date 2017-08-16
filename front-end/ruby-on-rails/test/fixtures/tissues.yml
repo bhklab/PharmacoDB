@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tissue_id: 1
+  tissue_name: MyText
+
+two:
+  tissue_id: 1
+  tissue_name: MyText

@@ -1,0 +1,75 @@
+<% provide(:title, "PharmacoGx") %>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"> </script>
+<%= javascript_include_tag("drugDoseResponseCurve.js")%>
+
+
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<section id="pmdb-celldrug-container">
+	<section id="pmdb-prof-container">
+		<div id="pmdb-prof-wrapper">
+			<div id="pmdb-prof-centrecol">
+				<div class="ppl-card">
+					<h1 class="centered-title"> PharmacoGx </h1>
+					<p><b> PharmacoGx </b> is an R/Bioconductor package we developed to simplify the analysis of large PharmacoGenomic Datasets. All the datasets included in PharmacoDB are available as R objects for analysis using PharmacoGx, with both the pharmacological and molecular data from each study. PharmacoGx incorporates all the annotations of each study available in PharmacoDB, and provides a suite of statistical modeling functions to jointly analyze molecular features and drug dose-response curves. </p>
+					<p>PharmacoGx is simple to start using once R is installed and running on your system. If its your first time using PharmacoGx, download and install the package and all its dependencies by opening an R console and running the following commands: </p>
+					<div class="code-container" >
+						source("http://www.bioconductor.org/biocLite.R") <br>
+						biocLite("PharmacoGx")
+					</div>
+					<br>
+					<p> After installing for the first time, to load the package you can run the following command in your R session: </p>
+					<div class="code-container" >
+						library(PharmacoGx)
+					</div>
+					<br>
+
+					<% unless @dataset_id.empty? %>
+
+					<!-- <h2 class="centered-title"> <%= @dataset_name.first %> <h2> -->
+
+					<p>To download a PharmacoSet object with all the pharmacological and molecular data for <b> <%=@dataset_name.first%> </b> and begin analysing the data, you can use the following commands. </p>
+
+					<div class="code-container" >
+						# <i> Download the object for <%= @dataset_name.first %> </i><br>
+						<%= @dataset_name.first %> <- downloadPSet(<%= @dataset_name.first %>) <br>
+						<br>
+						# <i>Plot Drug Dose response curves, using the same names for compounds and cell lines as PharmacoDB </i><br>
+						drugDoseResponseCurve(<%= @dataset_name.first %>, drug="paclitaxel", cell="MCF7") <br>
+						<br>
+						<% unless ["CTRPv2","FIMM"].include? @dataset_name.first %>
+						# <i>Extract the expression data to a matrix </i><br>
+						<%= @dataset_name.first %>.expression <- summarizeMolecularProfiles(<%= @dataset_name.first %>, mDataType="rna") <br> 
+						<br>
+						# <i>Run a linear model for univariate biomarker discovery </i><br>
+						<%= @dataset_name.first %>.sensitivity.signatures <- drugSensitivitySig(<%= @dataset_name.first %>, mDataType="rna", sensitivity.measure="auc_recomputed")
+						<% end %>
+					</div>
+					<% else %>
+					<p>You can download a PharmacoSet (PSet) object for any of the datasets in PharmacoDB. For example, to download a PSet with all the pharmacological and molecular data for <b> CCLE </b> and begin analysing the data, you can use the following commands: </p>
+
+					<div class="code-container" >
+						# <i> Download the object for CCLE </i><br>
+						CCLE <- downloadPSet(CCLE) <br>
+						<br>
+						# <i>Plot Drug Dose response curves, using the same names for compounds and cell lines as PharmacoDB </i><br>
+						drugDoseResponseCurve(CCLE, drug="paclitaxel", cell="MCF7") <br>
+						<br>
+						# <i>Extract the expression data to a matrix </i><br>
+						CCLE.expression <- summarizeMolecularProfiles(CCLE, mDataType="rna") <br> 
+						<br>
+						# <i>Run a linear model for univariate biomarker discovery </i><br>
+						CCLE.sensitivity.signatures <- drugSensitivitySig(CCLE, mDataType="rna", sensitivity.measure="auc_recomputed")
+					</div>
+
+					<%end%>
+					<br><p> To learn more about the PharmacoGx package, you can download the full documentation and vignettes through our Bioconductor page: <a href="https://bioconductor.org/packages/release/bioc/html/PharmacoGx.html"> PharmacoGx</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</section>
+<%= render 'components/footer' %>
