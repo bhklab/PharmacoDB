@@ -5,18 +5,43 @@
 [![GoDoc](https://godoc.org/github.com/bhklab/PharmacoDB/api?status.svg)](https://godoc.org/github.com/bhklab/PharmacoDB/api)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bhklab/PharmacoDB)](https://goreportcard.com/report/github.com/bhklab/PharmacoDB)
 
-[PharmacoDB](http://pharmacodb.pmgenomics.ca/) enables efficient mining of a compendium of large pharmacogenomic studies where panels of immortalized cancer cell lines have been screened against hundreds of approved and experimental drug compounds. Database contains curated datasets with standard annotations for cell lines, their tissue source, and drug compounds, as well as hundreds of thousands of drug dose-response curves.
-
-Application currently has two main components: [`api`](./api) and [`web-application`](./front-end).
-
 ## Table of Contents
-
+- [**About**](#about)
+- [**Example Queries**](#example-queries)
 - [**API**](#api)
   - [**Endpoints**](#endpoints)
   - [**Running the API Locally**](#running-the-api-locally)
 - [**Web Application**](#web-application)
 - [**Contributing**](#contributing)
 - [**License**](#license)
+
+## About
+
+High throughput drug screening technologies have enabled the profiling of hundreds of cancer cell lines to a large variety of small molecules to discover novel and repurposed treatments. Several large studies have been publicly released testing candidate molecules, often with corresponding molecular profiles of the cell lines used for drug screening. These studies have become invaluable resources for the research community, allowing researchers to leverage the collected data to support their own research. However, such pharmacogenomic datasets are disparate and lack of standardization for cell line and drug identifiers, and used heterogeneous data format for the drug sensitivity measurements.
+
+To address these issues, we developed [PharmacoDB](http://pharmacodb.pmgenomics.ca/), a web-application assembling the largest in vitro drug screens in a single database, and allowing users to easily query the union of studies released to date. PharmacoDB allows scientists to search across publicly available datasets to find instances where a drug or cell line of interest has been profiled, and to view and compare the dose-response data for a specific cell line - drug pair from any of the studies included in the database.
+
+Application currently has two main components: [`api`](./api) and [`web-application`](./front-end).
+
+## Example Queries
+
+Cell lines? Try typing **MCF7**
+
+![MCF7](/front-end/ruby-on-rails/app/assets/images/about/cell-line-search.png)
+
+Tissues? Try typing **Breast**
+
+![Breast](/front-end/ruby-on-rails/app/assets/images/about/tissue-search.png)
+
+Drugs? Try typing **Paclitaxel**
+
+![Paclitaxel](/front-end/ruby-on-rails/app/assets/images/about/drugs-search.png)
+
+Drug dose-response curves? Try typing **MCF7 Paclitaxel**
+
+![MCF7 Paclitaxel](/front-end/ruby-on-rails/app/assets/images/about/drug-dose-response-curve-search.png)
+
+[Start searching](http://pharmacodb.pmgenomics.ca/) across pharmacogenomic datasets and do not hesitate to give us feedback on [GitHub](https://github.com/bhklab/pharmacodb/issues).
 
 ## API
 
