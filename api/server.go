@@ -1,6 +1,9 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/thinkerou/favicon"
+)
 
 // Init server.
 func Init(config *Config) {
@@ -9,6 +12,9 @@ func Init(config *Config) {
 
 	// Gin router with default middleware: logger and recovery
 	router := gin.Default()
+
+	// Serve favicon
+	router.Use(favicon.New("./assets/images/favicon.ico"))
 
 	v := router.Group(config.Version + "/")
 	for _, route := range routes {
