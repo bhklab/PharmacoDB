@@ -15,6 +15,9 @@ func Init(config *Config) {
 	// Set gin mode
 	gin.SetMode(config.Mode)
 
+	// Serve favicon
+	router.StaticFile("/favicon.ico", "./assets/images/favicon.ico")
+
 	router.GET("/", RootHandler)
 
 	v := router.Group("v" + config.Version + "/")
