@@ -12,6 +12,7 @@ type DBAuthInfo struct {
 	User string // local mysql user
 	Pass string // local mysql password
 	Name string // database name
+	Host string // mysql host
 }
 
 // DB is a global datastore for database connection information.
@@ -28,11 +29,14 @@ func SetDB(version string) {
 	if DB.Name = os.Getenv("DB_NAME_V" + version); DB.Name == "" {
 		panic("Missing environment variable: DB_NAME_V" + version)
 	}
+	if DB.Host = os.Getenv("DB_HOST_V" + version); DB.Host == "" {
+		panic("Missing environment variable: DB_HOST_V" + version)
+	}
 }
 
 // Database creates a new database connection.
 func Database() (*sql.DB, error) {
-	cred := DB.User + ":" + DB.Pass + "@tcp(127.0.0.1:3306)/" + DB.Name
+	cred := DB.User + ":" + DB.Pass + "@tcp(" + DB.Host + ":3306)/" + DB.Name
 	db, _ := sql.Open("mysql", cred)
 	err := db.Ping()
 	if err != nil {
