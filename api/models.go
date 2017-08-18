@@ -1,6 +1,6 @@
 package api
 
-// Cell is model for a cell line.
+// Cell is a resource model for cell_lines.
 type Cell struct {
 	ID          int         `json:"id"`
 	ACC         *string     `json:"accession_id,omitempty"`
@@ -12,7 +12,7 @@ type Cell struct {
 // Cells is a collection of Cell.
 type Cells []Cell
 
-// Tissue is model for a tissue.
+// Tissue is a resource model for tissues.
 type Tissue struct {
 	ID          int         `json:"id"`
 	Name        *string     `json:"name,omitempty"`
@@ -22,17 +22,17 @@ type Tissue struct {
 // Tissues is a collection of Tissue.
 type Tissues []Tissue
 
-// Drug is model for a drug.
-type Drug struct {
+// Compound is a resource model for compounds.
+type Compound struct {
 	ID          int         `json:"id"`
 	Name        string      `json:"name"`
 	Annotations Annotations `json:"annotations,omitempty"`
 }
 
-// Drugs is a collection of Drug.
-type Drugs []Drug
+// Compounds is a collection of Drug.
+type Compounds []Compound
 
-// Dataset is model for a dataset.
+// Dataset is a resource model for datasets.
 type Dataset struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
@@ -41,12 +41,12 @@ type Dataset struct {
 // Datasets is a collection of Dataset.
 type Datasets []Dataset
 
-// Experiment is model for an experiment.
+// Experiment is a resource model for experiments.
 type Experiment struct {
 	ID            int           `json:"experiment_id"`
 	Cell          Cell          `json:"cell_line"`
 	Tissue        Tissue        `json:"tissue"`
-	Drug          Drug          `json:"drug"`
+	Compound      Compound      `json:"compound"`
 	Dataset       Dataset       `json:"dataset"`
 	DoseResponses DoseResponses `json:"dose_responses,omitempty"`
 }
@@ -54,7 +54,7 @@ type Experiment struct {
 // Experiments is a collection of Experiment.
 type Experiments []Experiment
 
-// DoseResponse is model for dose/response data.
+// DoseResponse is a model for a dose/response data pair.
 type DoseResponse struct {
 	Dose     float64 `json:"dose"`
 	Response float64 `json:"response"`
@@ -63,7 +63,7 @@ type DoseResponse struct {
 // DoseResponses is a collection of DoseResponse.
 type DoseResponses []DoseResponse
 
-// Annotation is model for names used by various datasets for each model.
+// Annotation models the name used by datasets for a resource item.
 type Annotation struct {
 	Name     string   `json:"name"`
 	Datasets []string `json:"datasets"`

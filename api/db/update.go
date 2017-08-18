@@ -1,3 +1,5 @@
+// This module is used for tranforming front-end database to
+// back-end database, modifying/adding/dropping tables as needed.
 package main
 
 import (

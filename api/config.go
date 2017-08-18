@@ -7,6 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Config is an API configuration struct.
+type Config struct {
+	Mode    string
+	Port    string
+	Version string
+}
+
 // API server environment modes.
 const (
 	DebugMode   string = "debug"   // for development
@@ -14,32 +21,46 @@ const (
 	TestMode    string = "test"    // for testing
 )
 
-var (
-	apiPort    string
-	apiVersion string
-)
+var apiVersion string
 
-var apiMode = ReleaseMode
+// DefaultConfig returns the default API configuration setting.
+func DefaultConfig() Config {
+	return Config{ReleaseMode, "8080", "1"}
+}
 
-// SetMode sets server environment mode.
-func SetMode(mode string) {
+// SetMode sets api mode.
+func (c *Config) SetMode(mode string) {
 	switch mode {
 	case DebugMode:
-		apiMode = DebugMode
+		c.Mode = DebugMode
 	case ReleaseMode:
-		apiMode = ReleaseMode
+		c.Mode = ReleaseMode
 	case TestMode:
-		apiMode = TestMode
+		c.Mode = TestMode
 	default:
 		panic(fmt.Errorf("API mode '%s' not recognized", mode))
 	}
-	// Set gin mode as well.
+	// Set gin mode.
 	gin.SetMode(mode)
 }
 
-// GetModeFromEnv gets mode from environment variable MODE.
-// Panics if mode environment variable is not available.
-func GetModeFromEnv() string {
+// SetPort sets api port.
+func (c *Config) SetPort(port string) {
+	c.Port = port
+}
+
+// SetVersion sets api version.
+func (c *Config) SetVersion(version string) {
+	c.Version = version
+}
+
+// SetVersion sets global api version.
+func SetVersion(version string) {
+	apiVersion = "v" + version
+}
+
+// GetEnvMode gets api mode from environment variable MODE.
+func GetEnvMode() string {
 	m := os.Getenv("MODE")
 	if m == "" {
 		panic("MODE environment variable does not exist.")
@@ -47,19 +68,8 @@ func GetModeFromEnv() string {
 	return m
 }
 
-// Mode returns current server environment mode.
-func Mode() string {
-	return apiMode
-}
-
-// SetPort sets API port.
-func SetPort(port string) {
-	apiPort = port
-}
-
-// GetPortFromEnv gets port from environment variable PORT.
-// Panics if port environment variable is not available.
-func GetPortFromEnv() string {
+// GetEnvPort gets api port from environment variable PORT.
+func GetEnvPort() string {
 	p := os.Getenv("PORT")
 	if p == "" {
 		panic("PORT environment variable does not exist.")
@@ -67,19 +77,8 @@ func GetPortFromEnv() string {
 	return p
 }
 
-// Port returns current API port.
-func Port() string {
-	return apiPort
-}
-
-// SetVersion sets current API version.
-func SetVersion(v string) {
-	apiVersion = v
-}
-
-// GetVersionFromEnv gets version from environment variable VERSION.
-// Panics if version environment variable is not available.
-func GetVersionFromEnv() string {
+// GetEnvVersion gets api version from environment variable VERSION.
+func GetEnvVersion() string {
 	v := os.Getenv("VERSION")
 	if v == "" {
 		panic("VERSION environment variable does not exist.")
@@ -87,7 +86,7 @@ func GetVersionFromEnv() string {
 	return v
 }
 
-// Version returns the current API version.
+// Version returns the current api version.
 func Version() string {
 	return apiVersion
 }

@@ -4,49 +4,39 @@ import (
 	"database/sql"
 	"os"
 
-	raven "github.com/getsentry/raven-go"
 	_ "github.com/go-sql-driver/mysql" // go mysql driver
 )
 
-// DBAuthInfo contains username, password and database name information.
-// Used when making database connection.
+// DBAuthInfo contains local mysql username, password, and database name.
 type DBAuthInfo struct {
 	User string // local mysql user
 	Pass string // local mysql password
 	Name string // database name
 }
 
-// DB is a global datastore for database
-// connection credential information.
+// DB is a global datastore for database connection information.
 var DB DBAuthInfo
 
-// SetDB updates DB with local connection information
-// using environment variables.
-func SetDB() {
-	if DB.User = os.Getenv("DB_USER_V1"); DB.User == "" {
-		panic("OS environment variable 'DB_USER_V1' is missing")
+// SetDB updates DB using environment settings.
+func SetDB(version string) {
+	if DB.User = os.Getenv("DB_USER_V" + version); DB.User == "" {
+		panic("Missing environment variable: DB_USER_V" + version)
 	}
-	if DB.Pass = os.Getenv("DB_PASS_V1"); DB.Pass == "" {
-		panic("OS environment variable 'DB_PASS_V1' is missing")
+	if DB.Pass = os.Getenv("DB_PASS_V" + version); DB.Pass == "" {
+		panic("Missing environment variable: DB_PASS_V" + version)
 	}
-	if DB.Name = os.Getenv("DB_NAME_V1"); DB.Name == "" {
-		panic("OS environment variable 'DB_NAME_V1' is missing")
+	if DB.Name = os.Getenv("DB_NAME_V" + version); DB.Name == "" {
+		panic("Missing environment variable: DB_NAME_V" + version)
 	}
 }
 
-// cred returns dataSourceName credentials string.
-func cred() string {
-	return DB.User + ":" + DB.Pass + "@tcp(127.0.0.1:3306)/" + DB.Name
-}
-
-// InitDB prepares database abstraction for later use.
-func InitDB() (*sql.DB, error) {
-	db, err := sql.Open("mysql", cred())
+// Database creates a new database connection.
+func Database() (*sql.DB, error) {
+	cred := DB.User + ":" + DB.Pass + "@tcp(127.0.0.1:3306)/" + DB.Name
+	db, _ := sql.Open("mysql", cred)
+	err := db.Ping()
 	if err != nil {
-		raven.CaptureError(err, nil)
-	}
-	if err = db.Ping(); err != nil {
-		raven.CaptureError(err, nil)
+		LogSentry(err)
 	}
 	return db, err
 }

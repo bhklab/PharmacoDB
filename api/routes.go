@@ -2,20 +2,19 @@ package api
 
 import "github.com/gin-gonic/gin"
 
-// HTTP Request Methods.
+// HTTP methods.
 const (
 	GET    string = "GET"
+	HEAD   string = "HEAD"
 	POST   string = "POST"
 	PUT    string = "PUT"
 	DELETE string = "DELETE"
-	HEAD   string = "HEAD"
 	OPTION string = "OPTION"
 	PATCH  string = "PATCH"
 )
 
 // Route is a routing model.
 type Route struct {
-	Method   string
 	Endpoint string
 	Handler  gin.HandlerFunc
 }
@@ -23,42 +22,49 @@ type Route struct {
 // Routes is a collection of Route.
 type Routes []Route
 
-var routes = Routes{
-	Route{GET, "/cell_lines", IndexCell},
-	Route{GET, "/cell_lines/:id", ShowCell},
-	Route{GET, "/cell_lines/:id/drugs", CellDrugs},
+var routesGET = Routes{
+	Route{"/cell_lines", IndexCells},
+	Route{"/cell_lines/:id", ShowCell},
+	Route{"/cell_lines/:id/compounds", CellCompounds},
 
-	Route{GET, "/tissues", IndexTissue},
-	Route{GET, "/tissues/:id", ShowTissue},
-	Route{GET, "/tissues/:id/cell_lines", TissueCells},
-	Route{GET, "/tissues/:id/drugs", TissueDrugs},
+	Route{"/tissues", IndexTissues},
+	Route{"/tissues/:id", ShowTissue},
+	Route{"/tissues/:id/cell_lines", TissueCells},
+	Route{"/tissues/:id/compounds", TissueCompounds},
 
-	Route{GET, "/drugs", IndexDrug},
-	Route{GET, "/drugs/:id", ShowDrug},
-	Route{GET, "/drugs/:id/cell_lines", DrugCells},
-	Route{GET, "/drugs/:id/tissues", DrugTissues},
+	Route{"/compounds", IndexCompounds},
+	Route{"/compounds/:id", ShowCompound},
+	Route{"/compounds/:id/cell_lines", CompoundCells},
+	Route{"/compounds/:id/tissues", CompoundTissues},
 
-	Route{GET, "/datasets", IndexDataset},
-	Route{GET, "/datasets/:id", ShowDataset},
-	Route{GET, "/datasets/:id/cell_lines", DatasetCells},
-	Route{GET, "/datasets/:id/tissues", DatasetTissues},
-	Route{GET, "/datasets/:id/drugs", DatasetDrugs},
+	Route{"/datasets", IndexDatasets},
+	Route{"/datasets/:id", ShowDataset},
+	Route{"/datasets/:id/cell_lines", DatasetCells},
+	Route{"/datasets/:id/tissues", DatasetTissues},
+	Route{"/datasets/:id/compounds", DatasetCompounds},
 
-	Route{GET, "/experiments", IndexExperiment},
-	Route{GET, "/experiments/:id", ShowExperiment},
+	Route{"/experiments", IndexExperiments},
+	Route{"/experiments/:id", ShowExperiment},
 
-	Route{GET, "/intersections", IndexIntersection},
-	Route{GET, "/intersections/1/:cell_id/:drug_id", CellDrugIntersection},
-	Route{GET, "/intersections/2/:cell_id/:dataset_id", CellDatasetIntersection},
+	Route{"/intersections", IndexIntersections},
+	Route{"/intersections/1/:cell_id/:compound_id", CellCompoundIntersection},
+	Route{"/intersections/2/:cell_id/:dataset_id", CellDatasetIntersection},
 
-	Route{GET, "/stats/tissues/cell_lines", TissueCellStats},
-	Route{GET, "/stats/datasets/cell_lines", DatasetCellStats},
-	Route{GET, "/stats/datasets/cell_lines/:id/drugs", DatasetCellDrugsStats},
-	Route{GET, "/stats/datasets/tissues", DatasetTissueStats},
-	Route{GET, "/stats/datasets/tissues/:id/cell_lines", DatasetTissueCellsStats},
-	Route{GET, "/stats/datasets/tissues/:id/drugs", DatasetTissueDrugsStats},
-	Route{GET, "/stats/datasets/drugs", DatasetDrugStats},
-	Route{GET, "/stats/datasets/drugs/:id/cell_lines", DatasetDrugCellsStats},
-	Route{GET, "/stats/datasets/drugs/:id/tissues", DatasetDrugTissuesStats},
-	Route{GET, "/stats/datasets/experiments", DatasetExperimentStats},
+	Route{"/stats/tissues/cell_lines", StatTissuesCells},
+
+	Route{"/stats/datasets/cell_lines", StatDatasetsCells},
+	Route{"/stats/datasets/tissues", StatDatasetsTissues},
+	Route{"/stats/datasets/compounds", StatDatasetsCompounds},
+
+	Route{"/stats/datasets/cell_lines/tissues/:id", StatDatasetsTissuesCells},
+	Route{"/stats/datasets/cell_lines/compounds/:id", StatDatasetsCompoundsCells},
+	Route{"/stats/datasets/tissues/compounds/:id", StatDatasetsCompoundsTissues},
+	Route{"/stats/datasets/compounds/cell_lines/:id", StatDatasetsCellsCompounds},
+	Route{"/stats/datasets/compounds/tissues/:id", StatDatasetsTissuesCompounds},
+
+	Route{"/stats/datasets/experiments", StatDatasetsExperiments},
+}
+
+var routesHEAD = Routes{
+	Route{"/cell_lines", IndexCellsHEAD},
 }

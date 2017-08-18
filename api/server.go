@@ -1,47 +1,38 @@
 package api
 
-import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-)
+import "github.com/gin-gonic/gin"
 
-// Context configuration.
-type Context struct {
-	Mode    string
-	Port    string
-	Version string
-}
+// Init server.
+func Init(config *Config) {
+	// Set database credentials
+	SetDB(config.Version)
 
-// Init new server, using gin router.
-func Init(c *Context) {
-	SetMode(c.Mode)
-	SetPort(c.Port)
-	SetVersion(c.Version)
+	SetVersion(config.Version)
 
-	SetDB()
-
-	// Rate limit
-	// limiter := tollbooth.NewLimiter(1, time.Second)
-	//
-	// // Limit only GET and POST requests.
-	// limiter.Methods = []string{"GET", "POST"}
-
+	// Gin router with default middleware: logger and recovery
 	router := gin.Default()
 
-	// CORS
-	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
-	router.Use(cors.New(config))
+	// Set gin mode
+	gin.SetMode(config.Mode)
 
-	router.StaticFile("/favicon.ico", "./static/images/favicon.png")
+	router.GET("/", RootHandler)
 
-	v := router.Group(Version() + "/")
-	for _, route := range routes {
-		v.Handle(route.Method, route.Endpoint, route.Handler)
+	v := router.Group("v" + config.Version + "/")
+	v.GET("/", RootHandler)
+	// GET requests
+	for _, route := range routesGET {
+		v.Handle(GET, route.Endpoint, route.Handler)
+	}
+	// HEAD requests
+	for _, route := range routesHEAD {
+		v.Handle(HEAD, route.Endpoint, route.Handler)
 	}
 
-	// Respond with status code 400 (Bad Request) if no routers match the request url.
-	router.NoRoute(func(c *gin.Context) { LogBadRequestError(c) })
+	// If no routers match the request url, return 400 (Bad Request)
+	router.NoRoute(func(c *gin.Context) {
+		BadRequest(c, "The endpoint "+c.Request.URL.Path+" is not well formed")
+	})
 
-	router.Run(":" + Port())
+	// Listen and serve on config port
+	router.Run(":" + config.Port)
 }
