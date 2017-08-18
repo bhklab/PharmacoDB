@@ -18,6 +18,7 @@ install:
   - go get github.com/gin-gonic/gin
   - go get github.com/getsentry/raven-go
   - go get github.com/go-sql-driver/mysql
+  - go get github.com/thinkerou/favicon
   - go version
   - go env
 

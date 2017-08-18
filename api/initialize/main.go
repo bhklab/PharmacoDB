@@ -21,7 +21,7 @@ func main() {
 	flag.BoolVar(&getVersionFromEnv, "eversion", false, "use VERSION environment variable")
 	flag.StringVar(&c.Mode, "mode", "release", "environment mode")
 	flag.StringVar(&c.Port, "port", "8080", "server port")
-	flag.StringVar(&c.Version, "version", "v1", "api version")
+	flag.StringVar(&c.Version, "version", "1", "api version")
 
 	flag.Parse()
 

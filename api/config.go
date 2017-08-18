@@ -21,6 +21,8 @@ const (
 	TestMode    string = "test"    // for testing
 )
 
+var apiVersion string
+
 // DefaultConfig returns the default API configuration setting.
 func DefaultConfig() Config {
 	return Config{ReleaseMode, "8080", "1"}
@@ -52,6 +54,11 @@ func (c *Config) SetVersion(version string) {
 	c.Version = version
 }
 
+// SetVersion sets global api version.
+func SetVersion(version string) {
+	apiVersion = "v" + version
+}
+
 // GetEnvMode gets api mode from environment variable MODE.
 func GetEnvMode() string {
 	m := os.Getenv("MODE")
@@ -77,4 +84,9 @@ func GetEnvVersion() string {
 		panic("VERSION environment variable does not exist.")
 	}
 	return v
+}
+
+// Version returns the current api version.
+func Version() string {
+	return apiVersion
 }
