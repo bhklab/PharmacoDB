@@ -1,18 +1,13 @@
-# PharmacoDB
+# PharmacoDB [![Build Status](https://travis-ci.org/bhklab/PharmacoDB.svg?branch=master)](https://travis-ci.org/bhklab/PharmacoDB) [![Build status](https://ci.appveyor.com/api/projects/status/9bkwyiu0vkm66y1t?svg=true)](https://ci.appveyor.com/project/assefamaru/pharmacodb) [![GoDoc](https://godoc.org/github.com/bhklab/PharmacoDB/api?status.svg)](https://godoc.org/github.com/bhklab/PharmacoDB/api)
 
-[![Build Status](https://travis-ci.org/bhklab/PharmacoDB.svg?branch=master)](https://travis-ci.org/bhklab/PharmacoDB)
-[![Build status](https://ci.appveyor.com/api/projects/status/9bkwyiu0vkm66y1t?svg=true)](https://ci.appveyor.com/project/assefamaru/pharmacodb)
-[![GoDoc](https://godoc.org/github.com/bhklab/PharmacoDB/api?status.svg)](https://godoc.org/github.com/bhklab/PharmacoDB/api)
-
-## Table of Contents
-- [**About**](#about)
-- [**Example Queries**](#example-queries)
-- [**API**](#api)
-  - [**Endpoints**](#endpoints)
-  - [**Running the API Locally**](#running-the-api-locally)
-- [**Web Application**](#web-application)
-- [**Contributing**](#contributing)
-- [**License**](#license)
+- [About](#about)
+- [Example Queries](#example-queries)
+- [API](#api)
+  - [Endpoints](#endpoints)
+  - [Running the API Locally](#running-the-api-locally)
+- [Web Application](#web-application)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## About
 
@@ -55,31 +50,31 @@ https://api.pharmacodb.com/v1/
 
 Returned data is in `json` format.
 
-Source code documentation ref for the API can be found at: [https://godoc.org/github.com/bhklab/PharmacoDB/api](https://godoc.org/github.com/bhklab/PharmacoDB/api)
+Source code documentation for the API can be found at [GoDoc.org](https://godoc.org/github.com/bhklab/PharmacoDB/api)
 
 ### Endpoints
 
-Resource type: **`cell lines`**
+**`cell lines`**
 
 - [**/cell_lines**](./doc/template.md)
 - [**/cell_lines/{id}**](./doc/template.md)
 - [**/cell_lines/{id}/drugs**](./doc/template.md)
 
-Resource type: **`tissues`**
+**`tissues`**
 
 - [**/tissues**](./doc/template.md)
 - [**/tissues/{id}**](./doc/template.md)
 - [**/tissues/{id}/cell_lines**](./doc/template.md)
 - [**/tissues/{id}/drugs**](./doc/template.md)
 
-Resource type: **`drugs`**
+**`drugs`**
 
-- [**/drugs**](./doc/template.md)
-- [**/drugs/{id}**](./doc/template.md)
-- [**/drugs/{id}/cell_lines**](./doc/template.md)
-- [**/drugs/{id}/tissues**](./doc/template.md)
+- [**/compounds**](./doc/template.md)
+- [**/compounds/{id}**](./doc/template.md)
+- [**/compounds/{id}/cell_lines**](./doc/template.md)
+- [**/compounds/{id}/tissues**](./doc/template.md)
 
-Resource type: **`datasets`**
+**`datasets`**
 
 - [**/datasets**](./doc/template.md)
 - [**/datasets/{id}**](./doc/template.md)
@@ -87,28 +82,28 @@ Resource type: **`datasets`**
 - [**/datasets/{id}/tissues**](./doc/template.md)
 - [**/datasets/{id}/drugs**](./doc/template.md)
 
-Resource type: **`experiments`**
+**`experiments`**
 
 - [**/experiments**](./doc/template.md)
 - [**/experiments/{id}**](./doc/template.md)
 
-Resource type: **`intersections`**
+**`intersections`**
 
 - [**/intersections**](./doc/template.md)
 - [**/intersections/1/{cell_id}/{drug_id}**](./doc/template.md)
 - [**/intersections/2/{cell_id}/{dataset_id}**](./doc/template.md)
 
-Resource type: **`stats`**
+**`stats`**
 
 - [**/stats/tissues/cell_lines**](./doc/template.md)
 - [**/stats/datasets/cell_lines**](./doc/template.md)
-- [**/stats/datasets/cell_lines/{id}/drugs**](./doc/template.md)
 - [**/stats/datasets/tissues**](./doc/template.md)
-- [**/stats/datasets/tissues/{id}/cell_lines**](./doc/template.md)
-- [**/stats/datasets/tissues/{id}/drugs**](./doc/template.md)
-- [**/stats/datasets/drugs**](./doc/template.md)
-- [**/stats/datasets/drugs/{id}/cell_lines**](./doc/template.md)
-- [**/stats/datasets/drugs/{id}/tissues**](./doc/template.md)
+- [**/stats/datasets/compounds**](./doc/template.md)
+- [**/stats/datasets/cell_lines/tissues/{tissue_id}**](./doc/template.md)
+- [**/stats/datasets/cell_lines/compounds/{compound_id}**](./doc/template.md)
+- [**/stats/datasets/tissues/compounds/{compound_id}**](./doc/template.md)
+- [**/stats/datasets/compounds/cell_lines/{cell_id}**](./doc/template.md)
+- [**/stats/datasets/compounds/tissues/{tissue_id}**](./doc/template.md)
 - [**/stats/datasets/experiments**](./doc/template.md)
 
 Most endpoints contain options for further formatting query or output, including options such as: `indent`, `type`, `include`, `page`, `per_page`, `all` and more. Visit each endpoint link above to see a list of all the options that are available to that endpoint.
@@ -119,7 +114,7 @@ To setup and run the API locally, simply download and run one of the api builds 
 
 ## Web Application
 
-Add webapp content here for documenting some of the interface features, and linking to the web docs page.
+Documentation for the web-application can be found at: [pharmacodb.pmgenomics.ca/docs](http://pharmacodb.pmgenomics.ca/docs).
 
 ## Contributing
 
