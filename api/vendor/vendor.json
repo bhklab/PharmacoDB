@@ -75,5 +75,9 @@
 			"revisionTime": "2017-02-08T14:18:51Z"
 		}
 	],
-	"rootPath": "github.com/bhklab/PharmacoDB/api"
+	"rootPath": "github.com/bhklab/PharmacoDB/api",
+	"heroku": {
+        "install" : [ "./initialize/..." ],
+        "goVersion": "go1.8"
+	}
 }
