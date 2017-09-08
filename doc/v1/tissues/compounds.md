@@ -1,4 +1,4 @@
-# Compounds
+# Compounds Tested Against A Tissue
 
 ```
 GET /tissues/{id}/compounds

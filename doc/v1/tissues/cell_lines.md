@@ -1,4 +1,4 @@
-# Cell Lines
+# Cell Lines Of A Tissue Type
 
 ```
 GET /tissues/{id}/cell_lines
