@@ -1,7 +1,7 @@
 # PharmacoDB
 
 [![Build Status](https://travis-ci.org/bhklab/PharmacoDB.svg?branch=master)](https://travis-ci.org/bhklab/PharmacoDB)
-[![Build status](https://ci.appveyor.com/api/projects/status/9bkwyiu0vkm66y1t?svg=true)](https://ci.appveyor.com/project/assefamaru/pharmacodb) 
+[![Build status](https://ci.appveyor.com/api/projects/status/9bkwyiu0vkm66y1t?svg=true)](https://ci.appveyor.com/project/assefamaru/pharmacodb)
 [![GoDoc](https://godoc.org/github.com/bhklab/PharmacoDB/api?status.svg)](https://godoc.org/github.com/bhklab/PharmacoDB/api)
 
 - [About](#about)
@@ -58,46 +58,46 @@ Source code documentation for the API can be found at [GoDoc.org](https://godoc.
 
 ### Endpoints
 
-**`cell lines`**
+**cell lines**
 
-- [**/cell_lines**](./doc/template.md)
-- [**/cell_lines/{id}**](./doc/template.md)
-- [**/cell_lines/{id}/drugs**](./doc/template.md)
+- [**/cell_lines**](./doc/v1/cell_lines/readme.md)
+- [**/cell_lines/{id}**](./doc/v1/cell_lines/id.md)
+- [**/cell_lines/{id}/drugs**](./doc/v1/cell_lines/compounds.md)
 
-**`tissues`**
+**tissues**
 
 - [**/tissues**](./doc/template.md)
 - [**/tissues/{id}**](./doc/template.md)
 - [**/tissues/{id}/cell_lines**](./doc/template.md)
-- [**/tissues/{id}/drugs**](./doc/template.md)
+- [**/tissues/{id}/compounds**](./doc/template.md)
 
-**`drugs`**
+**drugs**
 
 - [**/compounds**](./doc/template.md)
 - [**/compounds/{id}**](./doc/template.md)
 - [**/compounds/{id}/cell_lines**](./doc/template.md)
 - [**/compounds/{id}/tissues**](./doc/template.md)
 
-**`datasets`**
+**datasets**
 
 - [**/datasets**](./doc/template.md)
 - [**/datasets/{id}**](./doc/template.md)
 - [**/datasets/{id}/cell_lines**](./doc/template.md)
 - [**/datasets/{id}/tissues**](./doc/template.md)
-- [**/datasets/{id}/drugs**](./doc/template.md)
+- [**/datasets/{id}/compounds**](./doc/template.md)
 
-**`experiments`**
+**experiments**
 
 - [**/experiments**](./doc/template.md)
 - [**/experiments/{id}**](./doc/template.md)
 
-**`intersections`**
+**intersections**
 
 - [**/intersections**](./doc/template.md)
-- [**/intersections/1/{cell_id}/{drug_id}**](./doc/template.md)
+- [**/intersections/1/{cell_id}/{compound_id}**](./doc/template.md)
 - [**/intersections/2/{cell_id}/{dataset_id}**](./doc/template.md)
 
-**`stats`**
+**stats**
 
 - [**/stats/tissues/cell_lines**](./doc/template.md)
 - [**/stats/datasets/cell_lines**](./doc/template.md)

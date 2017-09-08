@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Error is a custom public error implementation.
+// Error is a public error implementation.
 type Error struct {
 	Code        int         `json:"code"`
 	Message     string      `json:"message"`
