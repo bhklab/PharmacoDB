@@ -1,4 +1,4 @@
-# Tissues
+# Tissues Tested Against A Compound.
 
 ```
 GET /compounds/{id}/tissues
@@ -37,7 +37,7 @@ GET /compounds/{id}/tissues
 | **per_page** | filter | *integer* | no | 30 | Number of items returned per page |
 | **include** | input | metadata | no | - | Include meta info (eg. pagination) in body instead of headers |
 | **indent** | input | *boolean* | no | false | Add indentation to response |
-| **type** | input | - | no | tissue_id | Define whether `id = compound_id` or `id = compound_name` |
+| **type** | input | - | no | compound_id | Define whether `id = compound_id` or `id = compound_name` |
 
 ## Output Formats
 
