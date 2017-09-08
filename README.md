@@ -88,8 +88,8 @@ Source code documentation for the API can be found at [GoDoc.org](https://godoc.
 
 **Experiments**
 
-- [**/experiments**](./doc/template.md)
-- [**/experiments/{id}**](./doc/template.md)
+- [**/experiments**](./doc/v1/experiments/readme.md)
+- [**/experiments/{id}**](./doc/v1/experiments/id.md)
 
 **Intersections**
 
