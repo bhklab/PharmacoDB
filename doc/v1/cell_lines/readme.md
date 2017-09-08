@@ -48,7 +48,7 @@ GET /cell_lines
 GET /cell_lines
 ```
 
-- http://pharmacodb.pmgenomics.ca/cell_lines
+- https://api.pharmacodb.com/v1/cell_lines
 
 ## Output
 
