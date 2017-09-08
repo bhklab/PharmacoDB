@@ -80,11 +80,11 @@ Source code documentation for the API can be found at [GoDoc.org](https://godoc.
 
 **Datasets**
 
-- [**/datasets**](./doc/template.md)
-- [**/datasets/{id}**](./doc/template.md)
-- [**/datasets/{id}/cell_lines**](./doc/template.md)
-- [**/datasets/{id}/tissues**](./doc/template.md)
-- [**/datasets/{id}/compounds**](./doc/template.md)
+- [**/datasets**](./doc/v1/datasets/readme.md)
+- [**/datasets/{id}**](./doc/v1/datasets/id.md)
+- [**/datasets/{id}/cell_lines**](./doc/v1/datasets/cell_lines.md)
+- [**/datasets/{id}/tissues**](./doc/v1/datasets/tissues.md)
+- [**/datasets/{id}/compounds**](./doc/v1/datasets/compounds.md)
 
 **Experiments**
 
