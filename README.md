@@ -62,14 +62,14 @@ Source code documentation for the API can be found at [GoDoc.org](https://godoc.
 
 - [**/cell_lines**](./doc/v1/cell_lines/readme.md)
 - [**/cell_lines/{id}**](./doc/v1/cell_lines/id.md)
-- [**/cell_lines/{id}/drugs**](./doc/v1/cell_lines/compounds.md)
+- [**/cell_lines/{id}/compounds**](./doc/v1/cell_lines/compounds.md)
 
 **Tissues**
 
-- [**/tissues**](./doc/template.md)
-- [**/tissues/{id}**](./doc/template.md)
-- [**/tissues/{id}/cell_lines**](./doc/template.md)
-- [**/tissues/{id}/compounds**](./doc/template.md)
+- [**/tissues**](./doc/v1/tissues/readme.md)
+- [**/tissues/{id}**](./doc/v1/tissues/id.md)
+- [**/tissues/{id}/cell_lines**](./doc/v1/tissues/cell_lines.md)
+- [**/tissues/{id}/compounds**](./doc/v1/tissues/compounds.md)
 
 **Drugs**
 
