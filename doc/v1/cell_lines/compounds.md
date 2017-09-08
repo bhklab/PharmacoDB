@@ -1,4 +1,4 @@
-# Compounds
+# Compounds Tested Against Cell Line
 
 ```
 GET /cell_lines/{id}/compounds
