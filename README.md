@@ -58,27 +58,27 @@ Source code documentation for the API can be found at [GoDoc.org](https://godoc.
 
 ### Endpoints
 
-**cell lines**
+**Cell lines**
 
 - [**/cell_lines**](./doc/v1/cell_lines/readme.md)
 - [**/cell_lines/{id}**](./doc/v1/cell_lines/id.md)
 - [**/cell_lines/{id}/drugs**](./doc/v1/cell_lines/compounds.md)
 
-**tissues**
+**Tissues**
 
 - [**/tissues**](./doc/template.md)
 - [**/tissues/{id}**](./doc/template.md)
 - [**/tissues/{id}/cell_lines**](./doc/template.md)
 - [**/tissues/{id}/compounds**](./doc/template.md)
 
-**drugs**
+**Drugs**
 
 - [**/compounds**](./doc/template.md)
 - [**/compounds/{id}**](./doc/template.md)
 - [**/compounds/{id}/cell_lines**](./doc/template.md)
 - [**/compounds/{id}/tissues**](./doc/template.md)
 
-**datasets**
+**Datasets**
 
 - [**/datasets**](./doc/template.md)
 - [**/datasets/{id}**](./doc/template.md)
@@ -86,18 +86,18 @@ Source code documentation for the API can be found at [GoDoc.org](https://godoc.
 - [**/datasets/{id}/tissues**](./doc/template.md)
 - [**/datasets/{id}/compounds**](./doc/template.md)
 
-**experiments**
+**Experiments**
 
 - [**/experiments**](./doc/template.md)
 - [**/experiments/{id}**](./doc/template.md)
 
-**intersections**
+**Intersections**
 
 - [**/intersections**](./doc/template.md)
 - [**/intersections/1/{cell_id}/{compound_id}**](./doc/template.md)
 - [**/intersections/2/{cell_id}/{dataset_id}**](./doc/template.md)
 
-**stats**
+**Stats**
 
 - [**/stats/tissues/cell_lines**](./doc/template.md)
 - [**/stats/datasets/cell_lines**](./doc/template.md)
