@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
 
-  get 'errors/not_found'
+  	get 'errors/not_found'
 
-  get 'errors/internal_server_error'
+  	get 'errors/internal_server_error'
 
 	root 'static_pages#home'
 
@@ -41,7 +41,7 @@ Rails.application.routes.draw do
 	get 'drugs'        => 'profiles#drugs'
 	get 'datasets'     => 'profiles#datasets'
 	get 'experiments'  => 'profiles#experiments'
-	get 'targets'  => 'profiles#targets'
+	get 'genes'  => 'profiles#genes'
 	get 'contact_us'   => 'profiles#contact_us'
 	post 'contact_us'   => 'profiles#contact_us'
 
@@ -49,13 +49,16 @@ Rails.application.routes.draw do
 	get 'tissues/:id'          => 'profiles#tissues'
 	get 'drugs/:id'            => 'profiles#drugs'
 	get 'datasets/:id'         => 'profiles#datasets'
-	get 'targets/:id'         => 'profiles#targets'
+	get 'genes/:id'         => 'profiles#genes'
 
-  get 'download' => 'static_pages#download'
+	get 'download' => 'static_pages#download'
+	get 'news' => 'static_pages#news'
+	get 'batch_query' => 'static_pages#batch_query'
+	post 'batch_query' => 'static_pages#batch_query'
 
-  # errors
-  match "/404", :to => "errors#not_found", :via => :all
-  match "/500", :to => "errors#internal_server_error", :via => :all
+  	# errors
+  	match "/404", :to => "errors#not_found", :via => :all
+  	match "/500", :to => "errors#internal_server_error", :via => :all
 
 	# For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

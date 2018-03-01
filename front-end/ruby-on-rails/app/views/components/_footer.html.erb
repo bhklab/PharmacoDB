@@ -12,8 +12,10 @@
 			</ul>
 			<ul>
 				<li class="ftr-clmn-title">Tools</li>
+				<li><%= link_to explore_path do %>Explore<% end %></li>
+				<li><%= link_to batch_query_path do %>Batch Query<% end %></li>
 				<li><%= link_to search_path do %>Search<% end %></li>
-				<li><%= link_to "GitHub", "https://github.com/bhklab/PharmacoDB-web", :target => "_blank" %></li>
+				<li><%= link_to "GitHub", "https://github.com/bhklab/PharmacoDB", :target => "_blank" %></li>
 			</ul>
 			<ul>
 				<li class="ftr-clmn-title">Datatypes</li>
@@ -21,7 +23,7 @@
 				<li><%= link_to cell_lines_path do %>cell lines<% end %></li>
 				<li><%= link_to tissues_path do %>tissues<% end %></li>
 				<li><%= link_to drugs_path do %>drugs<% end %></li>
-				<li><%= link_to targets_path do %>targets<%end%></li>
+				<li><%= link_to genes_path do %>genes<%end%></li>
 				<li><%= link_to experiments_path do %>experiments<% end %></li>
 			</ul>
 			<div id="ftr-contact">

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
+
+service mysql restart && service mysql reload
+
+cd /usr/src/app
+
+bundle install
+
+export RAILS_ENV=production && bundle exec rake log:clear && bundle exec rake assets:clobber && bundle exec rake assets:precompile && rails s -e production

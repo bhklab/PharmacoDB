@@ -17,7 +17,7 @@ Rails.application.config.assets.precompile += %w( typeahead.js )
 Rails.application.config.assets.precompile += %w( typed.js )
 Rails.application.config.assets.precompile += %w( typeahead.js )
 Rails.application.config.assets.precompile += %w( d3.v3.min.js )
-
+Rails.application.config.assets.precompile += %w( svgToPdf.js )
 
 # Add additional assets to the asset load path
 # Rails.application.config.assets.paths << Emoji.images_path

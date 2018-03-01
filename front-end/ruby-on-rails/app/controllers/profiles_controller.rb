@@ -1,4 +1,8 @@
+require 'json'
+
 class ProfilesController < ApplicationController
+
+  skip_before_action :verify_authenticity_token
 
    def is_equal_incl(arg, name)
     return (arg.casecmp(name) == 0) || (name.to_s.downcase().include? arg.downcase())
@@ -66,7 +70,7 @@ class ProfilesController < ApplicationController
          @cellosaurus_path = @cellosaurus_path + accession
          if cellosaurus_data[0]['synonyms'].present?
             synonyms = cellosaurus_data[0]['synonyms'].split("; ").join(", ")
-            html_link = "<a target=\"_blank\" href=\"http://web.expasy.org/cellosaurus/#{accession}\">Cellosaurus</a>"
+            html_link = "<a target=\"_blank\" href=\"http://web.expasy.org/cellosaurus/#{accession}\" target=\"_blank\">Cellosaurus</a>"
             @synonyms << [html_link, synonyms]
          end
          if cellosaurus_data[0]['di'].present?
@@ -131,7 +135,6 @@ class ProfilesController < ApplicationController
          @synonyms = "N/A"
       end
 
-
       mol_data = MolCell.where(:cell_id => @cell_line_id).includes(:dataset).pluck(:dataset_name, :mDataType, :num_prof)
 
       @mol_data_type = mol_data.pluck(1).uniq
@@ -159,16 +162,19 @@ class ProfilesController < ApplicationController
       @tissue_id = tissue[0]['tissue_id']
       @tissue_name = tissue[0]['tissue_name']
 
-      sql = "SELECT d.drug_id, d.drug_name, s.dataset_id, s.dataset_name, e.experiment_id FROM drugs d, datasets s, experiments e WHERE e.cell_id = #{@cell_line_id} AND d.drug_id = e.drug_id AND s.dataset_id = e.dataset_id"
+      sql = "SELECT d.drug_id, d.drug_name, s.dataset_id, s.dataset_name, e.experiment_id, p.IC50, p.AAC FROM drugs d, datasets s, experiments e, profiles p WHERE e.cell_id = #{@cell_line_id} AND d.drug_id = e.drug_id AND s.dataset_id = e.dataset_id AND p.experiment_id = e.experiment_id"
       experiments = ActiveRecord::Base.connection.exec_query(sql)
 
       drugs = []
       datasets = []
       dataset_count = []
       drugs_arr = []
+      @synonyms_waterfall = []
 
       @drug_AAC = []
       @drug_IC50 = []
+
+      waterfall_data = []
 
       experiments.each do |e|
          drug_id = e['drug_id']
@@ -197,41 +203,73 @@ class ProfilesController < ApplicationController
                end
             end
             ind = drugs.index(drug_name)
-            @drug_AAC[ind] << Experiment.find(e['experiment_id'] ).profile["AAC"]
-            if Experiment.find(e['experiment_id'] ).profile["IC50"].nil?
-              temp = Float::NAN
+            tempAAC = e["AAC"]
+            @drug_AAC[ind] << tempAAC
+            if e["IC50"].nil?
+              tempIC50 = Float::NAN
             else
-              temp = Experiment.find(e['experiment_id'] ).profile["IC50"]
+              tempIC50 = e["IC50"]
             end
-            @drug_IC50[ind] << temp
+            @drug_IC50[ind] << tempIC50
+            if params[:download] == "waterfall"
+               waterfall_data << [drug_name, dataset_name, tempAAC, tempIC50]
+            end
          else
             drugs << drug_name
             datasets << dataset_name
-            @drug_AAC << [Experiment.find(e['experiment_id'] ).profile["AAC"]]
+            tempAAC = e["AAC"]
+            @drug_AAC << [tempAAC]
 
-            if Experiment.find(e['experiment_id'] ).profile["IC50"].nil?
-              temp = Float::NAN
+            if e["IC50"].nil?
+              tempIC50 = Float::NAN
             else
-              temp = Experiment.find(e['experiment_id'] ).profile["IC50"]
+              tempIC50 = e["IC50"]
             end
-            @drug_IC50 << [temp]
+            @drug_IC50 << [tempIC50]
             if params[:d].to_s.strip.empty?
               drugs_arr << [drug_name, "<a href=\"/datasets/#{dataset_id}\">" + dataset_name + "</a>", 1, drug_id]
             else
               drugs_arr << [drug_name, "<a href=\"/datasets/#{dataset_id}\">" + dataset_name + "</a>", 1, drug_id] if is_equal_incl(params[:d], drug_name)
             end
+            if params[:download] == "waterfall"
+               waterfall_data << [dataset_name, drug_name, tempAAC, tempIC50]
+            end
          end
-      end
+         temp = [e["drug_name"]] + Drug.find(e['drug_id']).source_drug_names.pluck(:drug_name)
+         @synonyms_waterfall << temp.uniq
+   end
+
+   # sql = "SELECT DISTINCT cell_name FROM source_cell_names WHERE cell_id IN (#{cell_ids.join(', ')})"
+   # @synonyms_waterfall = []
+   # results = ActiveRecord::Base.connection.exec_query(sql)
+   # results.to_hash.each{ |k, v| @synonyms_waterfall.push(k.values[0]) }
+
+      @synonyms_waterfall.uniq!
 
       @drug_names_waterfall = drugs
+
+      #attempt at compiling synonyms for each drug of waterfall
+     
+
       @numdatasets = datasets.uniq.count
       @numdrugs = drugs.count
-      drugs_arr = drugs_arr.sort_by { |e| e[2] }.reverse 
+
+
+      if params[:sort] == "compounds"
+        drugs_arr = sort_column(drugs_arr, params[:direction], 0)
+      elsif params[:sort] == "datasets"
+        drugs_arr = sort_column(drugs_arr, params[:direction], 1)
+      elsif params[:sort] == "experiments"
+        drugs_arr = sort_column(drugs_arr, params[:direction], 2)
+      else
+        # sort the experiments row by default for both tables
+        drugs_arr = sort_column(drugs_arr, "desc", 2)
+      end
 
       @drugs = drugs_arr.paginate(:page => params[:page], :per_page => 10)
 
       if params[:download] == "drug_table"
-         drugs_arr.each do |d| 
+         drugs_arr.each do |d|
             d[1] = d[1].gsub(/<a[^>]*>/, '')
             d[1] = d[1].gsub(/<\/a.?>/, '')
             d[1] = d[1].gsub(/,/, ';')
@@ -262,12 +300,12 @@ class ProfilesController < ApplicationController
 
       if params[:d].to_s.strip.empty?
          @search_drugs = false
-         @placeholder_drug = 'Search drug names ...'
+         @placeholder_drug = 'Search compound names ...'
       else
          @search_drugs = true
          if @drugs.length.equal? 0
             @caption_drug = 'Your search for ' + params[:d].to_s.strip + " yielded no results."
-            @placeholder_drug = 'Search drug names ...'
+            @placeholder_drug = 'Search compound names ...'
          else
             @caption_drug = ''
             @placeholder_drug = params[:d].to_s.strip
@@ -284,6 +322,16 @@ class ProfilesController < ApplicationController
          send_data data_csv, filename: @cell_line_name + '_drug_table.csv'
       end
 
+      if params[:download] == "waterfall"
+         data_csv = ''
+         data_csv << " Drug, Dataset, AAC, IC50\n"
+         waterfall_data.sort_by!{|g| g[0]}
+         waterfall_data.each do |d|
+            data_csv << d.to_csv
+            data_csv << "\n"
+         end
+         send_data data_csv, filename: @cell_line_name + '_waterfall_table.csv'
+      end
 
       @exit_code = 1
       return
@@ -326,10 +374,10 @@ class ProfilesController < ApplicationController
          return
       end
 
-      sql = "SELECT tissue_name FROM tissues WHERE tissue_id = #{params[:id]}"
-      tissue = ActiveRecord::Base.connection.exec_query(sql)
+      # sql = "SELECT tissue_name FROM tissues WHERE tissue_id = #{params[:id]}"
+      # tissue = ActiveRecord::Base.connection.exec_query(sql)
       @tissue_id = params[:id]
-      @tissue_name = tissue[0]['tissue_name']
+      @tissue_name = Tissue.find(params[:id].to_i).tissue_name
 
       @synonyms = []
 
@@ -341,7 +389,7 @@ class ProfilesController < ApplicationController
             dataset_id = s['dataset_id']
             dataset_name = s['dataset_name']
             html_link = "<a href=\"/datasets/#{dataset_id}\">" + dataset_name + "</a>"
-            allsyn << [html_link, s['tissue_name']]
+            allsyn << [html_link, s['tissue_name'].tr("_", " ") ]
          end
          names_so_far = []
          sources_so_far = []
@@ -408,6 +456,8 @@ class ProfilesController < ApplicationController
 
       sql = "SELECT d.drug_id, d.drug_name, s.dataset_id, s.dataset_name FROM drugs d, datasets s, experiments e, cell_tissues ct WHERE ct.tissue_id = #{@tissue_id} AND e.cell_id = ct.cell_id AND d.drug_id = e.drug_id AND s.dataset_id = e.dataset_id"
       experiments = ActiveRecord::Base.connection.exec_query(sql)
+      ## unfortunately slow code with active record
+      # experiments = Experiment.includes(:drug, :dataset).where(:tissue_id => @tissue_id)
 
       if experiments.present?
          experiments.each do |e|
@@ -438,15 +488,25 @@ class ProfilesController < ApplicationController
          end
       end
 
+      if params[:sort] == "compounds"
+        array = sort_column(array, params[:direction], 0)
+      elsif params[:sort] == "datasets"
+        array = sort_column(array, params[:direction], 1)
+      elsif params[:sort] == "experiments"
+        array = sort_column(array, params[:direction], 2)
+      else
+        # sort the experiments row by default for both tables
+        array = sort_column(array, "desc", 2)
+      end
+
       @numdrugs = drugs.uniq.count
       @numdatasets = datasets.uniq.count
-      array = array.sort_by { |e| e[2] }.reverse
+
       drugs_arr = array
       @drugs = array.paginate(:page => params[:dpage], :per_page => 10)
 
-
       if params[:download] == "drug_table"
-         drugs_arr.each do |d| 
+         drugs_arr.each do |d|
             d[1] = d[1].gsub(/<a[^>]*>/, '')
             d[1] = d[1].gsub(/<\/a.?>/, '')
             d[1] = d[1].gsub(/,/, ';')
@@ -469,14 +529,14 @@ class ProfilesController < ApplicationController
       @scounts = drugs_count.map { |x| x[1] }
 
 
-      sql = "SELECT ct.cell_id, s.dataset_id FROM datasets s, experiments e, cell_tissues ct WHERE ct.tissue_id = #{@tissue_id} AND e.cell_id = ct.cell_id AND s.dataset_id = e.dataset_id"
-      experiments = ActiveRecord::Base.connection.exec_query(sql)
+      sql = "SELECT ds.cell_id, ds.dataset_id FROM dataset_cells ds, cell_tissues ct WHERE ct.tissue_id = #{@tissue_id} AND ds.cell_id = ct.cell_id"
+      dataset_cells = ActiveRecord::Base.connection.exec_query(sql)
 
 
-      exps = experiments.to_a
+      dss = dataset_cells.to_a
       @ccounts = []
       datasets.each do |s|
-         count = exps.select {|e| e['dataset_id'] == s['dataset_id']}.map{|x| x['cell_id']}.uniq.count
+         count = dss.select {|e| e['dataset_id'] == s['dataset_id']}.map{|x| x['cell_id']}.uniq.count
          cells_count << [s['dataset_name'],count]
       end
 
@@ -486,12 +546,12 @@ class ProfilesController < ApplicationController
 
       if params[:d].to_s.strip.empty?
          @search_drugs = false
-         @placeholder_drug = 'Search drug names ...'
+         @placeholder_drug = 'Search compound names ...'
       else
          @search_drugs = true
          if @drugs.length.equal? 0
             @caption_drug = 'Your search for ' + params[:d].to_s.strip + " yielded no results."
-            @placeholder_drug = 'Search drug names ...'
+            @placeholder_drug = 'Search compound names ...'
          else
             @caption_drug = ''
             @placeholder_drug = params[:d].to_s.strip
@@ -544,6 +604,8 @@ class ProfilesController < ApplicationController
    end #/tissues
 
    def drugs
+      @drugs_colspan = 2    
+      @placeholder_drug = 'Search compound names ...'    
       unless params[:id].present?
          datasets = Dataset.all
          @count_ids = []
@@ -556,20 +618,33 @@ class ProfilesController < ApplicationController
 
          sql = "SELECT drug_id, drug_name FROM drugs"
          drugs = ActiveRecord::Base.connection.exec_query(sql)
+         filtered_drugs = []
+         drugs.each do |drug|
+           if params[:d].to_s.strip.empty?
+             filtered_drugs << drug
+           else
+            filtered_drugs << drug if is_equal_incl(params[:d], drug['drug_name'])
+           end
+         end
          # XXX :: The database was changes as a workaround to get nice drugs first. Please fix the actual data!
-         @drugs = drugs.sort_by{ |d| d['drug_id']}.to_a.paginate(:page => params[:page], :per_page => 20)
+         @drugs = filtered_drugs.sort_by{ |d| d['drug_id']}.to_a.paginate(:page => params[:page], :per_page => 20)
          @drugs_count = drugs.count
+         if @drugs_count <= 10
+            @drugs_colspan = 1
+         end
          @exit_code = 0
          return
       end
 
-      sql = "SELECT drug_name FROM drugs WHERE drug_id = #{params[:id]}"
-      drug = ActiveRecord::Base.connection.exec_query(sql)
+      # sql = "SELECT drug_name FROM drugs WHERE drug_id = #{params[:id]}"
+      drug = Drug.find(params[:id].to_i)
       @drug_id = params[:id]
-      @drug_name = drug[0]['drug_name']
+      @drug_name = drug.drug_name
+
+      @targets = drug.targets.uniq.to_a
 
       @synonyms = []
-      @drug_ids = DrugAnnot.where(:drug_id => @drug_id).first
+      @drug_ids = DrugAnnot.where(:drug_id => @drug_id).take
       @drug_ids = [["Smiles:",@drug_ids.smiles], ["Inchikey:",@drug_ids.inchikey], ["Pubchem:",@drug_ids.pubchem]]
 
       sql = "SELECT drug_name, dataset_id, dataset_name FROM source_drug_names, datasets WHERE drug_id = #{@drug_id} AND dataset_id = source_id"
@@ -625,28 +700,35 @@ class ProfilesController < ApplicationController
          @synonyms = "N/A"
       end
 
-      array = []
-      tarray = []
+      cell_line_array = []
+      tissue_array = []
       cell_lines = []
+      cell_ids = []
       tissues = []
       datasets = []
 
       @cell_AAC = []
       @cell_IC50 = []
 
-      sql = "SELECT c.cell_id, c.cell_name, t.tissue_id, t.tissue_name, s.dataset_id, s.dataset_name, e.experiment_id FROM cells c, tissues t, datasets s, cell_tissues ct, experiments e WHERE e.drug_id = #{@drug_id} AND s.dataset_id = e.dataset_id AND ct.cell_id = e.cell_id AND t.tissue_id = ct.tissue_id AND c.cell_id = e.cell_id"
+      waterfall_data = []
+      @synonyms_waterfall = []
+      
+      ### FIXME:: This following loop takes way too long because of the source cell name call at the end. How can we optimize the query?
+      sql = "SELECT c.cell_id, c.cell_name, t.tissue_id, t.tissue_name, s.dataset_id, s.dataset_name, e.experiment_id, p.AAC, p.IC50 FROM cells c, tissues t, datasets s, cell_tissues ct, experiments e, profiles p WHERE e.drug_id = #{@drug_id} AND s.dataset_id = e.dataset_id AND ct.cell_id = e.cell_id AND t.tissue_id = ct.tissue_id AND c.cell_id = e.cell_id AND p.experiment_id = e.experiment_id"
       experiments = ActiveRecord::Base.connection.exec_query(sql)
 
       if experiments.present?
          experiments.each do |e|
             cell_id = e['cell_id']
+            cell_ids << cell_id
             cell_line = e['cell_name']
             tissue_id = e['tissue_id']
-            tissue = e['tissue_name']
+            # tissue = e['tissue_name']
+            tissue = strip_underscore(e['tissue_name'])
             dataset_id = e['dataset_id']
             dataset = e['dataset_name']
             if cell_lines.include? cell_line
-               array.each do |a|
+              cell_line_array.each do |a|
                   if a[0] == cell_line
                      unless a[1].include? dataset
                         a[1] = a[1] + ", " + "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>"
@@ -657,32 +739,40 @@ class ProfilesController < ApplicationController
                   end
                end
                ind = cell_lines.index(cell_line)
-               @cell_AAC[ind] << Experiment.find(e['experiment_id'] ).profile["AAC"]
-               if Experiment.find(e['experiment_id'] ).profile["IC50"].nil?
-                 temp = Float::NAN
+               tempAAC = e["AAC"]
+               @cell_AAC[ind] << tempAAC
+               if e["IC50"].nil?
+                 tempIC50 = Float::NAN
                else
-                 temp = Experiment.find(e['experiment_id'] ).profile["IC50"]
+                 tempIC50 = e["IC50"]
                end
-               @cell_IC50[ind] << temp
+               @cell_IC50[ind] << tempIC50
+               if params[:download] == "waterfall"
+                  waterfall_data << [cell_line, dataset, tempAAC, tempIC50]
+               end
             else
-              @cell_AAC << [Experiment.find(e['experiment_id'] ).profile["AAC"]]
+              tempAAC = e["AAC"]
+              @cell_AAC << [tempAAC]
 
-              if Experiment.find(e['experiment_id'] ).profile["IC50"].nil?
-                temp = Float::NAN
+              if e["IC50"].nil?
+                tempIC50 = Float::NAN
               else
-                temp = Experiment.find(e['experiment_id'] ).profile["IC50"]
+                tempIC50 = e["IC50"]
               end
-              @cell_IC50 << [temp]
+              @cell_IC50 << [tempIC50]
               if params[:c].to_s.strip.empty?
-                array << [cell_line, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, cell_id, tissue]
+                cell_line_array << [cell_line, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, cell_id, tissue]
               else
-                array << [cell_line, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, cell_id, tissue] if is_equal_incl(params[:c], cell_line)
+                cell_line_array << [cell_line, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, cell_id, tissue] if is_equal_incl(params[:c], cell_line)
               end
               cell_lines << cell_line
               datasets << dataset
+              if params[:download] == "waterfall"
+                  waterfall_data << [cell_line, dataset, tempAAC, tempIC50]
+               end
             end
             if tissues.include? tissue
-               tarray.each do |t|
+               tissue_array.each do |t|
                   if t[0] == tissue
                      unless t[1].include? dataset
                         t[1] = t[1] + ", " + "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>"
@@ -694,29 +784,57 @@ class ProfilesController < ApplicationController
                end
             else
               if params[:t].to_s.strip.empty?
-                tarray << [tissue, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, tissue_id]
+                tissue_array << [tissue, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, tissue_id]
               else
-                tarray << [tissue, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, tissue_id] if is_equal_incl(params[:t], tissue)
+                tissue_array << [tissue, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, tissue_id] if is_equal_incl(params[:t], tissue)
               end
               tissues << tissue
               datasets << dataset
             end
+            temp = [e["cell_name"]] + Cell.find(e['cell_id']).source_cell_names.pluck(:cell_name)
+            @synonyms_waterfall << temp.uniq
          end
       end
 
+      # sql = "SELECT DISTINCT cell_name FROM source_cell_names WHERE cell_id IN (#{cell_ids.join(', ')})"
+      # @synonyms_waterfall = []
+      # results = ActiveRecord::Base.connection.exec_query(sql)
+      # results.to_hash.each{ |k, v| @synonyms_waterfall.push(k.values[0]) }
+
+      @synonyms_waterfall.uniq!
+
       @cell_lines_waterfall = cell_lines
+
       @num_cell_lines = cell_lines.uniq.count
       @num_tissues = tissues.uniq.count
       @numdatasets = datasets.uniq.count
-      array = array.sort_by { |e| e[2] }.reverse
-      tarray = tarray.sort_by { |e| e[2] }.reverse
-      @cell_lines = array.paginate(:page => params[:cpage], :per_page => 10)
-      @tissues = tarray.paginate(:page => params[:tpage], :per_page => 10)
+     
+      # rearrange cell line and tissue tables
+      if params[:sort] == "cell_line"
+        cell_line_array = sort_column(cell_line_array, params[:direction], 0)
+      elsif params[:sort] == "tissue"
+        tissue_array = sort_column(tissue_array, params[:direction], 0)
+      elsif params[:sort] == "tissue_type"
+        cell_line_array = sort_column(cell_line_array, params[:direction], 4)
+      elsif params[:sort] == "c_datasets"
+        cell_line_array = sort_column(cell_line_array, params[:direction], 1)
+      elsif params[:sort] == "t_datasets"
+        tissue_array = sort_column(tissue_array, params[:direction], 1)
+      elsif params[:sort] == "c_experiments"
+        cell_line_array = sort_column(cell_line_array, params[:direction], 2)
+      elsif params[:sort] == "t_experiments"
+        tissue_array = sort_column(tissue_array, params[:direction], 2)
+      else 
+        # sort the experiments row by default for both tables
+        cell_line_array = sort_column(cell_line_array, "desc", 2)
+        tissue_array = sort_column(tissue_array, "desc", 2)
+      end
 
-
+      @cell_lines = cell_line_array.paginate(:page => params[:cpage], :per_page => 10)
+      @tissues = tissue_array.paginate(:page => params[:tpage], :per_page => 10)
 
       if params[:download] == "cell_table"
-         array.each do |d| 
+         cell_line_array.each do |d|
             d[1] = d[1].gsub(/<a[^>]*>/, '')
             d[1] = d[1].gsub(/<\/a.?>/, '')
             d[1] = d[1].gsub(/,/, ';')
@@ -725,7 +843,7 @@ class ProfilesController < ApplicationController
       end
 
       if params[:download] == "tissue_table"
-         tarray.each do |d| 
+         tissue_array.each do |d|
             d[1] = d[1].gsub(/<a[^>]*>/, '')
             d[1] = d[1].gsub(/<\/a.?>/, '')
             d[1] = d[1].gsub(/,/, ';')
@@ -760,12 +878,53 @@ class ProfilesController < ApplicationController
          end
       end
 
+      # @gene_drug_associations = drug.gene_drugs.include(:gene, :dataset).order(:pvalue).limit(10)
+      # sql = "SELECT s.*, g.*, gd.* FROM datasets s, genes g, gene_drugs gd WHERE gd.drug_id = #{@drug_id} AND s.dataset_id = gd.dataset_id AND g.gene_id = gd.gene_id ORDER BY gd.pvalue"
+      # results = ActiveRecord::Base.connection.exec_query(sql)
+      results = GeneDrug.includes(:gene, :dataset, :tissue).where(:drug_id => @drug_id).order(:pvalue)
+      filtered_results = []
+      results.each do |r|
+        if params[:m].to_s.strip.empty?
+          filtered_results << r
+        else
+          filtered_results << r if is_equal_incl(params[:m], r.gene['gene_name'])
+        end
+      end
+      pseudotissues = ["pan-cancer", "solid tumour", "liquid tumour"]
+      @gene_drug_associations = filtered_results.map{ |r| [r["dataset_id"], r.dataset["dataset_name"], r.gene["gene_name"], r["sens_stat"], r["estimate"], r["pvalue"], r.gene["gene_id"], r.tissue.nil? ? pseudotissues[-(r.tissue_id + 1)] : r.tissue.tissue_name, r["mDataType"]]}
 
+      # rearrange gene drug associations
+      if params[:sort] == "gene"
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 2)
+      elsif params[:sort] == "gd_dataset"
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 1)
+      elsif params[:sort] == "stat"
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 3)
+      elsif params[:sort] == "coef"
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 4)
+      elsif params[:sort] == "anova"
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 5)
+      else 
+        # sort the experiments row by default for both tables
+        @gene_drug_associations = sort_column(@gene_drug_associations, "asc", 5)
+      end
+
+      if params[:download] == "drug_table"
+        data_csv = ''
+        data_csv << 'mDataType,dataset_name,drug_name,sens_stat,estimate,pvalue,drug_id,tissue'
+        data_csv << "\n"
+        @gene_drug_associations.each do |d|
+          data_csv << d[8].to_s + "," + d[1].to_s + "," + d[2].to_s + "," + d[3].to_s + "," + d[4].to_s + "," + d[5].to_s + "," + d[6].to_s + "," + d[7].to_s + "\n"
+        end
+        send_data data_csv, filename: @drug_name + '_gene_association_table.csv'
+     end
+
+      @gene_drug_associations = @gene_drug_associations.to_a.paginate(:page => params[:gdpage], :per_page => 10)
 
       if params[:download] == "cell_table"
          data_csv = ''
          data_csv << "Cell Name, Tissue, Datasets, # Experiments\n"
-         array.each do |d|
+         cell_line_array.each do |d|
             data_csv << [0,3,1,2].map{|x| d[x]}.to_csv
             data_csv << "\n"
          end
@@ -777,11 +936,22 @@ class ProfilesController < ApplicationController
       if params[:download] == "tissue_table"
          data_csv = ''
          data_csv << "Tissue Name, Datasets, # Experiments\n"
-         tarray.each do |d|
+         tissue_array.each do |d|
             data_csv << d.to_csv
             data_csv << "\n"
          end
          send_data data_csv, filename: @drug_name + '_tissue_table.csv'
+      end
+
+      if params[:download] == "waterfall"
+         data_csv = ''
+         data_csv << "Cell, Dataset, AAC, IC50\n"
+         waterfall_data.sort_by!{|g| g[0]}
+         waterfall_data.each do |d|
+            data_csv << d.to_csv
+            data_csv << "\n"
+         end
+         send_data data_csv, filename: @drug_name + '_waterfall_table.csv'
       end
 
 
@@ -789,32 +959,45 @@ class ProfilesController < ApplicationController
       return
    end #/drugs
 
-   def targets
+   def genes
+      @colspan = 2
       unless params[:id].present?
-         targets = Target.all
+         genes = Gene.all
          @count_ids = []
          @count_names = []
+         targets = Target.all
          targets.each do |t|
             sql = "SELECT DISTINCT dt.drug_id FROM targets t, drug_targets dt WHERE dt.target_id = #{t.target_id}"
-            # targets = d.targets.pluck(:target_id).uniq
+            # genes = d.genes.pluck(:gene_id).uniq
             @count_ids << ActiveRecord::Base.connection.exec_query(sql).count
             @count_names << t.target_name
          end
 
-         sql = "SELECT target_id, target_name FROM targets"
-         targets = ActiveRecord::Base.connection.exec_query(sql)
-         @targets = targets.sort_by{ |d| d['drug_id']}.to_a.paginate(:page => params[:page], :per_page => 20)
-         @targets_count = targets.count
+         sql = "SELECT gene_id, gene_name FROM genes"
+         genes = ActiveRecord::Base.connection.exec_query(sql)
+         filtered_genes = []
+         genes.each do |gene|
+           if params[:g].to_s.strip.empty?
+             filtered_genes << gene
+           else
+            filtered_genes << gene if is_equal_incl(params[:g], gene['gene_name'])
+           end
+         end
+         @genes = filtered_genes.sort_by{ |g| g['gene_id']}.to_a.paginate(:page => params[:page], :per_page => 20)
+         if @genes.length <= 10
+            @colspan = 1
+         end
+         @genes_count = genes.count
          @exit_code = 0
          return
       end
 
-      sql = "SELECT target_name FROM targets WHERE target_id = #{params[:id]}"
-      target = ActiveRecord::Base.connection.exec_query(sql)
-      @target_id = params[:id]
-      @target_name = target[0]['target_name']
+      sql = "SELECT gene_name, ensg FROM genes WHERE gene_id = #{params[:id]}"
+      gene = ActiveRecord::Base.connection.exec_query(sql)
+      @gene_id = params[:id]
+      @gene_name = gene[0]['gene_name']
 
-      @synonyms = []
+      @synonyms = [gene[0]['ensg']]
       ## TODO:: Add protein based synonyms here!
       # sql = "SELECT drug_name, dataset_id, dataset_name FROM source_drug_names, datasets WHERE drug_id = #{@drug_id} AND dataset_id = source_id"
       # syn = ActiveRecord::Base.connection.exec_query(sql)
@@ -870,12 +1053,12 @@ class ProfilesController < ApplicationController
       end
 
       array = []
-      tarray = []
+      tissue_array = []
       drugs = []
       tissues = []
       datasets = []
 
-      sql = "SELECT d.drug_id, d.drug_name, s.dataset_id, s.dataset_name FROM drugs d, datasets s, drug_targets dt, experiments e WHERE dt.target_id = #{@target_id} AND s.dataset_id = e.dataset_id AND dt.drug_id = e.drug_id AND d.drug_id = dt.drug_id"
+      sql = "SELECT d.drug_id, d.drug_name, s.dataset_id, s.dataset_name FROM drugs d, datasets s, drug_targets dt, experiments e, targets t WHERE dt.target_id = t.target_id AND t.gene_id = #{@gene_id} AND s.dataset_id = e.dataset_id AND dt.drug_id = e.drug_id AND d.drug_id = dt.drug_id"
       experiments = ActiveRecord::Base.connection.exec_query(sql)
 
       if experiments.present?
@@ -905,7 +1088,7 @@ class ProfilesController < ApplicationController
               datasets << dataset
             end
             # if tissues.include? tissue
-            #    tarray.each do |t|
+            #    tissue_array.each do |t|
             #       if t[0] == tissue
             #          unless t[1].include? dataset
             #             t[1] = t[1] + ", " + "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>"
@@ -917,9 +1100,9 @@ class ProfilesController < ApplicationController
             #    end
             # else
             #   if params[:t].to_s.strip.empty?
-            #     tarray << [tissue, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, tissue_id]
+            #     tissue_array << [tissue, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, tissue_id]
             #   else
-            #     tarray << [tissue, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, tissue_id] if is_equal_incl(params[:t], tissue)
+            #     tissue_array << [tissue, "<a href=\"/datasets/#{dataset_id}\">" + dataset + "</a>", 1, tissue_id] if is_equal_incl(params[:t], tissue)
             #   end
             #   tissues << tissue
             #   datasets << dataset
@@ -927,23 +1110,66 @@ class ProfilesController < ApplicationController
          end
       end
 
+      if params[:sort] == "compounds"
+        array = sort_column(array, params[:direction], 0)
+      elsif params[:sort] == "datasets"
+        array = sort_column(array, params[:direction], 1)
+      elsif params[:sort] == "experiments"
+        array = sort_column(array, params[:direction], 2)
+      else
+        # sort the experiments row by default for both tables
+        array = sort_column(array, "desc", 2)
+      end
+
       @num_drugs = drugs.uniq.count
       # @num_tissues = tissues.uniq.count
       @numdatasets = datasets.uniq.count
-      array = array.sort_by { |e| e[2] }.reverse
-      # tarray = tarray.sort_by { |e| e[2] }.reverse
-      @drugs = array.paginate(:page => params[:dpage], :per_page => 10)
-      # @tissues = tarray.paginate(:page => params[:tpage], :per_page => 10)
 
-      if params[:download] == "drug_table"
-         array.each do |d| 
-            d[1] = d[1].gsub(/<a[^>]*>/, '')
-            d[1] = d[1].gsub(/<\/a.?>/, '')
-            d[1] = d[1].gsub(/,/, ';')
-            d.delete_at(3)
-         end
+      # tissue_array = tissue_array.sort_by { |e| e[2] }.reverse
+      @drugs = array.paginate(:page => params[:dpage], :per_page => 10)
+      # @tissues = tissue_array.paginate(:page => params[:tpage], :per_page => 10)
+
+      # sql = "SELECT s.*, d.*, gd.* FROM datasets s, drugs d, gene_drugs gd WHERE gd.gene_id = #{@gene_id} AND s.dataset_id = gd.dataset_id AND d.drug_id = gd.drug_id ORDER BY gd.pvalue"
+      # results = ActiveRecord::Base.connection.exec_query(sql)
+      results = GeneDrug.includes(:drug, :dataset, :tissue).where(:gene_id => @gene_id).order(:pvalue)
+      filtered_results = []
+      results.each do |r|
+        if params[:m].to_s.strip.empty?
+          filtered_results << r
+        else
+          filtered_results << r if is_equal_incl(params[:m], r.drug['drug_name'])
+        end
+      end
+      pseudotissues = ["pan-cancer", "solid tumour", "liquid tumour"]
+      @gene_drug_associations = filtered_results.map{ |r| [r["dataset_id"], r.dataset["dataset_name"], r.drug["drug_name"], r["sens_stat"], r["estimate"], r["pvalue"], r["drug_id"], r.tissue.nil? ? pseudotissues[-(r.tissue_id + 1)] : r.tissue.tissue_name, r["mDataType"]]}
+
+      # rearrange gene drug associations
+      if params[:sort] == "drug"
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 2)
+      elsif params[:sort] == "gd_dataset" 
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 1)
+      elsif params[:sort] == "stat"
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 3)
+      elsif params[:sort] == "coef"
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 4)
+      elsif params[:sort] == "anova"
+        @gene_drug_associations = sort_column(@gene_drug_associations, params[:direction], 5)
+      else 
+        # sort the experiments row by default for both tables
+        @gene_drug_associations = sort_column(@gene_drug_associations, "asc", 5)
       end
 
+      if params[:download] == "drug_table"
+        data_csv = ''
+        data_csv << 'mDataType,dataset_name,drug_name,sens_stat,estimate,pvalue,drug_id,tissue'
+        data_csv << "\n"
+        @gene_drug_associations.each do |d|
+           data_csv << d[8].to_s + "," + d[1].to_s + "," + d[2].to_s + "," + d[3].to_s + "," + d[4].to_s + "," + d[5].to_s + "," + d[6].to_s + "," + d[7].to_s + "\n"
+        end
+        send_data data_csv, filename: @gene_name + '_drug_association_table.csv'
+     end
+
+      @gene_drug_associations = @gene_drug_associations.to_a.paginate(:page => params[:gdpage], :per_page => 10)
 
       @ccounts = []
       # @tcounts = []
@@ -960,33 +1186,21 @@ class ProfilesController < ApplicationController
 
       if params[:d].to_s.strip.empty?
          @search_drugs = false
-         @placeholder_drug = 'Search drug names ...'
+         @placeholder_drug = 'Search compound names ...'
       else
          @search_drugs = true
          if @drugs.length.equal? 0
             @caption_drugs = 'Your search for ' + params[:d].to_s.strip + " yielded no results."
-            @placeholder_drug = 'Search drug names ...'
+            @placeholder_drug = 'Search compound names ...'
          else
             @caption_drugs = ''
             @placeholder_drug = params[:d].to_s.strip
          end
       end
 
-
-      if params[:download] == "drug_table"
-         data_csv = ''
-         data_csv << "Drug Name, Datasets, # Experiments\n"
-         array.each do |d|
-            data_csv << d.to_csv
-            data_csv << "\n"
-         end
-         send_data data_csv, filename: @target_name + '_drug_table.csv'
-      end
-
-
       @exit_code = 1
       return
-   end #/target
+   end #/gene
 
    def datasets
       unless params[:id].present?
@@ -1008,22 +1222,21 @@ class ProfilesController < ApplicationController
       sql = "SELECT c.cell_id, c.cell_name, d.drug_id, d.drug_name FROM cells c, drugs d, experiments e WHERE e.dataset_id = #{@dataset_id} AND c.cell_id = e.cell_id AND d.drug_id = e.drug_id"
       cds = ActiveRecord::Base.connection.exec_query(sql)
       cell_lines = []
+      drugs = []
+
       cds.each do |row|
-        if params[:c].to_s.strip.empty?
+        if params[:c].nil? || params[:c].to_s.strip.empty? # using lazy evaluation to remove need for to_s on nil. 
           cell_lines << [row['cell_id'], row['cell_name']]
         else
           cell_lines << [row['cell_id'], row['cell_name']] if is_equal_incl(params[:c], row['cell_name'].to_s)
         end
-      end
-      cell_lines = cell_lines.uniq.sort
-      drugs = []
-      cds.each do |row|
-        if params[:d].to_s.strip.empty?
+        if params[:d].nil? || params[:d].to_s.strip.empty?
           drugs << [row['drug_id'], row['drug_name']]
         else
           drugs << [row['drug_id'], row['drug_name']] if is_equal_incl(params[:d], row['drug_name'].to_s)
         end
       end
+      cell_lines = cell_lines.uniq.sort
       drugs = drugs.uniq.sort
       #drugs = cds.map {|c| [c['drug_id'], c['drug_name']]}.uniq.sort
       @cell_lines_count = cell_lines.count
@@ -1040,12 +1253,16 @@ class ProfilesController < ApplicationController
       @colors = []
 
       lst_datasets.each do |l|
-         sql = "SELECT e.cell_id, e.drug_id, t.tissue_id FROM tissues t, experiments e, cell_tissues ct WHERE e.dataset_id = #{l.dataset_id} AND ct.cell_id = e.cell_id AND t.tissue_id = ct.tissue_id"
-         exp = ActiveRecord::Base.connection.exec_query(sql)
-         @ccounts << exp.map { |e| e['cell_id']  }.uniq.count
-         @tcounts << exp.map { |e| e['tissue_id']  }.uniq.count
-         @dcounts << exp.map { |e| e['drug_id']  }.uniq.count
-         @ecounts << exp.count
+        #  sql = "SELECT e.cell_id, e.drug_id, t.tissue_id FROM tissues t, experiments e, cell_tissues ct WHERE e.dataset_id = #{l.dataset_id} AND ct.cell_id = e.cell_id AND t.tissue_id = ct.tissue_id"
+        #  exp = ActiveRecord::Base.connection.exec_query(sql)
+         # @ccounts << exp.map { |e| e['cell_id']  }.uniq.count
+         # @tcounts << exp.map { |e| e['tissue_id']  }.uniq.count
+        #  @dcounts << exp.map { |e| e['drug_id']  }.uniq.count
+        @dcounts << Dataset.joins(:drugs).where(:dataset_id=>l.dataset_id).group("drugs.drug_id").length
+        @ecounts << Experiment.where(:dataset_id => l.dataset_id).count
+        # exps  = Experiment.where(:dataset_id => l.dataset_id).pluck(:cell_id, :tissue_id).uniq
+        @ccounts << Dataset.joins(:cells).where(:dataset_id=>l.dataset_id).count
+        @tcounts << Dataset.joins(:tissues).where(:dataset_id=>l.dataset_id).group("tissues.tissue_id").length
          if l.dataset_id.to_s == @dataset_id.to_s
             @colors << 'rgba(222,45,38,0.8)'
          else
@@ -1054,16 +1271,33 @@ class ProfilesController < ApplicationController
       end
 
 
+      # lst_datasets.each do |l|
+      #    sql = "SELECT dc.cell_id, ct.tissue_id FROM cell_tissues ct, dataset_cells dc WHERE dc.dataset_id = #{l.dataset_id} AND ct.cell_id = dc.cell_id"
+      #    exp = ActiveRecord::Base.connection.exec_query(sql)
+      #    @ccounts << exp.map { |e| e['cell_id']  }.uniq.count
+      #    @tcounts << exp.map { |e| e['tissue_id']  }.uniq.count
+      #    # @dcounts << exp.map { |e| e['drug_id']  }.uniq.count
+      #    # @ecounts << exp.count
+      #    if l.dataset_id.to_s == @dataset_id.to_s
+      #       @colors << 'rgba(222,45,38,0.8)'
+      #    else
+      #       @colors << 'rgb(142,124,195)'
+      #    end
+      # end
+
+
+
+
       # Set right flag for table caption
 
       if params[:d].to_s.strip.empty?
          @search_drugs = false
-         @placeholder_drug = 'Search drug names ...'
+         @placeholder_drug = 'Search compound names ...'
       else
          @search_drugs = true
          if @drugs.length.equal? 0
             @caption_drug = 'Your search for ' + params[:d].to_s.strip + " yielded no results."
-            @placeholder_drug = 'Search drug names ...'
+            @placeholder_drug = 'Search compound names ...'
          else
             @caption_drug = ''
             @placeholder_drug = params[:d].to_s.strip
@@ -1084,6 +1318,29 @@ class ProfilesController < ApplicationController
             @placeholder_cell_lines = params[:c].to_s.strip
          end
       end
+
+
+
+      if params[:download] == "cell_table"
+         data_csv = ''
+         data_csv << "Cell Name\n"
+         cell_lines.each do |d|
+            data_csv << d[1]
+            data_csv << "\n"
+         end
+         send_data data_csv, filename: @dataset_name + '_cell_table.csv'
+      end
+
+      if params[:download] == "drug_table"
+         data_csv = ''
+         data_csv << "Drug Name\n"
+         drugs.each do |d|
+            data_csv << d[1]
+            data_csv << "\n"
+         end
+         send_data data_csv, filename: @dataset_name + '_drug_table.csv'
+      end
+
 
 
       @exit_code = 1
@@ -1115,17 +1372,30 @@ class ProfilesController < ApplicationController
    end #/experiments
 
    def explore
-
+    
     @tissues = ActiveRecord::Base.connection.exec_query("SELECT tissue_id, tissue_name FROM tissues")
     @cell_lines = ActiveRecord::Base.connection.exec_query("SELECT cell_id, cell_name FROM cells")
-    @is_cell_lines = false
     @drugs = ActiveRecord::Base.connection.exec_query("SELECT drug_id, drug_name FROM drugs")
-    @is_drugs = false
     @drug_targets = ActiveRecord::Base.connection.exec_query("SELECT target_id, target_name FROM targets")
+
+    @valid_cell_line_ids = []
+    @valid_drug_ids = []
+
     @is_tissues = true
+    @is_cell_lines = false
+    @is_drugs = false    
     @is_drug_targets = true
+
+    if params[:select_all].present?
+      val = params[:select_all].to_s.split(' ')
+      if val[0] == "true"
+        @is_cell_lines = true
+        @is_drugs = true
+      end
+    end
+
     if params[:tid].present?  # tissues
-      tids = params[:tid].to_s.split('+')
+      tids = params[:tid].to_s.split(' ')
       @tissues = @tissues.select{|t| tids.include? t['tissue_id'].to_s}
       @is_cell_lines = true
       @is_drugs = true
@@ -1136,9 +1406,37 @@ class ProfilesController < ApplicationController
       sql = "SELECT DISTINCT drugs.drug_id, drugs.drug_name FROM experiments INNER JOIN drugs WHERE experiments.tissue_id IN (#{tids.join(', ')}) AND experiments.drug_id = drugs.drug_id"
       @drugs = ActiveRecord::Base.connection.exec_query(sql)
     end
+
+    if params[:cid].present? # cell lines
+      cids = params[:cid].to_s.split(' ')
+      sql = "SELECT DISTINCT drug_id FROM experiments WHERE cell_id IN (#{cids.join(', ')})"
+      drug_ids = []
+      results = ActiveRecord::Base.connection.exec_query(sql)
+      results.to_hash.each{ |k, v| drug_ids.push(k.values[0]) }
+      respond_to do |format|
+        response = { :drug_ids => drug_ids }
+        format.json  { render :json => response }
+      end
+    end
+
+    if params[:drug_id].present? # drugs
+      drug_ids = params[:drug_id].to_s.split(' ')
+      sql = "SELECT DISTINCT cell_id FROM experiments WHERE drug_id IN (#{drug_ids.join(', ')})"
+      cids = []
+      results = ActiveRecord::Base.connection.exec_query(sql)
+      results.to_hash.each{ |k, v| cids.push(k.values[0]) }
+      respond_to do |format|
+        response = { :cids => cids }
+        format.json  { render :json => response }
+      end
+
+    end
+
     if params[:target_id].present?  # targets
-      target_ids = params[:target_id].to_s.split('+')
+      target_ids = params[:target_id].to_s.split(' ')
       @drug_targets = @drug_targets.select{|t| target_ids.include? t['target_id'].to_s}
+      @is_cell_lines = true
+      @is_drugs = true
       # cell lines
       sql = "SELECT DISTINCT c.cell_id, c.cell_name FROM drug_targets d, targets t, experiments e, cells c WHERE t.target_id IN (#{target_ids.join(', ')}) AND e.cell_id = c.cell_id AND e.drug_id = d.drug_id AND d.target_id = t.target_id"
       @cell_lines = ActiveRecord::Base.connection.exec_query(sql)
@@ -1146,6 +1444,7 @@ class ProfilesController < ApplicationController
       sql = "SELECT DISTINCT dr.drug_id, dr.drug_name FROM drug_targets d, targets t, experiments e, drugs dr WHERE t.target_id IN (#{target_ids.join(', ')}) AND e.drug_id = dr.drug_id AND e.drug_id = d.drug_id AND d.target_id = t.target_id"
       @drugs = ActiveRecord::Base.connection.exec_query(sql)
     end
+
     @cell_lines_count = @cell_lines.count
     @tissues_count = @tissues.count
     @drugs_count = @drugs.count
@@ -1153,12 +1452,9 @@ class ProfilesController < ApplicationController
    end
 
    def contact_us
-     @title = params[:title].present? ? params[:title] : ""
-     @subject = params[:subject].present? ? params[:subject] : ""
-
-     @title = @title.to_s.strip
-     @subject = @subject.to_s.strip
-
+     @title = params[:title].present? ? params[:title].to_s.strip : ""
+     @subject = params[:subject].present? ? params[:subject].to_s.strip : ""
+     @id = params[:id].present? ? params[:id] : "-1"
    end
 
 end

@@ -12,7 +12,9 @@
       <ol class="pcb-list">
          <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
          <li><%= link_to tissues_path do %>Tissues<% end %><i>/</i></li>
-         <li class="pcb-list-active"><%= @tissue_name %></li>
+         <% unless @tissue_name.nil? %>
+         <li class="pcb-list-active"><%= @tissue_name.gsub('_', ' ') %></li>
+         <% end %>
       </ol>
    </div>
 </div>
@@ -26,7 +28,8 @@
 					$("#buttoncount_stat").remove();
 					$("#otherTissues").remove();
 					makePie(<%= raw @count_names %>,<%= @count_ids %>, <%= raw @other_names.map(&:to_s)%>, <%= raw @other_nums %>);
-			</script>
+      </script>
+      <a id="tissues"></a>
 			<%= render 'components/tissue_search_form', locals: { rest_uri: "/tissues" } %>
       <table class="table table-bordered" id="pmdb-list-all-table" style="table-layout: fixed">
          <caption>List of all tissues in Pharmacodb - currently <%= @tissues_count %> in total.</caption>
@@ -42,10 +45,8 @@
                   <td>
 										<a id = "<%= escape_javascript(t['tissue_name']) %>" href="/tissues/<%= t['tissue_id'] %>"  title="">
 										<script type="text/javascript">
-											var tissue_name = "<%= t['tissue_name'] %>".replaceAll("_", " ")
-											var tissue_id = "<%= t['tissue_name'] %>".replace(/(?=[()])/g, '\\')
-
-											console.log(tissue_name, tissue_id)
+											var tissue_name = "<%= t['tissue_name'] %>".replaceAll("_", " ");
+											var tissue_id = "<%= t['tissue_name'] %>".replace(/(?=[()])/g, '\\');
 											$("#" + tissue_id).text(tissue_name);
 										</script>
 
@@ -58,14 +59,14 @@
          </tbody>
       </table>
       <div class="flickr_pagination">
-         <%= will_paginate @tissues %>
+         <%= will_paginate @tissues, :params => {:anchor => "tissues"} %>
       </div>
    </div>
 </section>
 <% elsif @exit_code == 1 %>
 <!-- cell_line page wrapper -->
 <section id="pmdb-prof-container">
-	 <%= render 'components/contact_sidebar', :subject => "tissues", :title => @tissue_name %>
+	 <%= render 'components/contact_sidebar', :subject => "tissues", :title => @tissue_name, :id => @tissue_id %>
    <div id="pmdb-prof-wrapper">
       <div id="pmdb-prof-leftcol">
          <!-- profile card -->
@@ -98,6 +99,19 @@
                      <td><%= s[1] %></td>
                   </tr>
                   <% end %>
+                  <tr>
+                     <td> PharmacoGx </td>
+                     <!-- <td><%= @tissue_name %></td> -->
+                     <td>
+                        <a id = "tissue_type_cell_lines_pgx" title="">
+                          <!-- <%= @tissue_name %> -->
+                          <script type="text/javascript">
+                            var tissue_name = "<%= @tissue_name %>".replaceAll("_", " ");
+                            $("#tissue_type_cell_lines_pgx").text(tissue_name);
+                          </script>
+                        </a>
+                     </td>
+                  </tr>
                </tbody>
             </table>
             <% end %>
@@ -117,6 +131,7 @@
                <%= @caption_cell_lines %>
             <% end %>
             </h5>
+            <a id="cell-lines"></a>
             <%= render 'components/cell_line_search_form', locals: { rest_uri: "/tissues/".concat(@tissue_id) } %>
             <table>
                <tbody>
@@ -130,9 +145,9 @@
                </tbody>
             </table>
             <div class="flickr_pagination">
-               <%= will_paginate @cell_lines, :param_name => 'cpage', inner_window: 1, outer_window: 1 %>
+               <%= will_paginate @cell_lines, :param_name => 'cpage', inner_window: 1, outer_window: 1, :params => {:anchor => "cell-lines"} %>
             </div>
-            <a href="/tissues/<%= @tissue_id %>?download=cell_table"> Download CSV </a>
+            <a href="/tissues/<%= @tissue_id %>?download=cell_table" class="downloadButton"> Download CSV </a>
          </div>
          <!-- drugs stat card -->
          <div class="ppl-card ppl-card-2">
@@ -154,13 +169,14 @@
             <% end %>
             </h5>
             <% unless doNotShow %>
+              <a id="compounds"></a>
                <%= render 'components/drug_search_form', locals: { rest_uri: "/tissues/".concat(@tissue_id) } %>
                <table id="ppl-card2-table">
                   <thead>
                      <tr>
-                        <th>Compounds</th>
-                        <th class="ppl-table-center">Datasets</th>
-                        <th class="ppl-table-center"># Experiments</th>
+                        <th><%= sortable("compounds", "Compounds", "compounds") %></th>
+                        <th class="ppl-table-center"><%= sortable("datasets", "Datasets", "compounds") %></th>
+                        <th class="ppl-table-center"><%= sortable("experiments", "Experiments", "compounds") %></th>
                      </tr>
                   </thead>
                   <tbody>
@@ -174,9 +190,9 @@
                   </tbody>
                </table>
                <div class="flickr_pagination">
-                  <%= will_paginate @drugs, :param_name => 'dpage', inner_window: 1, outer_window: 1 %>
+                  <%= will_paginate @drugs, :param_name => 'dpage', inner_window: 1, outer_window: 1, :params => {:anchor => "compounds"} %>
                </div>
-               <a href="/tissues/<%= @tissue_id %>?download=drug_table"> Download CSV </a>
+               <a href="/tissues/<%= @tissue_id %>?download=drug_table" class="downloadButton"> Download CSV </a>
 
             <% end %>
          </div>
@@ -189,7 +205,7 @@
 						<script type="text/javascript">
 							$("#barPlotpmdb-ctissue-plot").remove()
 							$("#buttonpmdb-ctissue-plot").remove()
-							$(document).ready(makeBarPlot(<%= raw @snames %>,<%= @ccounts %>, <%= raw '"' + @tissue_name + '"'%>, "pmdb-ctissue-plot", "per dataset", "", "compounds", ""))
+							$(document).ready(makeBarPlot(<%= raw @snames %>,<%= @ccounts %>, <%= raw '"' + @tissue_name + '"'%>, "pmdb-ctissue-plot", "per dataset", "Number of cell lines of <%= @tissue_name.gsub('_', ' ') %> per dataset", "cell lines", ""))
 						</script>
          </div>
       <% end %>

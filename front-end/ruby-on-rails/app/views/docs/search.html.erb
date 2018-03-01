@@ -17,7 +17,7 @@
     <div id="docs-content-wrapper">
         <div id="dcw-left-wrapper">
             <ul>
-							  <li><%= link_to docs_videos_path do %>Overview<% end %></li><br>
+				<li><%= link_to docs_videos_path do %>Overview<% end %></li><br>
                 <li class="dcw-item-active"><%= link_to docs_search_path do %>Search<% end %></li><br>
                 <li><%= link_to docs_cell_lines_path do %>Cell lines<% end %></li>
                 <li><%= link_to docs_tissues_path do %>Tissues<% end %></li>
@@ -49,6 +49,10 @@
               <%= image_tag("docs/cell_drug/search.png", alt:"Search for a drug tested on a cell line.", class:'docs-image') %>
               <figcaption> Search for a drug tested on a cell line. </figcaption>
             </figure>
+            <h3>Batch Query</h3>
+            <p>For queries involving multiple cell lines and compounds, users can access the drug sensitivity data via the <a href="/batch_query" target="_blank">Batch Query</a> page.</p>
+            <p>The batch query interface allows users to quickly cut and paste their list of cell lines and compounds of interest.</p>
+            <p>After submission, a spreadsheet containing all the summary metrics for the drug dose-response curves included in PharmacoDB will be available for download.</p>
             <p><i>Further queries, including comparisons of more data types, and more visualizations of the data provided are in active development, so be sure to check back with the documentation!</i></p>
             <!-- <p>Below the search bar, the page also includes links to pie charts detailing the types of cell lines, datasets, tissues, and drugs in PharmacoDB, as well as information about the site itself.</p> -->
         </div>

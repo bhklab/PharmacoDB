@@ -3,6 +3,7 @@ function updateDimensions(winWidth, margin) {
   height = 500 - margin.top - margin.bottom;
 }
 
+// takes two arrays of values and returns an array of intersecting values
 function findIntersection(set1, set2) {
   //see which set is shorter
   var temp;
@@ -19,6 +20,7 @@ function findIntersection(set1, set2) {
     })
 }
 
+// returns coordinates for drawing the intersections
 function intersection(x0, y0, r0, x1, y1, r1) {
       var a, dx, dy, d, h, rx, ry;
       var x2, y2;
@@ -86,6 +88,10 @@ String.prototype.replaceAll = String.prototype.replaceAll || function(s, r) {
   return this.replace(new RegExp(s, 'g'), r);
 };
 
+// creates the shapes of the circles/intersections for the venn diagram
+// this entire function is a horror story
+// petr/victor/whoever's reading this, just ask me if you need anything in this function
+// i'll decipher it
 function makeCircles(svg, color, arrColor, numCircles, names, vennId, datasets, middle) {
 
   //determine circle dimensions
@@ -99,6 +105,7 @@ function makeCircles(svg, color, arrColor, numCircles, names, vennId, datasets, 
   //append everything to venn so that it can be opacity 0
   var venn = svg.append("g")
     .attr("id", "venn" + vennId)
+    .attr("transform", "translate(-80, 0)")
     .style("opacity", 0)
     .attr("visibility", "hidden");
 
@@ -197,13 +204,15 @@ function makeCircles(svg, color, arrColor, numCircles, names, vennId, datasets, 
         }
       });
 
+  //intersection label    
   var topMidCount = venn.append("text")
           .attr("transform", "translate(155,170)")
           .attr("text-anchor", "middle")
           .attr("fill", "white")
           .style("font-size", "20px")
           .text(int01.length);
-
+  
+  // circle label
   var circle0Count = venn.append("text")
       .attr("transform", "translate(-30,170)")
       .attr("text-anchor", "middle")
@@ -211,6 +220,7 @@ function makeCircles(svg, color, arrColor, numCircles, names, vennId, datasets, 
       .style("font-size", "20px")
       .text(names[0].length - int01.length);
 
+  // circle label
   var circle1Count = venn.append("text")
       .attr("transform", "translate(330,170)")
       .attr("text-anchor", "middle")
@@ -375,7 +385,7 @@ function makeCircles(svg, color, arrColor, numCircles, names, vennId, datasets, 
         .style("font-size", "20px")
         .text(names[2].length - int02.length - (int12.length-middle.length))
 
-    //changing previous counts
+    //changing previous counts from when it wasn't 3+ circles
     topMidCount.attr("transform", "translate(155,140)")
       .text(int01.length-middle.length)
     circle0Count.attr("transform", "translate(-30,140)")
@@ -397,7 +407,6 @@ function makeCircles(svg, color, arrColor, numCircles, names, vennId, datasets, 
 
   //adding click for circle 0 and 1
   var twoCNoMid0 = names[0].diff(int01);
-  console.log(twoCNoMid0)
   var twoCNoMid1 = names[1].diff(int01);
 
 
@@ -420,31 +429,12 @@ function makeCircles(svg, color, arrColor, numCircles, names, vennId, datasets, 
     }
     d3.select("#" + vennId + "cTable1").transition().duration(400).style("opacity", 1);
   })
-
-
-
-
-  // else if (numCircles == 4) {
-  //   var circle2 = venn.append("circle")
-  //       .attr("cx", leftX)
-  //       .attr("cy", botY)
-  //       .attr("r", rad)
-  //       .style("opacity", 1)
-  //       .attr("fill", color();
-  //
-  //   var circle3 = venn.append("circle")
-  //       .attr("cx", rightX)
-  //       .attr("cy", botY)
-  //       .attr("r", rad)
-  //       .style("opacity", 1)
-  //       .attr("fill", color(randInt(0,20)));
-  // }
-
 }
 
+// make for every clickable part of the venn diagram
 function makeTable(names, tableId) {
-  //makes however many rows, and 3 columns
-  // make sure there is enough data to populate each subarray
+  // makes however many rows, and 3 columns
+  // also makes sure there is enough data to populate each subarray
   var tableData = [];
   var addElems = names.length % 3;
   names_copy = names.slice(0);
@@ -491,23 +481,277 @@ function makeTable(names, tableId) {
 
 }
 
+
+// makes an upset for 4+ sets, only goes up to 5 so far
+function makeUpset(svg, numSets, names, vennId, datasets) {
+
+  // make a group for the upset circle intersection things
+  var upsetCircles = svg.append("g")
+    .attr("id", "upsetCircles" + vennId)
+    .attr("transform", function() {
+      if (numSets > 4) {
+        return "translate(-90, 400)"
+      } else {
+        return "translate(-150, 400)"
+      }
+    })
+    .style("opacity", 0)
+    .attr("visibility", "hidden");
+
+  var rad = 13,
+  height = 400;
+
+  var width;
+  if (numSets > 4) {
+    width = 1100
+  } else {
+    width = 670
+  }
+
+  // computes intersections UNMANUALLY! goes up to  5 sets
+  var data2 = []
+  for (var i = 0; i < numSets; i++) {
+    for (var j = i + 1; j < numSets; j++) {
+      var temp = {}
+      temp["set"] = i.toString() + j.toString()
+      temp["names"] = findIntersection(names[i], names[j])
+      data2.push(temp)
+      for (var k = j + 1; k < numSets; k++) {
+        var temp = {}
+        temp["set"] = i.toString() + j.toString() + k.toString()
+        temp["names"] = findIntersection(findIntersection(names[i], names[j]), names[k])
+        data2.push(temp)
+        for (var l = k + 1; l < numSets; l++) {
+          var temp = {}
+          temp["set"] = i.toString() + j.toString() + k.toString() + l.toString()
+          temp["names"] = findIntersection(findIntersection(names[i], names[j]), findIntersection(names[k], names[l]))
+          data2.push(temp)
+          for (var m = l + 1; m < numSets; m++) {
+            var temp = {}
+            temp["set"] = i.toString() + j.toString() + k.toString() + l.toString() + m.toString()
+            temp["names"] = findIntersection((findIntersection(names[i], names[j]), findIntersection(names[k], names[l])), names[m])
+            data2.push(temp)
+          }
+        }
+      }
+    }
+  }
+
+  // makes sure data is unique
+  var unique = []
+  var newData = []
+  for (var i = 0; i < data2.length; i++) {
+    if (unique.indexOf(data2[i].set) == -1) {
+      unique.push(data2[i].set)
+      newData.push(data2[i])
+    }
+  }
+
+  var data = newData
+
+  // makes JSON objects for easy data parsing
+  // also makes dataset labels
+  for (var i = 0; i < numSets; i++) {
+    data.push({"set": i.toString(), "names": names[i]})
+
+    upsetCircles.append("text")
+      .attr("dx", -20)
+      .attr("dy", 5 + i * (rad*2.7))
+      .attr("text-anchor", "end")
+      .attr("fill", "black")
+      .style("font-size", 13)
+      .text(datasets[i])
+  }
+
+  // sort data decreasing
+  data.sort(function(a, b) {
+    return parseFloat(b.names.length) - parseFloat(a.names.length);
+});
+
+  // make the bars
+  var upsetBars = svg.append("g")
+    .attr("id", "upsetBars" + vennId)
+    .attr("transform", function () {
+      if (numSets > 4) {
+        return "translate(-110, -30)"
+      } else {
+        return "translate(-170, -30)"
+      }
+    })
+    .style("opacity", 0)
+    .attr("visibility", "hidden");
+
+    var nums = []
+    for (var i = 0; i < data.length; i++) {
+      nums.push(data[i].names.length)
+    }
+
+    var names = []
+    for (var i = 0; i < data.length; i++) {
+      names.push(data[i].names)
+    }
+
+  //set range for data by domain, and scale by range
+  var xrange = d3.scale.linear()
+    .domain([0, nums.length])
+    .range([0, width]);
+
+
+  var yrange = d3.scale.linear()
+    .domain([0, nums[0]])
+    .range([height, 0]);
+
+
+  //set axes for graph
+  var xAxis = d3.svg.axis()
+    .scale(xrange)
+    .orient("bottom")
+    .tickPadding(2)
+    .tickFormat(function(d,i) { return data[i].set})
+    .tickValues(d3.range(data.length));
+
+  var yAxis = d3.svg.axis()
+    .scale(yrange)
+    .orient("left")
+    .tickSize(5)
+
+  //add X axis
+  upsetBars.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," +  height + ")")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", 1)
+      .call(xAxis)
+      .selectAll(".tick")
+      .remove()
+
+
+  // Add the Y Axis
+  upsetBars.append("g")
+      .attr("class", "y axis")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", 1)
+      .call(yAxis)
+      .selectAll("text")
+      .attr("fill", "black")
+      .attr("stroke", "none");
+
+      // Y axis label
+      upsetBars.append("text")
+          .attr("text-anchor", "middle")
+          .attr("fill","black")
+          .attr("transform", "translate("+ -50 +","+(height/2)+")rotate(-90)")
+          .text("# " + vennId.replace("_", " "));
+
+
+  var chart = upsetBars.append('g')
+  		.attr("transform", "translate(1,0)")
+  		.attr('id','chart' + vennId)
+      .style("opacity", 0)
+      .attr("visibility", "hidden");
+
+  // adding each bar
+  chart.selectAll('.bar' + vennId)
+  		.data(data)
+  		.enter()
+      .append('rect')
+        .attr("class", "bar" + vennId)
+        .attr('width', 15)
+        .attr({
+          'x':function(d,i){ return (rad-1) + i * (rad*2.7)},
+          'y':function(d){ return yrange(d.names.length)}
+        })
+    		.style('fill', "darkslategrey")
+    		.attr('height',function(d){ return height - yrange(d.names.length); })
+        .on({
+          "mouseover": function(d,i) {
+            d3.select(this).transition().duration(300).style("opacity", 0.6);
+            d3.select("#set" + i + "num" + vennId).transition().duration(300).style("opacity", 1);
+            d3.select(this).style("cursor", "pointer");
+          },
+          "mouseout": function(d,i) {
+            d3.select(this).transition().duration(300).style("opacity", 1);
+            d3.select("#set" + i + "num" + vennId).transition().duration(300).style("opacity", 0);
+            d3.select(this).style("cursor", "default");
+          }
+        })
+        .on("click", function(d,i){
+          $("table").remove();
+          console.log(d.length)
+          makeTable(d.names, vennId + "uTable" + d.set)
+          d3.select("#" + vennId + "uTable" + d.set).transition().duration(400).style("opacity", 1);
+        })
+
+  // for some reason i can't append text onto the end of the bars
+  // and so i must do it here
+  for (var i = 0; i < nums.length; i++) {
+    upsetBars.append("text")
+      .attr({'x': i * (rad*3) + 20, 'y': yrange(nums[i])-5})
+      .attr("id", "set" + i + "num" + vennId)
+      .style("text-anchor", "middle")
+      .style("font-size", "13px")
+      .attr("fill", "black")
+      .style("opacity", 0)
+      .text(nums[i])
+    }
+
+  //circles
+  for (var i = 0; i < data.length; i++) {
+    for (var j = 0; j < numSets; j++) {
+      upsetCircles.append("circle")
+        .attr("cx", i * (rad*2.7))
+        .attr("cy", j * (rad*2.7))
+        .attr("r", rad)
+        .attr("id", vennId + "set" + i)
+        .style("opacity", 1)
+        .attr("fill", function() {
+          if (data[i].set.indexOf(j.toString()) != -1) {
+            return "darkslategrey"
+          } else {
+            return "silver"
+          }
+        })
+
+    }
+
+    if (data[i].set.length != 1) {
+      upsetCircles.append("line")
+        .attr("x1", i * (rad*2.7))
+        .attr("y1", data[i].set.substring(0, 1) * (rad*2.7))
+        .attr("x2", i * (rad*2.7))
+        .attr("y2", data[i].set.substring(data[i].set.length - 1, data[i].set.length) * (rad*2.7))
+        .style("stroke", "darkslategrey")
+        .attr("stroke-width", 4)
+    }
+  }
+
+
+
+}
+
+
 function makeVenn(cell_lines, tissues, drugs, datasets, middle, plotId) { // names: [[],[]]
   //number of circles to make
   var numCircles = datasets.length;
 
+
   //position and dimensions
   var margin = {
     top: 200,
-    right: 120,
-    bottom: 30,
-    left: 200
+    right: 200,
+    bottom: 100,
+    left: 260
   };
-  var width = 500;
+  var width = 600;
   var height;
   if (numCircles == 2) {
     height = 300;
-  } else {
+  } else if (numCircles == 3){
     height = 500;
+  } else {
+    height = 300;
   }
 
   //var color = d3.scale.category10();
@@ -541,8 +785,27 @@ function makeVenn(cell_lines, tissues, drugs, datasets, middle, plotId) { // nam
   // for resizing
   d3.select("#venn" + plotId)
   .attr( 'preserveAspectRatio',"xMinYMin meet")
-  .attr("viewBox", "0 0 850 400")
-  .attr('width', '700')
+  .attr("viewBox", function() {
+    if (numCircles > 4) {
+      return "0 0 1300 400"
+    } else {
+      return "0 0 850 400"
+    }
+  })
+  .attr('width', function() {
+    if (numCircles > 4) {
+      return '850'
+    } else {
+      return '700'
+    }
+  })
+  .attr("transform", function() {
+    if (numCircles > 4) {
+      return "translate(-70, 0)"
+    } else {
+      return "translate(0,0)"
+    }
+  })
 
 
 
@@ -550,12 +813,23 @@ function makeVenn(cell_lines, tissues, drugs, datasets, middle, plotId) { // nam
   var graphTitle = svg.append("text")
     .attr("text-anchor", "middle")
     .attr("fill","black")
-    .style("font-size", "40px")
-    .attr("transform", "translate("+ (width/2 - 90) +","+ -100 +")");
+    .style("font-size", "30px")
+    .attr("transform", function (){
+      if (numCircles > 4) {
+        return "translate("+ (width/2 + 200) +","+ -100 +")"
+      } else {
+        return "translate("+ (width/2 - 200) +","+ -100 +")"
+      }
+    });
 
   //"Show" title
   svg.append("text")
-    .attr("x", width+20)
+    .attr("x", function (){
+      if (numCircles > 4) {
+        return width + 290
+      } else {
+        return width-150
+      }})
     .attr("y", -10)
     .attr("text-anchor", "start")
     .style("font-size", 20)
@@ -569,9 +843,16 @@ function makeVenn(cell_lines, tissues, drugs, datasets, middle, plotId) { // nam
   var vennIds = ["cell_lines", "tissues", "drugs"]
 
   //make all venns first
-  makeCircles(svg, color, arrColor, numCircles, cell_lines, vennIds[0], datasets, middle[0]);
-  makeCircles(svg, color, arrColor, numCircles, tissues, vennIds[1], datasets, middle[1]);
-  makeCircles(svg, color, arrColor, numCircles, drugs, vennIds[2], datasets, middle[2]);
+  if (numCircles <= 3) {
+    makeCircles(svg, color, arrColor, numCircles, cell_lines, vennIds[0], datasets, middle[0]);
+    makeCircles(svg, color, arrColor, numCircles, tissues, vennIds[1], datasets, middle[1]);
+    makeCircles(svg, color, arrColor, numCircles, drugs, vennIds[2], datasets, middle[2]);
+  } else {
+    makeUpset(svg, numCircles, cell_lines, vennIds[0], datasets);
+    makeUpset(svg, numCircles, tissues, vennIds[1], datasets);
+    makeUpset(svg, numCircles, drugs, vennIds[2], datasets);
+  }
+
 
 
   //nesting so that each element of Show view has an active property
@@ -583,7 +864,12 @@ function makeVenn(cell_lines, tissues, drugs, datasets, middle, plotId) { // nam
 
   nest.forEach(function(d,i) {
     var selection = svg.append("text")
-      .attr("x", width+50)
+      .attr("x", function (){
+        if (numCircles > 4) {
+          return width + 300
+        } else {
+          return width-120
+        }})
       .attr("y", 25 + i * 30)
       .attr("id", "label" + vennIds[i])
       .attr("text-anchor", "start")
@@ -592,41 +878,87 @@ function makeVenn(cell_lines, tissues, drugs, datasets, middle, plotId) { // nam
 
 
     //default
-    if (numCircles == 2) {
-      graphTitle.text("Cell Lines" + ": " + datasets[0] + " + " + datasets[1]);
-    } else {
-      graphTitle.text("Cell Lines" + ": " + datasets[0] + " + " + datasets[1] + " + " + datasets[2]);
+    var gtitle = vennLabels[0] + ": ";
+    for (var j = 0; j < datasets.length-1; j++) {
+      gtitle = gtitle + datasets[j] + " + "
     }
+    gtitle = gtitle + datasets[datasets.length-1]
+    graphTitle.text(gtitle);
+
     d3.select("#labelcell_lines").attr("fill", "black");
-    d3.select("#venn" + vennIds[0]).style("opacity", 0.8);
-    d3.select("#venn" + vennIds[0]).attr("visibility", "visible");
+    if (numCircles <= 3) {
+      d3.select("#venn" + vennIds[0]).style("opacity", 0.8);
+      d3.select("#venn" + vennIds[0]).attr("visibility", "visible");
+    } else {
+      d3.select("#upsetBars" + vennIds[0]).style("opacity", 1);
+      d3.select("#upsetBars" + vennIds[0]).attr("visibility", "visible");
+      d3.select("#upsetCircles" + vennIds[0]).style("opacity", 1);
+      d3.select("#upsetCircles" + vennIds[0]).attr("visibility", "visible");
+      d3.select("#chart" + vennIds[0]).style("opacity", 1);
+      d3.select("#chart" + vennIds[0]).attr("visibility", "visible");
+    }
+
 
     //on click of Show views
     selection.on("click", function(){
         var active   = active ? false : true;
         if (active) {
-          if(numCircles == 2) {
-            graphTitle.text(vennLabels[d.key] + ": " + datasets[0] + " + " + datasets[1]);
-          } else {
-            graphTitle.text(vennLabels[d.key] + ": " + datasets[0] + " + " + datasets[1] + " + " + datasets[2]);
+          var title = vennLabels[d.key] + ": ";
+          for (var j = 0; j < datasets.length-1; j++) {
+            title = title + datasets[j] + " + "
           }
-          d3.select("#" + "label" + vennIds[d.key]).transition().duration(500).attr("fill", "black");
-          d3.select("#venn" + vennIds[d.key]).attr("visibility", "visible");
-          d3.select("#venn" + vennIds[d.key]).transition().duration(500).style("opacity", 0.8);
+          title = title + datasets[datasets.length-1]
+          graphTitle.text(title);
 
+          d3.select("#" + "label" + vennIds[d.key]).transition().duration(500).attr("fill", "black");
+          if (numCircles <= 3) {
+            d3.select("#venn" + vennIds[d.key]).attr("visibility", "visible");
+            d3.select("#venn" + vennIds[d.key]).transition().duration(500).style("opacity", 0.8);
+          } else {
+            d3.select("#upsetBars" + vennIds[d.key]).attr("visibility", "visible");
+            d3.select("#upsetBars" + vennIds[d.key]).transition().duration(500).style("opacity", 1);
+            d3.select("#upsetCircles" + vennIds[d.key]).attr("visibility", "visible");
+            d3.select("#upsetCircles" + vennIds[d.key]).transition().duration(500).style("opacity", 1);
+            d3.select("#chart" + vennIds[d.key]).attr("visibility", "visible");
+            d3.select("#chart" + vennIds[d.key]).transition().duration(500).style("opacity", 1);
+
+          }
 
           for (var j = 0; j < 3; j++) {
             if (vennIds[d.key] != vennIds[j]) {
               d3.select("#" + "label" + vennIds[j]).transition().duration(500).attr("fill", "silver");
-              d3.select("#venn" + vennIds[j]).attr("visibility", "hidden");
-              d3.select("#venn" + vennIds[j]).transition().duration(500).style("opacity", 0);
+              if (numCircles <= 3) {
+                d3.select("#venn" + vennIds[j]).transition().duration(500).style("opacity", 0);
+                d3.select("#venn" + vennIds[j]).attr("visibility", "hidden");
+
+              } else {
+                d3.select("#upsetBars" + vennIds[j]).transition().duration(500).style("opacity", 0);
+                d3.select("#upsetBars" + vennIds[j]).attr("visibility", "hidden");
+                d3.select("#upsetCircles" + vennIds[j]).transition().duration(500).style("opacity", 0);
+                d3.select("#upsetCircles" + vennIds[j]).attr("visibility", "hidden");
+                d3.select("#chart" + vennIds[j]).transition().duration(500).style("opacity", 0);
+                d3.select("#chart" + vennIds[j]).attr("visibility", "hidden");
+
+
+              }
             }
           }
         } else {
           graphTitle.text();
           d3.select("#" + "label" + vennIds[d.key]).transition().duration(500).attr("fill", "silver");
-          d3.select("#venn" + vennIds[d.key]).attr("visibility", "hidden");
-          d3.select("#venn" + vennIds[d.key]).transition().duration(500).style("opacity", 0);
+          if (numCircles <= 3) {
+            d3.select("#venn" + vennIds[d.key]).transition().duration(500).style("opacity", 0);
+            d3.select("#venn" + vennIds[d.key]).attr("visibility", "hidden");
+
+          } else {
+            d3.select("#upsetBars" + vennIds[j]).transition().duration(500).style("opacity", 0);
+            d3.select("#upsetBars" + vennIds[j]).attr("visibility", "hidden");
+            d3.select("#upsetCircles" + vennIds[j]).transition().duration(500).style("opacity", 0);
+            d3.select("#upsetCircles" + vennIds[j]).attr("visibility", "hidden");
+            d3.select("#chart" + vennIds[j]).transition().duration(500).style("opacity", 0);
+            d3.select("#chart" + vennIds[j]).attr("visibility", "hidden");
+
+          }
         }
 
          d.active = active;

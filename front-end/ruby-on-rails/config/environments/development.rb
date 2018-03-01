@@ -48,6 +48,9 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  # Keep 5 logs at 100MB each
+  config.logger = Logger.new(config.paths['log'].first, 5, 100*1024)
+  
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 

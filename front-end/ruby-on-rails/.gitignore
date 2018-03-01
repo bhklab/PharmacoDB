@@ -4,11 +4,29 @@
 # or operating system, you probably want to add a global ignore instead:
 #   git config --global core.excludesfile '~/.gitignore_global'
 
+# OS Junk files
+*.DS_Store
+
 # Ignore bundler config.
 /.bundle
+
+# Ignore Gemfile.lock
+*Gemfile.lock
 
 # Ignore all logfiles and tempfiles.
 /log/*
 !/log/.keep
 /tmp
 /public/assets/
+.idea/.generators
+.idea/.rakeTasks
+.idea/dataSources.local.xml
+.idea/dataSources.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/PharmacoDb-web.iml
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/dataSources/306c23e2-8c0e-48ca-a2df-e1518192842d.xml
+.idea/dataSources/b6569cf4-c6f0-4668-b89a-eb2e2988e77f.xml
+.idea/inspectionProfiles/Project_Default.xml

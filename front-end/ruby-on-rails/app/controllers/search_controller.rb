@@ -12,7 +12,7 @@ class SearchController < ApplicationController
         if params[:q].present?
             terms = []
             input = params[:q]
-
+            @prev_q = input
             # if input == "\\markjoke"
             #     connection = open("http://deepmark.herokuapp.com")
             #     @text = JSON.parse(connection.read)["text"].split("\n").join("<br>")
@@ -30,8 +30,8 @@ class SearchController < ApplicationController
             elsif ['drug', 'drugs'].include? input
                 redirect_to "/drugs"
                 return
-            elsif ['target', 'targets'].include? input
-                redirect_to "/targets"
+            elsif ['gene', 'genes'].include? input
+                redirect_to "/genes"
                 return
             elsif ['dataset', 'datasets'].include? input
                 redirect_to "/datasets"
@@ -40,55 +40,109 @@ class SearchController < ApplicationController
                 redirect_to "/docs"
             end
 
-            type = ["cell", "tissue", "drug", "dataset", "source", "target"]
-            paths = ["cell_lines", "tissues", "drugs", "datasets", "sources", "targets"]
-            filter_type = [["SourceCellName", "SourceTissueName", "SourceDrugName"], ["Cell", "Tissue", "Drug", "Dataset", "Source", "Target"]]
-            filter_name = ["cell_name", "tissue_name", "drug_name", "dataset_name", "source_name", "target_name"]
-            filter_id = ["cell_id", "tissue_id", "drug_id", "dataset_id", "source_id", "target_id"]
+            type = ["cell", "tissue", "drug", "dataset", "gene"]
+            paths = ["cell_lines", "tissues", "drugs", "datasets",  "genes"]
+            filter_type = ["Cell", "Tissue", "Drug", "Dataset",  "Gene"]
+            filter_trie = [CELLS, TISSUES, DRUGS, DATASETS, GENES]
+            filter_name = ["cell_name", "tissue_name", "drug_name", "dataset_name", "gene_name"]
+            filter_id = ["cell_id", "tissue_id", "drug_id", "dataset_id", "gene_id"]
 
-            continue_loop = true
-            filter_type.each do |f|
-                unless continue_loop
+            split_types = [" ", "+", "&"]
+
+            continue_outer_loop = true
+            for split in split_types
+                unless continue_outer_loop
                     break
                 end
-                max = f.count - 1
-                for i in 0..max
-                    object = eval(f[i]).where("#{filter_name[i]} = ?", input).first
-                    if object.present?
-                        continue_loop = false
-                        terms << [object, i]
-                        break
-                    end
-                end
-            end
-
-            if continue_loop
-                input = params[:q].split(Rails.application.config.my_search_split)
-                input.each do |p|
-                    continue_loop = true
-                    filter_type.each do |f|
-                        unless continue_loop
-                            break
-                        end
-                        max = f.count - 1
-                        for i in 0..max
-                            object = eval(f[i]).where("#{filter_name[i]} = ?", p).first
-                            if object.present?
-                                continue_loop = false
+                ## XXX: kind of hacky
+                input = params[:q].split(Rails.application.config.my_search_split).select{|x| x.length > 0}.select{|x| !["AND", "WITH", "VS."].include? x.upcase}
+                
+                continue_inner_loop = true
+                while continue_inner_loop
+                    input.length.downto(1).each do |j|
+                        term_found = false
+                        temp = input[0...j].join(split).upcase
+                        for i in 0...filter_type.length
+                            filter = filter_trie[i]
+                            unless filter.has_key?(temp).nil? || !filter.has_key?(temp)
+                                object = eval(filter_type[i]).find(filter.get(temp))
                                 terms << [object, i]
+                                term_found = true
                                 break
                             end
                         end
-                    end
-                    if continue_loop
-                        @error_message = ["Your search", "#{p}", "did not match any records in database."]
-                        @error_datasets = Dataset.all.pluck(:dataset_name).join(", ")
-                        @suggestions = ["Check for any spelling errors.", "Make sure to only search <a href=\"/cell_lines\">cell line</a>/<a href=\"/tissues\">tissue</a>/<a href=\"/drugs\">drug</a>/<a href=\"/datasets\">dataset</a> name(s).", "If searching multiple names, check the <a href=\"/docs\"> documentation </a> to see which combinations PharmacoDB handles."]
-                        @exit_code = 1
-                        return
+                        if term_found
+                            if j == input.length
+                                # The whole input was matched, we can just continue. 
+                                continue_inner_loop = false
+                                continue_outer_loop = false
+                                break
+                            else
+                                # only the first j elements of the input were matched, lets try again after subsetting
+                                input = input[j...input.length]
+                                break
+                            end
+                        else
+                            if j == 1
+                                # the current conjunction lead to no results, so we should try again with a new one
+                                continue_inner_loop = false
+                            end
+                        end
                     end
                 end
             end
+
+            if continue_outer_loop
+                @error_message = ["Your search", "#{params[:q]}", "did not match any records in database."]
+                @error_datasets = Dataset.all.pluck(:dataset_name).join(", ")
+                @suggestions = ["Check for any spelling errors.", "Make sure to only search <a href=\"/cell_lines\">cell line</a>/<a href=\"/tissues\">tissue</a>/<a href=\"/drugs\">drug</a>/<a href=\"/datasets\">dataset</a> name(s).", "If searching multiple names, check the <a href=\"/docs\"> documentation </a> to see which combinations PharmacoDB handles."]
+                @exit_code = 1
+                return
+            end
+
+            # continue_loop = true
+            # filter_type.each do |f|
+            #     unless continue_loop
+            #         break
+            #     end
+            #     max = f.count - 1
+            #     for i in 0..max
+            #         object = eval(f[i]).where("#{filter_name[i]} = ?", input).first
+            #         if object.present?
+            #             continue_loop = false
+            #             terms << [object, i]
+            #             break
+            #         end
+            #     end
+            # end
+
+            # if continue_loop
+            #     input = params[:q].split(Rails.application.config.my_search_split)
+            #     input.each do |p|
+            #         continue_loop = true
+            #         filter_type.each do |f|
+            #             unless continue_loop
+            #                 break
+            #             end
+            #             max = f.count - 1
+            #             for i in 0..max
+            #                 object = eval(f[i]).where("#{filter_name[i]} = ?", p).first
+            #                 if object.present?
+            #                     continue_loop = false
+            #                     terms << [object, i]
+            #                     break
+            #                 end
+            #             end
+            #         end
+                    # if continue_loop
+                    #     @error_message = ["Your search", "#{p}", "did not match any records in database."]
+                    #     @error_datasets = Dataset.all.pluck(:dataset_name).join(", ")
+                    #     @suggestions = ["Check for any spelling errors.", "Make sure to only search <a href=\"/cell_lines\">cell line</a>/<a href=\"/tissues\">tissue</a>/<a href=\"/drugs\">drug</a>/<a href=\"/datasets\">dataset</a> name(s).", "If searching multiple names, check the <a href=\"/docs\"> documentation </a> to see which combinations PharmacoDB handles."]
+                    #     @exit_code = 1
+                    #     return
+                    # end
+            #     end
+            # end
 
             if terms.count == 1
                 index = terms[0][1]
@@ -117,16 +171,16 @@ class SearchController < ApplicationController
                     @drug_exps = []
                     if type[index] == "dataset"
                         terms.each do |t|
-                            # @exps.push(Experiment.where(dataset_id: t).includes(:cell).pluck(:cell_name).uniq)
-                            @cell_line_exps.push(Experiment.where(dataset_id: t[0].send(filter_id[t[1]])).includes(:cell).pluck(:cell_name).uniq)
-                            @tissue_exps.push(Experiment.where(dataset_id: t[0].send(filter_id[t[1]])).includes(:tissue).pluck(:tissue_name).uniq)
-                            @drug_exps.push(Experiment.where(dataset_id: t[0].send(filter_id[t[1]])).includes(:drug).pluck(:drug_name).uniq)
-                            @search_quers.push(t[0].send(filter_name[index]))
-                            tempexp = Experiment.where(dataset_id: t[0].send(filter_id[t[1]]))
-                            cid = tempexp.pluck(:cell_id)
+                            cid = Experiment.where(dataset_id: t[0].send(filter_id[t[1]])).pluck(:cell_id).uniq
                             tid = CellTissue.where(cell_id: cid).pluck(:tissue_id)
                             # tid = Tissue.joins(:cell_tissues).where(cell_tissues: {cell_id: cid}).pluck(:tissue_id).uniq
-                            did = tempexp.pluck(:drug_id)
+                            did = Experiment.where(dataset_id: t[0].send(filter_id[t[1]])).pluck(:drug_id)
+                            # @exps.push(Experiment.where(dataset_id: t).includes(:cell).pluck(:cell_name).uniq)
+                            @cell_line_exps.push(Cell.find(cid).pluck(:cell_name))
+                            @tissue_exps.push(Tissue.find(tid).pluck(:tissue_name))
+                            @drug_exps.push(Drug.find(did).pluck(:drug_name))
+                            @search_quers.push(t[0].send(filter_name[index]))
+                            # tempexp = Experiment.where(dataset_id: t[0].send(filter_id[t[1]]))
                             if round == 0
                                 cell_line_ids = cid
                                 tissue_ids = tid
@@ -179,8 +233,8 @@ class SearchController < ApplicationController
                     index2 = terms[1][1]
 
 
-                    object1 = eval(filter_type[1][index1]).where("#{filter_id[index1]} = ?", terms[0][0].send(filter_id[index1])).first
-                    object2 = eval(filter_type[1][index2]).where("#{filter_id[index2]} = ?", terms[1][0].send(filter_id[index2])).first
+                    object1 = eval(filter_type[index1]).where("#{filter_id[index1]} = ?", terms[0][0].send(filter_id[index1])).first
+                    object2 = eval(filter_type[index2]).where("#{filter_id[index2]} = ?", terms[1][0].send(filter_id[index2])).first
                     object1_name = object1.send(filter_name[index1])
                     object1_id = object1.send(filter_id[index1])
                     object2_name = object2.send(filter_name[index2])
@@ -208,9 +262,9 @@ class SearchController < ApplicationController
                     drug_term = terms[terms.pluck(1).each_index.detect{|x| terms.pluck(1)[x] == 2}]
                     dataset_term = terms[terms.pluck(1).each_index.detect{|x| terms.pluck(1)[x] == 3}]
 
-                    # object1 = eval(filter_type[1][index1]).where("#{filter_id[index1]} = ?", terms[0][0].send(filter_id[index1])).first
-                    # object2 = eval(filter_type[1][index2]).where("#{filter_id[index2]} = ?", terms[1][0].send(filter_id[index2])).first
-                    # object3 = eval(filter_type[1][index3]).where("#{filter_id[index3]} = ?", terms[2][0].send(filter_id[index3])).first
+                    # object1 = eval(filter_type[index1]).where("#{filter_id[index1]} = ?", terms[0][0].send(filter_id[index1])).first
+                    # object2 = eval(filter_type[index2]).where("#{filter_id[index2]} = ?", terms[1][0].send(filter_id[index2])).first
+                    # object3 = eval(filter_type[index3]).where("#{filter_id[index3]} = ?", terms[2][0].send(filter_id[index3])).first
                     # object1_name = object1.send(filter_name[index1])
                     # object1_id = object1.send(filter_id[index1])
                     # object2_name = object2.send(filter_name[index2])
@@ -218,6 +272,16 @@ class SearchController < ApplicationController
                     # object3_name = object3.send(filter_name[index3])
                     # object3_id = object3.send(filter_id[index3])
 
+                    object1_name = cell_term.first.cell_name
+                    object2_name = drug_term.first.drug_name
+                    object3_name = dataset_term.first.dataset_name
+
+                    @cell_name = object1_name
+                    @drug_name = object2_name
+
+                    object1_id = cell_term.first.cell_id
+                    object2_id = drug_term.first.drug_id
+                    object3_id = dataset_term.first.dataset_id
 
                     # if index1 == 0
                     #     @cell_name = object1_name
@@ -236,6 +300,7 @@ class SearchController < ApplicationController
                 @dataset_click_ids = []
 
                 @profiles = []
+                @ddrc_data = []
                 if experiment.present?
                     i = 0
                     @js_code = ""
@@ -264,10 +329,16 @@ class SearchController < ApplicationController
                             # @range_max = response.max
                             # responses = "[" + response.join(", ") + "]"
                             # dataset_name = Dataset.where(dataset_id: e.dataset_id).first.dataset_name
-                            for i in 0..dose.length-2
-                                @data = @data + '{ "dose":' + dose[i].to_s + ', "response":' + response[i].to_s + '},'
+                            for j in 0..dose.length-2
+                                @data = @data + '{ "dose":' + dose[j].to_s + ', "response":' + response[j].to_s + '},'
                             end
                             @data = @data + '{ "dose":' + dose[dose.length-1].to_s + ', "response":' + response[dose.length-1].to_s + '} ]'
+
+                            if params[:download] == "ddrc"
+                                for j in 0...dose.length
+                                    @ddrc_data << [ii-1, dose[j], response[j]]
+                                end
+                            end
 
 
                             # @js_code = @js_code +
@@ -311,18 +382,52 @@ class SearchController < ApplicationController
                         end
                     end
 
+                    if params[:download] == "ddrc"
+                        @ddrc_data.each do |ddrc|
+                            ddrc[0] = @dataset_names[ddrc[0]]
+                        end
+                        data_csv = ''
+                        data_csv << "Experiment,Dose,Response\n"
+                        @ddrc_data.each do |ddrc|
+                            data_csv << ddrc.to_csv
+                        end
+                        send_data data_csv, filename: @prev_q.split(" ").join("_") + '_dose_response.csv'
+                    end
+
+                    if params[:download] == "stat_table"
+                        data_csv = ''
+                        data_csv << "Experiment,AAC (%),IC50 (µM),EC50 (µM),Einf (%),DSS1 (arb.)\n"
+                        (0...@dataset_names.length).each do |i|
+                            data_csv << @dataset_names[i] + ","
+                            e = @profiles[i]
+                            data_csv << (!e["AAC"].nil? ? "%0.3f" % (e["AAC"]*100) : "N/A") + ","
+                            data_csv << (!e["IC50"].nil? ? "%1.3g" % (10**e["IC50"]) : "N/A") + ","
+                            data_csv << (!e["EC50"].nil? ? "%1.3g" % (10**e["EC50"]) : "N/A") + ","
+                            data_csv << (!e["Einf"].nil? ? "%0.3f" % (e["Einf"]*100) : "N/A") + ","
+                            data_csv << (!e["DSS1"].nil? ? "%1.3g" % (e["DSS1"]) : "N/A")
+                            data_csv << "\n"
+                        end
+                        send_data data_csv.encode('utf-8'), filename: @prev_q.split(" ").join("_") + '_stat_table.csv'#, :type => 'text/xml; charset=utf-8; header=present'
+                    end
+
 
                     return
                 else
-                    @error_message = ["This cell line to drug combination - ", "#{object1_name} vs. #{object2_name} ", "- has not been tested in our database."]
+
+                    object1 = eval(filter_type[index1]).where("#{filter_id[index1]} = ?", terms[0][0].send(filter_id[index1])).first
+                    object2 = eval(filter_type[index2]).where("#{filter_id[index2]} = ?", terms[1][0].send(filter_id[index2])).first
+
+                    @error_message = ["Your search - ", "#{object1_name} vs. #{object2_name} ", "- did not match any records in our database."]
                     @error_datasets = Dataset.all.pluck(:dataset_name).join(", ")
-                    @suggestions = ["Check for spelling errors.", "Try a different cell line to drug combination."]
+                    @suggestions = ["Check for spelling errors.", "Try a different combination (see documentation for handled options)."]
                     @exit_code = 1
                     return
                 end
             # end # /cell vs. drug, 1 to 1
                 # end # /if terms.count == 2
             end # /if terms.uniq.count == 2
+
+
 
             @error_message = ["Your search - ", "#{params[:q]} ", "- did not yield any results."]
             @error_datasets = Dataset.all.pluck(:dataset_name).join(", ")

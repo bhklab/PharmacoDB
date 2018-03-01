@@ -1,18 +1,106 @@
-<% provide(:title, "Cite Us") %>
+<% provide(:title, "Download") %>
 <div id="hdr-default-base">
-	<%= render 'components/header' %>
+  <%= render 'components/header' %>
 </div>
 <%= render 'components/sidebar' %>
-
+<div class="other-pmdb-crumb-base">
+  <div class="other-pcb-wrapper">
+    <ol class="other-pcb-list">
+      <li><%= link_to root_path do %>Home
+        <% end %><i>/</i></li>
+      <li><%= link_to download_path do %>Download
+        <% end %><i>/</i></li>
+    </ol>
+  </div>
+</div>
 
 <!-- api section -->
 <section id="home-api-container">
-	<div id="hapi-img-wrapper">
-		<!-- <%= image_tag('rocket.png') %> -->
-		<i class="fa fa-download fa-5x" aria-hidden="true"></i>
-	</div>
-	<h2>Download</h2>
-	<p>&nbsp; &nbsp; &nbsp; &nbsp; A MySQL dump of all the data contained in PharmacoDB can be downloaded <a href="/db/PharmacoDB-2017-08-05.sql" download="PharmacoDB-2017-08-15.sql">here</a>.</p>
-</section>
+  <div id="hapi-img-wrapper">
+    <i class="fa fa-download fa-5x" aria-hidden="true"></i>
+  </div>
+  <h2>Download</h2>
+  <% if @version == "1.0.0-stable" %>
+    <ul>
+      <li>Easily deploy your own local instance of PharmacoDB using
+        <a href="https://hub.docker.com/r/bhklab/pharmacodb/" target="blank_">Docker</a>:
+      </li>
+      <ul>
+        <li>Docker Hub -
+          <a href="https://hub.docker.com/r/bhklab/pharmacodb/" target="blank_">bhklab/pharmacodb:1.0.0</a></li>
+      </ul>
+      <li>A MySQL dump of all the data contained in the current release of PharmacoDB is available through
+        <a href="https://doi.org/10.5281/zenodo.1038045" target="_blank">Zenodo</a> (see DOI below):
+      </li>
+      <ul>
+        <li>PharmacoDB-1.0.0 (Version 2) -
+          <a href="https://doi.org/10.5281/zenodo.1038045" target="blank_">10.5281/zenodo.1038045</a></li>
+      </ul>
+      <li>Flat mapping files used in PharmacoDB: <a href="?cell_annotation=y" target="_blank">cell annotation table</a>
+        and <a href="?drug_annotation=y" target="_blank">drug annotation table</a></li>
+      <li>Go to the <a href="/news?v=1.0.0-stable">NEWS</a> section to view release notes and access previous versions of the database
+        and flat mapping files.
+      </li>
+    </ul>
+    <br/>
+    <br/>
+    <br/>
+    <%= render 'components/all_downloads' %>
+    <% elsif @version == "1.1.0-stable" %>
+      <ul>
+        <li>Easily deploy your own local instance of PharmacoDB using
+          <a href="https://hub.docker.com/r/bhklab/pharmacodb/" target="blank_">Docker</a>:
+        </li>
+        <ul>
+          <li>Docker Hub -
+            <a href="https://hub.docker.com/r/bhklab/pharmacodb/" target="blank_">bhklab/pharmacodb:1.1.0</a></li>
+        </ul>
+        <li>A MySQL dump of all the data contained in the current release of PharmacoDB is available through
+          <a href="https://doi.org/10.5281/zenodo.1038045" target="_blank">Zenodo</a> (see DOI below):
+        </li>
+        <ul>
+          <li>In version 1.1.0 we are using the same data as the
+            <a href="/download?v=1.0.0-stable" target="_blank">previous release</a> of PharmacoDB. See PharmacoDB-1.0.0
+            - <a href="https://doi.org/10.5281/zenodo.1038045" target="blank_">10.5281/zenodo.1038045</a></li>
+        </ul>
+        <li>Flat mapping files used in PharmacoDB:
+          <a href="?cell_annotation=y" target="_blank">cell annotation table</a> and
+          <a href="?drug_annotation=y" target="_blank">drug annotation table</a></li>
+        <li>Go to the <a href="/news?v=1.1.0-stable">NEWS</a> section to view release notes and access previous versions of the
+          database and flat mapping files.
+        </li>
+      </ul>
+      <br/>
+      <br/>
+      <br/>
+      <%= render 'components/all_downloads' %>
+      <% else %>
+        <ul>
+          <li>Easily deploy your own local instance of PharmacoDB using
+            <a href="https://hub.docker.com/r/bhklab/pharmacodb/" target="blank_">Docker</a>:
+          </li>
+          <ul>
+            <li>Docker Hub -
+              <a href="https://hub.docker.com/r/bhklab/pharmacodb/" target="blank_">bhklab/pharmacodb:1.1.1</a></li>
+          </ul>
+          <li>A MySQL dump of all the data contained in the current release of PharmacoDB is available through
+            <a href="https://doi.org/10.5281/zenodo.1143644", target="blank_">Zenodo</a> (see DOI below):
+          </li>
+          <ul>
+            <li>DOI: <a href="https://doi.org/10.5281/zenodo.1143644", target="blank_"> 10.5281/zenodo.1143644</a></li>
+          </ul>
+          <li>Flat mapping files used in PharmacoDB:
+            <a href="?cell_annotation=y" target="_blank">cell annotation table</a> and
+            <a href="?drug_annotation=y" target="_blank">drug annotation table</a></li>
+          <li>Go to the <a href="/news">NEWS</a> section to view release notes and access previous versions of the
+            database and flat mapping files.
+          </li>
+        </ul>
+        <br/>
+        <br/>
+        <br/>
+        <%= render 'components/all_downloads' %>
+      <% end %>
+      </section>
 
-<%= render 'components/footer' %>
+      <%= render 'components/footer' %>

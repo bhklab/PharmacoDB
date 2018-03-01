@@ -1,0 +1,36 @@
+<header id="explore-header" class="">
+	<div id="explore-header-wrapper">
+		<%= link_to root_path, id: "explore-header-logo" do %><i class="icon-boxbilling"></i> PharmacoDB<% end %>
+		<ul id="explore-hdr-ul-left">
+			<li><%= link_to about_path do %>About<% end %></li>
+			<li><%= link_to docs_path do %>Documentation<% end %></li>
+			<li><%= link_to "Cite Us!", "/cite_us" %></li>
+			<li><%= link_to "Github", "https://github.com/bhklab/PharmacoDB", :target => "_blank" %></li>
+			<li><%= link_to "Download", "/download" %></li>
+			<li><%= link_to "News", "/news" %></li>
+		</ul>
+		<ul id="explore-hdr-ul-right">
+			<li id="explore-hdr-batch"><%= link_to explore_path, class: "explore-hdr-right-a" do %> <i class="fa fa-flask" aria-hidden="true"></i> Explore<% end %></li>
+			<li id="explore-hdr-batch"><%= link_to batch_query_path, class: "explore-hdr-right-a" do %> <i class="fa fa-spinner" aria-hidden="true"></i> Batch Query <% end %></li>	
+			<li id="explore-hdr-search"><%= link_to search_path, class: "explore-hdr-right-a" do %><i class="fa fa-search" aria-hidden="true"></i> Search<% end %></li>
+			<li id="explore-hdr-toggle">
+				<a>
+					<i id="first-icon-bar" class="icon-bar"></i>
+					<i id="second-icon-bar" class="icon-bar"></i>
+					<i id="third-icon-bar" class="icon-bar"></i>
+				</a>
+			</li>
+			<script type="text/javascript">
+
+			$("#explore-hdr-toggle").click(function(e) {
+				e.preventDefault();
+				$("#sidebar").toggleClass("toggled");
+				$("#first-icon-bar").toggleClass("toggled");
+				$("#second-icon-bar").toggleClass("toggled");
+				$("#third-icon-bar").toggleClass("toggled");
+			});
+
+			</script>
+		</ul>
+	</div>
+</header>

@@ -3,10 +3,10 @@
 	<%= render 'components/header' %>
 </div>
 <%= render 'components/sidebar' %>
-<%= javascript_include_tag("pieChart.js")%>
-<%= javascript_include_tag("barPlot.js")%>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+
+
+	 
 
 <div class="pmdb-crumb-base">
 	<div class="pcb-wrapper">
@@ -28,6 +28,7 @@
 			$("#otherTissues").remove()
 			$(document).ready(makePie(<%= raw @count_names %>,<%= @count_ids %>, <%= raw @other_names.map(&:to_s)%>, <%= @other_nums %>))
 		</script>
+		<a id="cell-lines"></a>
 		<%= render 'components/cell_line_search_form', locals: { rest_uri: "/cell_lines" } %>
 		<table class="table table-bordered" id="pmdb-list-all-table">
 			<caption>List of all cell lines in Pharmacodb - currently <%= @cell_lines_count %> in total.</caption>
@@ -47,14 +48,14 @@
 			</tbody>
 		</table>
 		<div class="flickr_pagination">
-			<%= will_paginate @cell_lines %>
+			<%= will_paginate @cell_lines, :params => {:anchor => "cell-lines"} %>
 		</div>
 	</div>
 </section>
 <% elsif @exit_code == 1 %>
 <!-- cell_line page wrapper -->
 <section id="pmdb-prof-container">
-	<%= render 'components/contact_sidebar', :subject => "cell_lines", :title => @cell_line_name %>
+	<%= render 'components/contact_sidebar', :subject => "cell_lines", :title => @cell_line_name, :id => @cell_line_id %>
 	<div id="pmdb-prof-wrapper">
 		<!-- <div id="pmdb-prof-centrecol">
 		<div class="ppl-card ppl-card-title">
@@ -86,15 +87,27 @@
 					<td><%= s[1] %></td>
 				</tr>
 				<% end %>
+				<tr>
+                    <td> PharmacoGx </td>
+                    <td><%= @cell_line_name %></td>
+	            </tr>
 			</tbody>
 		</table>
 		<% end %>
 		<h3 class="ppl-card-title">Tissue Type</h3>
-		<p><a href="/tissues/<%= @tissue_id %>" title=""><%= @tissue_name %></a></p>
+		<p>
+			<a id = "tissue_type_cell_lines" href="/tissues/<%= @tissue_id %>" title="">
+				<!-- <%= @tissue_name %> -->
+				<script type="text/javascript">
+					var tissue_name = "<%= @tissue_name %>".replaceAll("_", " ");
+					$("#tissue_type_cell_lines").text(tissue_name);
+				</script>
+			</a>
+		</p>
 		<h3 class="ppl-card-title">Disease(s)</h3>
 		<p> <%= link_to @ncit_path do %> <%= @diseases %> <% end %> </p>
 		<h3 class="ppl-card-title">Link(s)</h3>
-		<p><a target="_blank" href="<%= @cellosaurus_path %>" title="">Cellosaurus</a></p>
+		<p><a target="_blank" href="<%= @cellosaurus_path %>" title="" target="_blank">Cellosaurus</a></p>
 	</div>
 	<!-- drugs stat card -->
 	<div class="ppl-card ppl-card-2">
@@ -113,14 +126,14 @@
 			<% end %>
 		</h5>
 		<% unless doNotShow %>
+		<a id="compounds"></a>
 		<%= render 'components/drug_search_form', locals: { rest_uri: "/cell_lines/".concat(@cell_line_id) } %>
 		<table id="ppl-card2-table">
 			<thead>
 				<tr>
-
-					<th>Compound</th>
-					<th class="ppl-table-center">Datasets</th>
-					<th class="ppl-table-center"># Experiments</th>
+					<th><%= sortable("compounds", "Compounds", "compounds") %></th>
+					<th class="ppl-table-center"><%= sortable("datasets", "Datasets", "compounds") %></th>
+					<th class="ppl-table-center"><%= sortable("experiments", "Experiments", "compounds") %></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -134,9 +147,9 @@
 			</tbody>
 		</table>
 		<div class="flickr_pagination">
-			<%= will_paginate @drugs, inner_window: 1, outer_window: 1 %>
+			<%= will_paginate @drugs, inner_window: 1, outer_window: 1, :params => {:anchor => "compounds"} %>
 		</div>
-		<a href="/cell_lines/<%= @cell_line_id %>?download=drug_table"> Download CSV </a>
+		<a href="/cell_lines/<%= @cell_line_id %>?download=drug_table" class="downloadButton"> Download CSV </a>
 		<% end %>
 	</div>
 
@@ -188,9 +201,11 @@
 				$("#waterfallpmdb-cwaterfall-plot").remove()
 				$("#buttonIC50pmdb-cwaterfall-plot").remove()
 				$("#buttonAACpmdb-cwaterfall-plot").remove()
-				$(document).ready(makeWaterfall(<%= raw '"' + @cell_line_name + '"'%>, <%= raw @drug_names_waterfall %>, <%=raw @drug_AAC%>, <%=raw @drug_IC50%>, "pmdb-cwaterfall-plot"))
+				$(document).ready(makeWaterfall(<%= raw '"' + @cell_line_name + '"'%>, <%= raw @drug_names_waterfall %>, <%=raw @drug_AAC%>, <%=raw @drug_IC50%>, "pmdb-cwaterfall-plot", <%=raw @synonyms_waterfall%>))
 			</script>
+			<a href="/cell_lines/<%= @cell_line_id %>?download=waterfall" class="downloadButton"> Download Data as CSV </a>
 		</div>
+
 		<% end %>
 
 

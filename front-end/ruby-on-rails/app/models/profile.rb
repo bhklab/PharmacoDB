@@ -1,6 +1,6 @@
 class Profile < ApplicationRecord
-	belongs_to :experiments
-	has_many :cell, through: :experiments
-	has_many :drug, through: :experiments
-	has_many :dataset, through: :experiments
+	belongs_to :experiment
+	has_one :cell, through: :experiment
+	has_one :drug, through: :experiment
+	has_one :dataset, through: :experiment
 end

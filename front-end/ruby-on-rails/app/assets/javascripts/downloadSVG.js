@@ -120,7 +120,6 @@ var doctype = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C
       button.textContent = "Download";
 
       button.onclick = function(el) {
-        // console.log(el, d, i, sources)
         download(d, descriptor);
       };
 

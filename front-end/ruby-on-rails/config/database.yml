@@ -15,7 +15,8 @@ default: &default
   pool: 5
   username: root
   password: password
-  socket: /tmp/mysql.sock
+  host: localhost
+  port: 3306
 
 
 development:

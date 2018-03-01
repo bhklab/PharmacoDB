@@ -1,0 +1,25 @@
+#!/bin/bash
+
+chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
+
+service mysql restart && service mysql reload
+
+cd /usr/src/app/data
+
+echo 'Creating MySQL dump of pharmacodb_development database ...'
+
+mysqldump -uroot -ppass --compatible=postgresql --default-character-set=utf8 pharmacodb_development > /home/pharmacodb_development.sql 
+
+echo 'Creation of MySQL dump successful ... ~/pharmacodb_development.sql' 
+
+echo 'Converting MySQL dump to PostgreSQL compatible dump ...' 
+
+python db_converter.py /home/pharmacodb_development.sql /home/pharmacodb_development.psql 
+
+echo 'Creation of PostgreSQL compatible dump successful ... ~/pharmacodb_development.psql' 
+
+echo 'Removing MySQL dump' 
+
+rm /home/pharmacodb_development.sql 
+
+echo 'Successful removal of MySQL dump. New PostgreSQL compatible dump available at ~/pharmacodb_development.psql'

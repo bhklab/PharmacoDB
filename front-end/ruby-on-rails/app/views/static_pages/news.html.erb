@@ -1,0 +1,161 @@
+<% provide(:title, "News") %>
+<div id="hdr-default-base">
+  <%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<div class="other-pmdb-crumb-base">
+  <div class="other-pcb-wrapper">
+    <ol class="other-pcb-list">
+      <li><%= link_to root_path do %>Home
+        <% end %><i>/</i></li>
+      <li><%= link_to news_path do %>News
+        <% end %><i>/</i></li>
+    </ol>
+  </div>
+</div>
+
+<!-- api section -->
+<section id="home-api-container">
+  <div id="hapi-img-wrapper">
+    <i class="fa fa-rss fa-5x" aria-hidden="true"></i>
+  </div>
+  <h2>News</h2>
+  <br/>
+  <br/>
+  <% if @version == "1.0.0-stable" %>
+    <h3>Release 1.0.0 (stable)</h3>
+    <ul>
+      <li>PharmacoDB published in Nucleic Acids Research!</li>
+      <ul>
+        <li><p id="cite_us_links">
+          <a href="https://academic.oup.com/nar/article/doi/10.1093/nar/gkx911/4372597/PharmacoDB-an-integrative-database-for-mining-in" target="_blank">
+            Smirnov, Petr, et al. "PharmacoDB: an integrative database for mining in vitro anticancer drug screening
+            studies." Nucleic Acids Research (2017).</a><i></i></p></li>
+      </ul>
+      <li>Easily deploy your own local instance of PharmacoDB using
+        <a href="https://hub.docker.com/r/bhklab/pharmacodb/" target="blank_">Docker</a>:
+      </li>
+      <ul>
+        <li>Docker Hub -
+          <a href="https://hub.docker.com/r/bhklab/pharmacodb/" target="blank_">bhklab/pharmacodb:1.0.0</a></li>
+      </ul>
+      <li>We will now publish our data dumps through
+        <a href="https://doi.org/10.5281/zenodo.1038045" target="_blank">Zenodo</a> (see DOI below):
+        <ul>
+          <li>PharmacoDB-1.0.0 (Version 2) -
+            <a href="https://doi.org/10.5281/zenodo.1038045" target="blank_">10.5281/zenodo.1038045</a></li>
+        </ul>
+      <li>Fixed annotation:</li>
+      <ul>
+        <li><a href="/cell_lines/442" target="blank_">HARA</a> cell-line has
+          <a href="/tissues/18" target="blank_">lung</a> as tissue type and not
+          <a href="/tissues/7" target="blank_">breast</a>.
+        </li>
+      </ul>
+    </ul>
+    <br/>
+    <br/>
+    <br/>
+    <%= render 'components/all_releases' %>
+  <% elsif @version == "1.0.0-rc-3.0" %>
+    <h3>Release 1.0.0-RC-3.0</h3>
+    <ul>
+      <li>Improvements to <a href="/batch_query">batch query</a> feature. Users now notified when no results are
+        returned. Also added support for global selections (using wildcard).
+      </li>
+      <li>Finalized PharmacoDB database dump v1.0.0-RC-3.0 -
+        <a href="https://drive.google.com/file/d/0B31U4S10oAEHaldlMHBkRDBlYW8/view?usp=sharing" target="_blank">pharmacodb_dump_v1.0.0-RC-3.0.sql</a>.
+      <li>Fixed various annotations:</li>
+      <ul>
+        <li>Cell-lines <a href="/cell_lines/904" target="blank_">MDA-MB-435</a>,
+          <a href="/cell_lines/882" target="blank_">MALME-3M</a>,
+          <a href="/cell_lines/1396" target="blank_">SK-MEL-28</a>,
+          <a href="/cell_lines/1634" target="blank_">UACC-62</a>,
+          <a href="/cell_lines/1632" target="blank_">UACC-257</a> have a <a href="/tissues/31" target="blank_">skin</a>
+          tissue type and not <a href="/tissues/13" target="blank_">haematopoeitic and lymphoid</a>.
+        </li>
+        <li><a href="/cell_lines/39" target="blank_">A-253</a> cell-line has
+          <a href="/tissues/18" target="blank_">lung</a> as tissue type and not
+          <a href="/tissues/7" target="blank_">breast</a>.
+        </li>
+      </ul>
+    </ul>
+    <br/>
+    <br/>
+    <br/>
+    <%= render 'components/all_releases' %>
+  <% elsif @version == "1.0.0-rc-2.0" %>
+    <h3>Release 1.0.0-RC-2.0</h3>
+    <ul>
+      <li>Added expression associations to drug response.</li>
+      <li>Replaced targets with more general gene entities and mapped both expression associations and drug target
+        status to this entity.
+      </li>
+      <li><a href="/batch_query">Batch query</a> now available.</li>
+      <li>PharmacoDB database dump v1.0.0-RC-2.0 -
+        <a href="https://drive.google.com/file/d/0B31U4S10oAEHU3Bhb2NqM0pwX2M/view?usp=sharing" target="_blank">pharmacodb_dump_v1.0.0-RC-2.0.sql</a>
+      <li>Flat mapping files used in PharmacoDB now available:
+        <a href="/download?cell_annotation=y" target="_blank">cell annotation table</a> and
+        <a href="/download?drug_annotation=y" target="_blank">drug annotation table</a></li>
+    </ul>
+    <br/>
+    <br/>
+    <br/>
+    <%= render 'components/all_releases' %>
+  <% elsif @version == "1.0.0-rc-1.0" %>
+    <h3>Release 1.0.0-RC-1.0</h3>
+    <ul>
+      <li>Database query optimizations - decreased page load times.</li>
+      <li>PharmacoDB database dump v1.0.0-RC-1.0 -
+        <a href="https://drive.google.com/file/d/0B31U4S10oAEHTEtfcVBiNGpDVDg/view?usp=sharing" target="_blank">pharmacodb_dump_v1.0.0-RC-1.0.sql</a>
+    </ul>
+    <br/>
+    <br/>
+    <br/>
+    <%= render 'components/all_releases' %>
+  <% elsif @version == "1.1.0-stable" %>
+    <h3>Release 1.1.0 (stable)</h3>
+    <ul>
+      <li>Features:</li>
+      <ul>
+        <li>Added search feature to the tables in the genes and drugs pages.</li>
+        <li>Biomarker table in drugs page is now automatically sorted by p-value.</li>
+        <li>Increased the number of decimal points in the summary statistics table to make it consistent with the
+          exported csv values.
+        </li>
+      </ul>
+      <li>Bugs:</li>
+      <ul>
+        <li>Fixed incorrect bar plot title in tissues page.</li>
+        <li>Fixed a bug with the sidebar.</li>
+      </ul>
+    </ul>
+    <br/>
+    <br/>
+    <br/>
+    <%= render 'components/all_releases' %>
+  <% else %>
+    <h3>Release 1.1.1 (stable)</h3>
+    <ul>
+      <li>Features:</li>
+      <ul>
+        <li>PharmacoDB API at <a href="https://api.pharmacodb.com" target="_blank" >https://api.pharmacodb.com</a> has been retired. The API is now only available on <a href="https://pharmacodb.pmgenomics.ca/api" target="_blank">https://pharmacodb.pmgenomics.ca/api</a>. We apologize for any inconvenience.</li>            
+      </ul>
+      <li>Bugs:</li>
+      <ul>
+        <li>Previous database version contained an error matching the gene-drug associations to the datasets. It is
+          specifically known that the, FIMM and CTRPv2 datasets were incorrectly labeled. This has been corrected in the
+          newest dump. <a href="https://doi.org/10.5281/zenodo.1143644", target="blank_"> DOI: 10.5281/zenodo.1143644</a>
+        </li>
+        <li>Fixed a bug with outputting the gene-drug table to a csv where the mDataType column was missing.</li>
+        <li>Added a tissue column to the gene drug table.</li>
+      </ul>
+    </ul>
+    <br/>
+    <br/>
+    <br/>
+    <%= render 'components/all_releases' %>
+  <% end %>
+</section>
+
+<%= render 'components/footer' %>

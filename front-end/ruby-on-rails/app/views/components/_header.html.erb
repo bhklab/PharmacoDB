@@ -5,10 +5,9 @@
 			<li><%= link_to about_path do %>About<% end %></li>
 			<li><%= link_to docs_path do %>Documentation<% end %></li>
 			<li><%= link_to "Cite Us!", "/cite_us" %></li>
-			<li><%= link_to "Github", "https://github.com/bhklab/PharmacoDb-web", :target => "_blank" %></li>
-			<li>
-					<%= link_to "Download", "/download" %>
-			</li>
+			<li><%= link_to "Github", "https://github.com/bhklab/PharmacoDB", :target => "_blank" %></li>
+			<li><%= link_to "Download", "/download" %></li>
+			<li><%= link_to "News", "/news" %></li>
 		</ul>
 		<ul id="hdr-ul-right">
 			<!--
@@ -28,8 +27,9 @@
 			</li>
 			-->
 
-			<li id="hdr-search"><%= link_to explore_path do %> Explore! <% end %></li>
-
+			<li id="hdr-batch"><%= link_to explore_path, class: "hdr-right-a" do %> <i class="fa fa-flask" aria-hidden="true"></i> Explore <% end %></li>
+			<li id="hdr-batch"><%= link_to batch_query_path, class: "hdr-right-a" do %> <i class="fa fa fa-spinner" aria-hidden="true"></i> Batch Query <% end %></li>
+			<li id="hdr-search"><%= link_to search_path, class: "hdr-right-a" do %><i class="fa fa-search" aria-hidden="true"></i> Search<% end %></li>
 			<li id="hdr-toggle">
 				<a>
 					<i id="first-icon-bar" class="icon-bar"></i>
@@ -48,7 +48,7 @@
 			});
 
 			</script>
-			<script src="http://d3js.org/d3.v3.min.js"> </script>
+			<!-- <script src="http://d3js.org/d3.v3.min.js"> </script> -->
 		</ul>
 	</div>
 </header><!-- /header -->

@@ -3,25 +3,26 @@
 	<%= render 'components/header' %>
 </div>
 <%= render 'components/sidebar' %>
-
-<!-- <div class="pmdb-crumb-base">
-   <div class="pcb-wrapper">
-      <ol class="pcb-list">
+<div class="other-pmdb-crumb-base">
+   <div class="other-pcb-wrapper">
+      <ol class="other-pcb-list">
          <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
-         <li><%= link_to about_path do %>About<% end %><i>/</i></li>
+         <li><%= link_to cite_us_path do %>Cite Us<% end %><i>/</i></li>
       </ol>
    </div>
-</div> -->
+</div>
 <!-- about section -->
-<section id="about-container">
+<section id="home-api-container">
 	<h2>Cite Us:</h2>
 	<p> We ask users who find our database of value to their research to cite us, using the following publications:</p>
-	<table>
-	<tr>
-	<p id="about_links"><a href="https://academic.oup.com/bioinformatics/article/32/8/1244/1744214/PharmacoGx-an-R-package-for-analysis-of-large">  Smirnov, P. et al. PharmacoGx: An R package for analysis of large pharmacogenomic datasets. Bioinformatics 32, 1244–1246 (2016).</a><i></i></p>
-	</tr>
-	<!-- <tr><p id="about_links"><%= link_to search_path do %>Search<% end %><i></i></p></td></tr></table> -->
-	</table>
+	<ul>
+		<li><p id="cite_us_links"><a href="https://academic.oup.com/nar/article/doi/10.1093/nar/gkx911/4372597/PharmacoDB-an-integrative-database-for-mining-in" target="_blank"> Smirnov, Petr, et al. "PharmacoDB: an integrative database for mining in vitro anticancer drug screening studies." Nucleic Acids Research (2017).</a><i></i></p></li> 			
+		<li><p id="cite_us_links"><a href="https://academic.oup.com/bioinformatics/article/32/8/1244/1744214/PharmacoGx-an-R-package-for-analysis-of-large" target="_blank">  Smirnov, Petr, et al. "PharmacoGx: an R package for analysis of large pharmacogenomic datasets." Bioinformatics 32.8 (2015): 1244-1246.</a><i></i></p></li>
+	</ul>
+	<p>We are always improving the quality of data in PharmacoDB. In order to ensure reproducibility of results use a <a href="https://doi.org/10.5281/zenodo.1027721" target="_blank">Zenodo DOI</a> to specify the version of the data used in your study (see all available DOIs below):</p>
+	<ul>
+		<li>PharmacoDB-1.1.0 and PharmacoDB-1.0.0 share the same data (see Version 2) - <a href="https://doi.org/10.5281/zenodo.1038045" target="blank_">10.5281/zenodo.1038045</a></li>
+	</ul>
 </section>
 
 <%= render 'components/footer' %>

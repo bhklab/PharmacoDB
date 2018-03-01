@@ -1,0 +1,38 @@
+version: '2.0'
+services:
+  mysql_db:
+    image: mysql/mysql-server:latest
+    # build:
+    #   context: ./data/mysql-5.7/
+    #   dockerfile: Dockerfile
+    container_name: mysql
+    restart: always
+    environment:
+       MYSQL_ROOT_PASSWORD: password
+       MYSQL_DATABASE: pharmacodb_development
+       MYSQL_USER: admin
+       MYSQL_PASSWORD: admin
+    # ports:
+    #   - 3306:3306
+    volumes:
+      - ./data/db:/docker-entrypoint-initdb.d
+    env_file:
+      - '.env.mysql_db'
+  pharmacodb:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    image: pharmacodb_v1.0.0
+    container_name: pharmacodb_v1.0.0
+    privileged: true
+    depends_on:
+      - mysql_db
+    links:
+      - mysql_db:mysql
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/usr/src/app
+    # env_file:
+    #   - '.env.web'

@@ -72,7 +72,7 @@ if (Cookies.get('visited') == 1){on()}
 		<%= render 'components/sidebar' %>
 		<div id="hero-text-wrapper">
 			<h1>PharmacoDB</h1>
-			<h3>Mine multiple pharmacogenomic datasets</h3>
+			<h3>Mine multiple cancer pharmacogenomic datasets</h3>
 			<%= render 'components/search_form' %>
 		</div>
 		<div id="hero-stats-wrapper">
@@ -92,15 +92,15 @@ if (Cookies.get('visited') == 1){on()}
 					<script type="text/javascript">var stat1 = new CountUp("stat1", 0, <%= @cell_lines_count %>, 0, 2.5, options); stat1.start();</script>
 					<p class="stat-text">cell lines</p>
 				</a>
-				<a href="/targets" title="" class="stats-wrapper">
+				<a href="/genes" title="" class="stats-wrapper">
 					<p class="stat-num" id="stat6"></p>
-					<script type="text/javascript">var stat6 = new CountUp("stat6", 0, <%= @targets_count %>, 0, 2.5, options); stat6.start();</script>
-					<p class="stat-text">targets</p>
+					<script type="text/javascript">var stat6 = new CountUp("stat6", 0, <%= @genes_count %>, 0, 2.5, options); stat6.start();</script>
+					<p class="stat-text">genes</p>
 				</a>
 				<a href="/drugs" title="" class="stats-wrapper">
 					<p class="stat-num" id="stat3"></p>
 					<script type="text/javascript">var stat3 = new CountUp("stat3", 0, <%= @drugs_count %>, 0, 2.5, options); stat3.start();</script>
-					<p class="stat-text">drugs</p>
+					<p class="stat-text">compounds</p>
 				</a>
 				<a href="/experiments" title="" class="stats-wrapper">
 					<p class="stat-num" id="stat5"></p>

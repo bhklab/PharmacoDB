@@ -31,15 +31,14 @@ function makePie(names, nums, other_names, other_nums) {
   //positions and dimensions
   var margin = {
     top: 0,
-    right: 1000,
+    right: 100,
     bottom: 120,
-    left: 10
+    left: 120
   };
-  // var width = parseInt(d3.select('body').style('width'), 10);
-  // var height = parseInt(d3.select('body').style('height'), 10);
-  var width = 850;
-  var height = 400;
-  var radius = 450;
+
+  var width = 800;
+  var height = 600;
+  var radius = 240;
   var color = d3.scale.category20();
 
   // reverse the tissue names for the legend, not sure why I have to do this
@@ -51,34 +50,30 @@ function makePie(names, nums, other_names, other_nums) {
   // Add the svg canvas
   var svg = d3.select("#count_stat")
       .append("svg:svg")
+      .attr("fill", "white")
         .data([data])
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
           .attr("transform",
-                "translate(" + 0 + "," + margin.top + ")")
+                "translate(" + 10 + "," + margin.top + ")")
       .attr("id", "pie")
       .append("g")
           .attr("transform",
                 "translate(" + radius + "," + (radius+120) + ")")
-      .attr("fill", "white");
 
-  // for resizing
-  d3.select("#pie")
-  .attr( 'preserveAspectRatio',"xMinYMin meet")
-  .attr("viewBox", "0 0 1420 400")
-  .attr('width', '700')
+
 
   // graph title
   svg.append("text")
     .attr("text-anchor", "middle")
     .attr("fill","black")
-    .style("font-size", "40px")
-    .attr("transform", "translate("+ (width/4) +","+ -490 +")")
+    .style("font-size", "23px")
+    .attr("transform", "translate("+ (width/8) +","+ -300 +")")
     .text("Relative Percentage of Cell lines Per Tissue in PharmacoDB");
 
   var arc = d3.svg.arc()
     .outerRadius(radius)
-    .innerRadius(radius - 200);
+    .innerRadius(radius - 100);
       //.outerRadius(radius);
 
   var pie = d3.layout.pie()
@@ -167,7 +162,7 @@ function makePie(names, nums, other_names, other_nums) {
         //.attr("dy", "1em") for inside
       .attr("text-anchor", "middle")
       .attr("fill", "white")
-      .style("font-size", "25px")
+      .style("font-size", "14px")
       .text(function(d, i) {
         return d3.format(".2f")((data[i].num/sum)*100) + "%";
       });
@@ -181,6 +176,41 @@ function makePie(names, nums, other_names, other_nums) {
               // download the svg
               downloadSVG("count_stat", "tissue");
           });
+
+      // d3.select("#count_stat").append("button")
+      //     .attr("type","button")
+      //     .attr("id", "buttoncount_stat")
+      //     .attr("class", "downloadButton")
+      //     .text("Download PDF")
+      //     .on("click", function() {
+      //         //download the pdf
+      //         svg_to_pdf(document.querySelector("#pie"), function (pdf) {
+      //           download_pdf('tissue.pdf', pdf.output('dataurlstring'));
+      //         }
+      //
+      //       // var svg = document.querySelector("#pie").innerHTML;
+      //       //
+      //       // if (svg)
+      //       //   svg = svg.replace(/\r?\n|\r/g, '').trim();
+      //       //
+      //       // var canvas = document.createElement('canvas');
+      //       // var context = canvas.getContext('2d');
+      //       //
+      //       //
+      //       // context.clearRect(0, 0, canvas.width, canvas.height);
+      //       // canvg(canvas, svg);
+      //       //
+      //       //
+      //       // var imgData = canvas.toDataURL('image/png');
+      //       //
+      //       // // Generate PDF
+      //       // var doc = new jsPDF('p', 'pt', 'a4');
+      //       // doc.addImage(imgData, 'PNG', 40, 40, 75, 75);
+      //       // doc.save('test.pdf');
+      //
+      //
+      //
+      //     });
 
       // make a table that for the "Other" tissues
       // make sure there is enough data to populate each subarray of 3
@@ -244,8 +274,8 @@ function makePie(names, nums, other_names, other_nums) {
     //legend
     for (var i = 0; i < data.length; i++) {
       svg.append('rect')
-          .attr("x", width-350)
-          .attr("y", 160 - i * 35)
+          .attr("x", width-480)
+          .attr("y", 205 - i * 35)
           .attr("width", 15)
           .attr("height", 15)
           .style("fill", color(i));
@@ -253,11 +283,11 @@ function makePie(names, nums, other_names, other_nums) {
 
 
       svg.append('text')
-          .attr("x", width-330)
-          .attr("y",  i * 35 - 245)
+          .attr("x", width-460)
+          .attr("y",  i * 35 - 200)
           .attr("id", "legendLabel" + revArray[i])
           .style("text-anchor", "start")
-          .style("font-size", "25px")
+          .style("font-size", "14px")
           .style("opacity", 1)
           .attr("fill", "black")
           .on({
@@ -301,10 +331,10 @@ function makePie(names, nums, other_names, other_nums) {
 
       // total number of cell lines
       svg.append('text')
-          .attr("x", width)
-          .attr("y",  height + 40)
-          .style("text-anchor", "end")
-          .style("font-size", "25px")
+          .attr("x", 320)
+          .attr("y",  300)
+          .style("text-anchor", "start")
+          .style("font-size", "14px")
           .attr("fill", "black")
           .text("Total number of cell lines: " + sum)
 

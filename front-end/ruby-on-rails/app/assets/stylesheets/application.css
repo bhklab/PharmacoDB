@@ -12,6 +12,8 @@
  *
  *= require_tree .
  *= require_self
+ *= require ionicons
+ *= require introjs
  */
 .turbolinks-progress-bar {
   height: 7px;

@@ -1,0 +1,171 @@
+<div id="batch-query-particles-js"></div>
+<% provide(:title, "Batch Query") %>
+<div id="hdr-default-base">
+	<%= render 'components/header' %>
+</div>
+<%= render 'components/sidebar' %>
+<div class="batch-pmdb-crumb-base">
+    <div class="batch-pcb-wrapper">
+       <ol class="batch-pcb-list">
+          <li><%= link_to root_path do %>Home<% end %><i>/</i></li>
+          <li><%= link_to batch_query_path do %>Batch Query<% end %><i>/</i></li>
+       </ol>
+    </div>
+ </div>
+ <script>
+particlesJS('batch-query-particles-js', {
+    "particles": {
+    "number": {
+        "value": 70,
+        "density": {
+        "enable": true,
+        "value_area": 800
+        }
+    },
+    "color": {
+        "value": "#e62d2d"
+    },
+    "shape": {
+        "type": "circle",
+        "stroke": {
+        "width": 2,
+        "color": "#f4c242"
+        },
+        "polygon": {
+        "nb_sides": 5
+        },
+        "image": {
+        "src": "img/github.svg",
+        "width": 100,
+        "height": 100
+        }
+    },
+    "opacity": {
+        "value": 0.3,
+        "random": false,
+        "anim": {
+        "enable": false,
+        "speed": 1,
+        "opacity_min": 0.1,
+        "sync": false
+        }
+    },
+    "size": {
+        "value": 4,
+        "random": true,
+        "anim": {
+        "enable": false,
+        "speed": 40,
+        "size_min": 0.1,
+        "sync": false
+        }
+    },
+    "line_linked": {
+        "enable": false,
+        "distance": 150,
+        "color": "#000000",
+        "opacity": 0.4,
+        "width": 1
+    },
+    "move": {
+        "enable": true,
+        "speed": 2,
+        "direction": "none",
+        "random": false,
+        "straight": false,
+        "out_mode": "out",
+        "bounce": false,
+        "attract": {
+        "enable": false,
+        "rotateX": 600,
+        "rotateY": 1200
+        }
+    }
+    },
+    "interactivity": {
+    "detect_on": "canvas",
+    "events": {
+        "onhover": {
+        "enable": true,
+        "mode": "grab"
+        },
+        "onclick": {
+        "enable": true,
+        "mode": "push"
+        },
+        "resize": true
+    },
+    "modes": {
+        "grab": {
+        "distance": 150,
+        "line_linked": {
+            "opacity": 1
+        }
+        },
+        "bubble": {
+        "distance": 400,
+        "size": 40,
+        "duration": 2,
+        "opacity": 8,
+        "speed": 3
+        },
+        "repulse": {
+        "distance": 200,
+        "duration": 0.4
+        },
+        "push": {
+        "particles_nb": 4
+        },
+        "remove": {
+        "particles_nb": 2
+        }
+    }
+    },
+    "retina_detect": true
+});
+console.log(Cookies.get('batch_query_visited'));
+if (isNaN(Cookies.get('batch_query_visited'))) {
+    Cookies.set('batch_query_visited', 0);
+} else {
+    Cookies.set('batch_query_visited', Number(Cookies.get('batch_query_visited')) + 1);
+}
+</script>
+<!-- api section -->
+<section id="batch-query-container">
+	<!-- <div id="hapi-img-wrapper">	
+</div> -->
+    <div id="batch-query-title">
+        <h2><i class="fa fa-spinner" aria-hidden="true"></i> Batch Query</h2>  
+    </div>
+    <div id="batch-tour">
+        <!-- <i class="fa fa-hand-pointer-o" aria-hidden="true"></i> -->
+        <h3 onclick="javascript:introJs().start();">Get a quick tour?</h3>
+    </div>
+    <div id="batch-input" class="form-group">
+        <label id="batch-label" for="comment">Cell Lines:</label>
+        <p>Use a wildcard * to specify all cell lines</p>
+        <textarea data-step="1" data-intro="This is the cell line input box. You can paste in your list of cell lines here." id="cell-lines-ta" class="form-control" rows="15" id="comment"></textarea>
+        <div class="cell-line-warning alert alert-warning" style="display: none">
+            <strong>Warning!</strong> Please input a list of cell-lines.
+        </div>
+        <label id="batch-label" for="comment">Compounds:</label>
+        <p>Use a wildcard * to specify all compounds</p>
+        <textarea data-step="2" data-intro="This is the compounds input box. Paste your list of compounds here." id="drugs-ta" class="form-control" rows="15" id="comment"></textarea>
+        <div class="drugs-warning alert alert-warning" style="display: none">
+            <strong>Warning!</strong> Please input a list of compounds
+         </div>
+        <div data-step="3" data-intro="After you have pasted in your compounds and cell lines, do a batch query by clicking submit! A CSV file will be made available." data-position="top" id="submit-batch-wrapper">
+            <a id="submit-batch-query-btn"  class="batch-query-btn">
+                <span>SUBMIT</span>
+            </a>
+            <a id="ajax-submit"></a>
+        </div>
+    </div>
+
+</section>
+<script>
+$("textarea#cell-lines-ta").val('BDCM\nCMK-86\nDMS-79');
+$("textarea#drugs-ta").val('vandenatib\npaclitaxel\nrapamycin');
+</script>
+
+<%= render 'components/footer' %>

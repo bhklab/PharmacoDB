@@ -27,14 +27,14 @@ function wrap(text, width) {
   });
 }
 
-
+// make a histogram!!!!!! obviously
 function makeHistogram(nums, plotId, title) {
   //positions and dimensions
   var margin = {
     top: 100,
     right: 200,
     bottom: 30,
-    left: 100
+    left: 130
   };
   var width = 700;
   var height = 500;
@@ -56,7 +56,6 @@ function makeHistogram(nums, plotId, title) {
   d3.select("#histogram" + plotId)
   .attr( 'preserveAspectRatio',"xMinYMin meet")
   .attr("viewBox", "0 0 800 400")
-
   .attr('width', '700')
 
   // graph title
@@ -133,6 +132,7 @@ function makeHistogram(nums, plotId, title) {
     .attr("stroke", "none")
 
 
+  // group for bars
   var bar = svg.selectAll(".bar")
     .data(bins)
     .enter().append("g")
@@ -161,6 +161,7 @@ function makeHistogram(nums, plotId, title) {
         }
       })
 
+  // bar tooltip
   bar.append("text")
       .attr("dy", ".75em")
       .attr("y", -12)
@@ -185,9 +186,5 @@ function makeHistogram(nums, plotId, title) {
               // download the svg
               downloadSVG(plotId, descriptor);
           });
-
-
-
-
 
 }

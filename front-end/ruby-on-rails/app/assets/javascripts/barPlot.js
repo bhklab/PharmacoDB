@@ -31,18 +31,42 @@ String.prototype.replaceAll = String.prototype.replaceAll || function(s, r) {
   return this.replace(new RegExp(s, 'g'), r);
 };
 
+// zips and sorts, called zipp because it was being affected by other files in the javascripts folder
+function zipp(a, b) {
+  var zipped = [];
+  // zip
+  for (var i=0; i<a.length; i++) {
+    zipped.push({a: a[i], b: b[i] });
+  }
+  zipped.sort(function (x, y){
+    return x.a - y.a;
+  });
+  // unzip
+    var z;
+    for (i=0; i<zipped.length; i++) {
+      z = zipped[i];
+      a[i] = z.a;
+      b[i] = z.b;
+    }
+}
 
+// makes HORIZONTAL bar plot
 function makeBarPlot(names, nums, cell_line, plotId, variableEnding, title, xAxisLabel, datasetName) {
   //positions and dimensions
   var margin = {
     top: 100,
-    right: 200,
+    right: 600,
     bottom: -80,
     left: 200
   };
+
   var width = 500;
   var height = 500;
   var color = d3.scale.category10();
+
+  // zip and sort
+  zipp(nums, names)
+
   names.unshift(" ")
   nums.unshift(0)
 
@@ -55,7 +79,6 @@ function makeBarPlot(names, nums, cell_line, plotId, variableEnding, title, xAxi
   var xrange = d3.scale.linear()
     .domain([0, maxNum])
     .range([0, width]);
-
 
   var yrange = d3.scale.linear()
     .domain([0, names.length])
@@ -84,6 +107,7 @@ function makeBarPlot(names, nums, cell_line, plotId, variableEnding, title, xAxi
   // Add the svg canvas
   var svg = d3.select("#" + plotId)
       .append("svg")
+        .attr("fill", "white")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
       .attr("id", "barPlot" + plotId)
@@ -117,14 +141,17 @@ function makeBarPlot(names, nums, cell_line, plotId, variableEnding, title, xAxi
       .attr("stroke-width", 1)
       .call(xAxis);
 
+  d3.selectAll(".tick")
+    .select("text")
+    .attr("fill", "black")
+    .attr("stroke", "none")
+
   // X axis label
   svg.append("text")
       .attr("text-anchor", "middle")
       .attr("fill","black")
       .attr("transform", "translate("+ (width/2) +","+(height+50)+")")
       .text("# " + xAxisLabel);
-
-
 
   // Add the Y Axis
   svg.append("g")
@@ -150,13 +177,13 @@ function makeBarPlot(names, nums, cell_line, plotId, variableEnding, title, xAxi
           }
         });
 
-  //for resizing
+  //for resizing: KEEP this or plot will break :( yes i was lazy
   d3.selectAll("#barPlot" + plotId)
   .attr( 'preserveAspectRatio',"xMinYMin meet")
   .attr("viewBox", "80 0 700 500")
   .attr('width', '500')
 
-  //adding chart
+  //adding chart group
   var chart = svg.append('g')
   		.attr("transform", "translate(1,0)")
   		.attr('id','chart')
@@ -225,11 +252,21 @@ function makeBarPlot(names, nums, cell_line, plotId, variableEnding, title, xAxi
             else {
               downloadSVG(plotId, xAxisLabel)
             }
-        });
-
+        })
+        .style("margin-right", function() {
+            if (plotId == "pmdb-gdrug-plot") {
+              return "100px"
+            }
+        })
+        .style("margin-left", function() {
+          if (plotId == "pmdb-gdrug-plot") {
+            return "400px"
+          }
+      });
 
 }
 
+// make a vertical bar plot
 function makeVertBarPlot(names, nums, plotId, title) {
   //positions and dimensions
   var margin = {
@@ -253,7 +290,6 @@ function makeVertBarPlot(names, nums, plotId, title) {
   var xrange = d3.scale.linear()
     .domain([0, names.length])
     .range([0, width]);
-
 
   var yrange = d3.scale.linear()
     .domain([0, maxNum])
@@ -334,14 +370,13 @@ function makeVertBarPlot(names, nums, plotId, title) {
         });
 
 
-
   //for resizing
   d3.selectAll("#barPlot" + plotId)
   .attr( 'preserveAspectRatio',"xMinYMin meet")
   .attr("viewBox", "80 0 900 500")
   .attr('width', '700')
 
-  //adding chart
+  //adding chart group
   var chart = svg.append('g')
   		.attr("transform", "translate(0,0)")
   		.attr('id','chart')
