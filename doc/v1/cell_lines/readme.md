@@ -22,7 +22,7 @@ This method returns a list of cell lines.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/cell_lines
+- http://pharmacodb.ca/cell_lines
 
 ## Parameters
 
@@ -48,7 +48,7 @@ GET /cell_lines
 GET /cell_lines
 ```
 
-- https://api.pharmacodb.ca/v1/cell_lines
+- http://api.pharmacodb.ca/v1/cell_lines
 
 ## Output
 

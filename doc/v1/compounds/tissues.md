@@ -23,7 +23,7 @@ This method returns a list of unique tissues that have been treated against a co
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/compounds
+- http://pharmacodb.ca/compounds
 
 ## Parameters
 
@@ -49,9 +49,9 @@ GET /compounds/{id}/tissues
 GET /compounds/{id}/tissues
 ```
 
-- https://api.pharmacodb.com/v1/compounds/526/tissues
-- https://api.pharmacodb.com/v1/compounds/526/tissues?page=2&per_page=10
-- https://api.pharmacodb.com/v1/compounds/paclitaxel/tissues?type=name
+- http://api.pharmacodb.ca/v1/compounds/526/tissues
+- http://api.pharmacodb.ca/v1/compounds/526/tissues?page=2&per_page=10
+- http://api.pharmacodb.ca/v1/compounds/paclitaxel/tissues?type=name
 
 ## Output
 

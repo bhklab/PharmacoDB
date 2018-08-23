@@ -22,7 +22,7 @@ This method returns a list of datasets.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/datasets
+- http://pharmacodb.ca/datasets
 
 ## Parameters
 
@@ -48,7 +48,7 @@ GET /datasets
 GET /datasets
 ```
 
-- https://api.pharmacodb.com/v1/datasets
+- http://api.pharmacodb.ca/v1/datasets
 
 ## Output
 

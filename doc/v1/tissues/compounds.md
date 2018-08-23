@@ -22,7 +22,7 @@ This method returns a list of unique compounds that have been tested against a t
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/tissues
+- http://pharmacodb.ca/tissues
 
 ## Parameters
 
@@ -48,9 +48,9 @@ GET /tissues/{id}/compounds
 GET /tissues/{id}/compounds
 ```
 
-- https://api.pharmacodb.com/v1/tissues/7/compounds
-- https://api.pharmacodb.com/v1/tissues/7/compounds?page=2&per_page=10
-- https://api.pharmacodb.com/v1/tissues/breast/compounds?type=name
+- http://api.pharmacodb.ca/v1/tissues/7/compounds
+- http://api.pharmacodb.ca/v1/tissues/7/compounds?page=2&per_page=10
+- http://api.pharmacodb.ca/v1/tissues/breast/compounds?type=name
 
 ## Output
 

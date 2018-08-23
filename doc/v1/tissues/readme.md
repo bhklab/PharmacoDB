@@ -22,7 +22,7 @@ This method returns a list of tissues.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/tissues
+- http://pharmacodb.ca/tissues
 
 ## Parameters
 
@@ -48,7 +48,7 @@ GET /tissues
 GET /tissues
 ```
 
-- https://api.pharmacodb.com/v1/tissues
+- http://api.pharmacodb.ca/v1/tissues
 
 ## Output
 

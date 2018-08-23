@@ -22,7 +22,7 @@ This method returns a single tissue.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/tissues
+- http://pharmacodb.ca/tissues
 
 ## Parameters
 
@@ -45,9 +45,9 @@ GET /tissues/{id}
 GET /tissues/{id}
 ```
 
-- https://api.pharmacodb.com/v1/tissues/1
-- https://api.pharmacodb.com/v1/tissues/breast?type=name
-- https://api.pharmacodb.com/v1/tissues/7?indent=true
+- http://api.pharmacodb.ca/v1/tissues/1
+- http://api.pharmacodb.ca/v1/tissues/breast?type=name
+- http://api.pharmacodb.ca/v1/tissues/7?indent=true
 
 ## Output
 

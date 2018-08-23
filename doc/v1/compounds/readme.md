@@ -22,7 +22,7 @@ This method returns a list of compounds.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/compounds
+- http://pharmacodb.ca/compounds
 
 ## Parameters
 
@@ -48,7 +48,7 @@ GET /compounds
 GET /compounds
 ```
 
-- https://api.pharmacodb.com/v1/compounds
+- http://api.pharmacodb.ca/v1/compounds
 
 ## Output
 

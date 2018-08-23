@@ -22,7 +22,7 @@ This method returns a single dataset.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/datasets
+- http://pharmacodb.ca/datasets
 
 ## Parameters
 
@@ -45,9 +45,9 @@ GET /datasets/{id}
 GET /datasets/{id}
 ```
 
-- https://api.pharmacodb.com/v1/datasets/1
-- https://api.pharmacodb.com/v1/datasets/ccle?type=name
-- https://api.pharmacodb.com/v1/datasets/1?indent=true
+- http://api.pharmacodb.ca/v1/datasets/1
+- http://api.pharmacodb.ca/v1/datasets/ccle?type=name
+- http://api.pharmacodb.ca/v1/datasets/1?indent=true
 
 ## Output
 

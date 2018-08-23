@@ -23,7 +23,7 @@ This method returns a list of unique tissues that have been tested in a dataset 
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/datasets
+- http://pharmacodb.ca/datasets
 
 ## Parameters
 
@@ -49,9 +49,9 @@ GET /datasets/{id}/tissues
 GET /datasets/{id}/tissues
 ```
 
-- https://api.pharmacodb.com/v1/datasets/1/tissues
-- https://api.pharmacodb.com/v1/datasets/1/tissues?page=2&per_page=10
-- https://api.pharmacodb.com/v1/datasets/ccle/tissues?type=name
+- http://api.pharmacodb.ca/v1/datasets/1/tissues
+- http://api.pharmacodb.ca/v1/datasets/1/tissues?page=2&per_page=10
+- http://api.pharmacodb.ca/v1/datasets/ccle/tissues?type=name
 
 ## Output
 

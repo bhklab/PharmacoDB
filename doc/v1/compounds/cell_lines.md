@@ -23,7 +23,7 @@ This method returns a list of unique cell lines that have been treated against a
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/compounds
+- http://pharmacodb.ca/compounds
 
 ## Parameters
 
@@ -49,9 +49,9 @@ GET /compounds/{id}/cell_lines
 GET /compounds/{id}/cell_lines
 ```
 
-- https://api.pharmacodb.com/v1/compounds/526/cell_lines
-- https://api.pharmacodb.com/v1/compounds/526/cell_lines?page=2&per_page=10
-- https://api.pharmacodb.com/v1/compounds/paclitaxel/cell_lines?type=name
+- http://api.pharmacodb.ca/v1/compounds/526/cell_lines
+- http://api.pharmacodb.ca/v1/compounds/526/cell_lines?page=2&per_page=10
+- http://api.pharmacodb.ca/v1/compounds/paclitaxel/cell_lines?type=name
 
 ## Output
 

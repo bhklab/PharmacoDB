@@ -22,7 +22,7 @@ This method returns a list of unique compounds that have been tested against a c
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/cell_lines/
+- http://pharmacodb.ca/cell_lines/
 
 ## Parameters
 
@@ -48,9 +48,9 @@ GET /cell_lines/{id}/compounds
 GET /cell_lines/{id}/compounds
 ```
 
-- https://api.pharmacodb.com/v1/cell_lines/895/compounds
-- https://api.pharmacodb.com/v1/cell_lines/895/compounds?page=2&per_page=10
-- https://api.pharmacodb.com/v1/cell_lines/mcf7/compounds?type=name
+- http://api.pharmacodb.ca/v1/cell_lines/895/compounds
+- http://api.pharmacodb.ca/v1/cell_lines/895/compounds?page=2&per_page=10
+- http://api.pharmacodb.ca/v1/cell_lines/mcf7/compounds?type=name
 
 ## Output
 

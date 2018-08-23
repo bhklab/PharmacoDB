@@ -36,10 +36,10 @@ GET /{endpoint}
 GET /{endpoint}
 ```
 
-- https://api.pharmacodb.com/v1/intersections/1/895/526
-- https://api.pharmacodb.com/v1/intersections/2/895/1?indent=true
-- https://api.pharmacodb.com/v1/stats/tissues/cell_lines
-- https://api.pharmacodb.com/v1/stats/datasets/cell_lines
-- https://api.pharmacodb.com/v1/stats/datasets/tissues
-- https://api.pharmacodb.com/v1/stats/datasets/compounds
-- https://api.pharmacodb.com/v1/stats/datasets/experiments
+- http://api.pharmacodb.ca/v1/intersections/1/895/526
+- http://api.pharmacodb.ca/v1/intersections/2/895/1?indent=true
+- http://api.pharmacodb.ca/v1/stats/tissues/cell_lines
+- http://api.pharmacodb.ca/v1/stats/datasets/cell_lines
+- http://api.pharmacodb.ca/v1/stats/datasets/tissues
+- http://api.pharmacodb.ca/v1/stats/datasets/compounds
+- http://api.pharmacodb.ca/v1/stats/datasets/experiments

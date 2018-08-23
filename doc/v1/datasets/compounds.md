@@ -23,7 +23,7 @@ This method returns a list of unique compounds that have been tested in a datase
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/datasets
+- http://pharmacodb.ca/datasets
 
 ## Parameters
 
@@ -49,9 +49,9 @@ GET /datasets/{id}/compounds
 GET /datasets/{id}/compounds
 ```
 
-- https://api.pharmacodb.com/v1/datasets/1/compounds
-- https://api.pharmacodb.com/v1/datasets/1/compounds?page=2&per_page=10
-- https://api.pharmacodb.com/v1/datasets/ccle/compounds?type=name
+- http://api.pharmacodb.ca/v1/datasets/1/compounds
+- http://api.pharmacodb.ca/v1/datasets/1/compounds?page=2&per_page=10
+- http://api.pharmacodb.ca/v1/datasets/ccle/compounds?type=name
 
 ## Output
 

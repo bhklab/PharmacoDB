@@ -22,7 +22,7 @@ This method returns a single compound.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/compounds
+- http://pharmacodb.ca/compounds
 
 ## Parameters
 
@@ -45,9 +45,9 @@ GET /compounds/{id}
 GET /compounds/{id}
 ```
 
-- https://api.pharmacodb.com/v1/compounds/1
-- https://api.pharmacodb.com/v1/compounds/paclitaxel?type=name
-- https://api.pharmacodb.com/v1/compounds/526?indent=true
+- http://api.pharmacodb.ca/v1/compounds/1
+- http://api.pharmacodb.ca/v1/compounds/paclitaxel?type=name
+- http://api.pharmacodb.ca/v1/compounds/526?indent=true
 
 ## Output
 

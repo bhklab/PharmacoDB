@@ -22,7 +22,7 @@ This method returns a single experiment.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/experiments
+- http://pharmacodb.ca/experiments
 
 ## Parameters
 
@@ -44,8 +44,8 @@ GET /experiments/{id}
 GET /experiments/{id}
 ```
 
-- https://api.pharmacodb.com/v1/experiments/25
-- https://api.pharmacodb.com/v1/experiments/25?indent=true
+- http://api.pharmacodb.ca/v1/experiments/25
+- http://api.pharmacodb.ca/v1/experiments/25?indent=true
 
 ## Output
 

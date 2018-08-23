@@ -23,7 +23,7 @@ This method returns a list of unique cell lines that belong to a tissue type of 
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/tissues
+- http://pharmacodb.ca/tissues
 
 ## Parameters
 
@@ -49,9 +49,9 @@ GET /tissues/{id}/cell_lines
 GET /tissues/{id}/cell_lines
 ```
 
-- https://api.pharmacodb.com/v1/cell_lines/7/cell_lines
-- https://api.pharmacodb.com/v1/cell_lines/7/cell_lines?page=2&per_page=10
-- https://api.pharmacodb.com/v1/cell_lines/breast/cell_lines?type=name
+- http://api.pharmacodb.ca/v1/cell_lines/7/cell_lines
+- http://api.pharmacodb.ca/v1/cell_lines/7/cell_lines?page=2&per_page=10
+- http://api.pharmacodb.ca/v1/cell_lines/breast/cell_lines?type=name
 
 ## Output
 

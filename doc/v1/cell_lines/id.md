@@ -22,7 +22,7 @@ This method returns a single cell line.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/cell_lines
+- http://pharmacodb.ca/cell_lines
 
 ## Parameters
 
@@ -45,9 +45,9 @@ GET /cell_lines/{id}
 GET /cell_lines/{id}
 ```
 
-- https://api.pharmacodb.com/v1/cell_lines/1
-- https://api.pharmacodb.com/v1/cell_lines/mcf7?type=name
-- https://api.pharmacodb.com/v1/cell_lines/895?indent=true
+- http://api.pharmacodb.ca/v1/cell_lines/1
+- http://api.pharmacodb.ca/v1/cell_lines/mcf7?type=name
+- http://api.pharmacodb.ca/v1/cell_lines/895?indent=true
 
 ## Output
 

@@ -23,7 +23,7 @@ This method returns a list of unique cell lines that have been tested in a datas
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/datasets
+- http://pharmacodb.ca/datasets
 
 ## Parameters
 
@@ -49,9 +49,9 @@ GET /datasets/{id}/cell_lines
 GET /datasets/{id}/cell_lines
 ```
 
-- https://api.pharmacodb.com/v1/datasets/1/cell_lines
-- https://api.pharmacodb.com/v1/datasets/1/cell_lines?page=2&per_page=10
-- https://api.pharmacodb.com/v1/datasets/ccle/cell_lines?type=name
+- http://api.pharmacodb.ca/v1/datasets/1/cell_lines
+- http://api.pharmacodb.ca/v1/datasets/1/cell_lines?page=2&per_page=10
+- http://api.pharmacodb.ca/v1/datasets/ccle/cell_lines?type=name
 
 ## Output
 

@@ -22,7 +22,7 @@ This method returns a list of experiments.
 
 ## Sources
 
-- http://pharmacodb.pmgenomics.ca/experiments
+- http://pharmacodb.ca/experiments
 
 ## Parameters
 
@@ -47,7 +47,7 @@ GET /experiments
 GET /experiments
 ```
 
-- https://api.pharmacodb.com/v1/experiments
+- http://api.pharmacodb.ca/v1/experiments
 
 ## Output
 
