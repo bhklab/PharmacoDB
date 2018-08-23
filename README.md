@@ -17,7 +17,7 @@
 
 High throughput drug screening technologies have enabled the profiling of hundreds of cancer cell lines to a large variety of small molecules to discover novel and repurposed treatments. Several large studies have been publicly released testing candidate molecules, often with corresponding molecular profiles of the cell lines used for drug screening. These studies have become invaluable resources for the research community, allowing researchers to leverage the collected data to support their own research. However, such pharmacogenomic datasets are disparate and lack of standardization for cell line and drug identifiers, and used heterogeneous data format for the drug sensitivity measurements.
 
-To address these issues, we developed [PharmacoDB](http://pharmacodb.pmgenomics.ca/), a web-application assembling the largest in vitro drug screens in a single database, and allowing users to easily query the union of studies released to date. PharmacoDB allows scientists to search across publicly available datasets to find instances where a drug or cell line of interest has been profiled, and to view and compare the dose-response data for a specific cell line - drug pair from any of the studies included in the database.
+To address these issues, we developed [PharmacoDB](http://pharmacodb.ca/), a web-application assembling the largest in vitro drug screens in a single database, and allowing users to easily query the union of studies released to date. PharmacoDB allows scientists to search across publicly available datasets to find instances where a drug or cell line of interest has been profiled, and to view and compare the dose-response data for a specific cell line - drug pair from any of the studies included in the database.
 
 Application currently has two main components: [`api`](./api) and [`web-application`](./front-end).
 
@@ -39,17 +39,17 @@ Application currently has two main components: [`api`](./api) and [`web-applicat
 
 ![MCF7 Paclitaxel](/front-end/ruby-on-rails/app/assets/images/about/drug-dose-response-curve-search.png)
 
-[Start searching](http://pharmacodb.pmgenomics.ca/) across pharmacogenomic datasets and do not hesitate to give us feedback on [GitHub](https://github.com/bhklab/pharmacodb/issues).
+[Start searching](http://pharmacodb.ca/) across pharmacogenomic datasets and do not hesitate to give us feedback on [GitHub](https://github.com/bhklab/pharmacodb/issues).
 
 ## API
 
 The PharmacoDB API contains curated data from a wide set of studies, including: [`CCLE`](http://software.broadinstitute.org/software/cprg/?q=node/11),
-[`GDSC`](http://www.cancerrxgene.org/), [`CTRP v2`](https://portals.broadinstitute.org/ctrp/) and [more](http://pharmacodb.pmgenomics.ca/datasets). This data is made restfully available over HTTP.
+[`GDSC`](http://www.cancerrxgene.org/), [`CTRP v2`](https://portals.broadinstitute.org/ctrp/) and [more](http://pharmacodb.ca/datasets). This data is made restfully available over HTTP.
 
 To access the API, all calls are made to the following URL, adding required parameters for specific services.
 
 ```
-https://api.pharmacodb.ca/v1/
+http://api.pharmacodb.ca/v1/
 ```
 
 Returned data is in `json` format.
@@ -118,7 +118,7 @@ To setup and run the API locally, simply download and run one of the api builds 
 
 ## Web Application
 
-Documentation for the web-application can be found at: [pharmacodb.pmgenomics.ca/docs](http://pharmacodb.pmgenomics.ca/docs).
+Documentation for the web-application can be found at: [pharmacodb.ca/docs](http://pharmacodb.ca/docs).
 
 ## Contributing
 
