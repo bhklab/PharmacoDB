@@ -49,7 +49,7 @@ The PharmacoDB API contains curated data from a wide set of studies, including: 
 To access the API, all calls are made to the following URL, adding required parameters for specific services.
 
 ```
-https://api.pharmacodb.com/v1/
+https://api.pharmacodb.ca/v1/
 ```
 
 Returned data is in `json` format.
